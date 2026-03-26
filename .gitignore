@@ -1,0 +1,14 @@
+.claude/
+# Python
+__pycache__/
+*.pyc
+
+# Env
+.env
+
+# Mac
+.DS_Store
+
+# Node
+node_modules/
+dist/

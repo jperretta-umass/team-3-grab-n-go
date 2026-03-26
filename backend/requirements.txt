@@ -38,3 +38,5 @@ typing-inspection==0.4.2
     #   pydantic
 uvicorn==0.41.0
     # via -r requirements.in
+sqlalchemy==2.0.44
+psycopg2-binary==2.9.10
