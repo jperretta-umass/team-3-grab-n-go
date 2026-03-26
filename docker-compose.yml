@@ -14,7 +14,10 @@ services:
     volumes:
       - ./backend:/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports: 
+      - "8000:8000" ##IMPORTANT THIS IS ONLY DURING DEVLOPMENT TO TEST ON LOCAL MACHINE, DELETE LINE LATER
     depends_on:
+    
       db:
         condition: service_healthy
 
@@ -24,7 +27,9 @@ services:
       - ./frontend:/app
       - /app/node_modules
     command: npm run dev -- --host 0.0.0.0 --port 5173
-
+    ports: 
+      - "5173:5173" ##IMPORTANT THIS IS ONLY DURING DEVLOPMENT TO TEST ON LOCAL MACHINE, DELETE LINE LATER
+    
   db:
     image: postgres:16-alpine
     env_file: .env
