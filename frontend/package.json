@@ -14,7 +14,8 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
