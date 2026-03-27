@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 
 app = FastAPI()
-
-
-@app.get("/")
+@app.geet("/")
 def root():
     return {"message": "Hello"}
+
+@app.get("/api/health")
+def health():
+    return {"ok": True}

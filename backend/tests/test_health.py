@@ -3,6 +3,9 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 
-def test_root():
-    c = TestClient(app)
-    assert c.get("/").json() == {"message": "Hello"}
+def test_health():
+    client = TestClient(app)
+    response = client.get("/api/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"ok": True}
