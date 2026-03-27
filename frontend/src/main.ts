@@ -6,6 +6,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import DelivererPage from "./components/DelivererPage.vue"; 
 import SingleOrder from "./components/SingleOrder.vue";
 import HomeView from "./components/HomeView.vue"
+import ItemPage from "./components/ItemPage.vue"
 
 
 const router = createRouter({
@@ -13,7 +14,8 @@ const router = createRouter({
     routes: [
        { path: '/', component: HomeView },
         {path: "/DelivererPage", component: DelivererPage },
-        {path: "/SingleOrder", component: SingleOrder }
+        {path: "/SingleOrder", component: SingleOrder },
+        {path: "/ItemPage", component: ItemPage } 
     ]
 });
 
