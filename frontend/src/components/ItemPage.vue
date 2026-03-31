@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 type MealType = 'breakfast' | 'lunch' | 'dinner'
 type DietType = 'no-peanuts' | 'vegan' | 'gluten-free' | 'vegetarian'
@@ -118,130 +118,32 @@ const selectedMeal = ref('')
 const selectedDiet = ref('')
 const selectedHall = ref('Hampshire')
 
-const entrees = ref<MenuItem[]>([
-  {
-    id: 1,
-    name: 'Grilled Chicken Bowl',
-    mealType: ['lunch', 'dinner'],
-    diets: ['gluten-free'],
-    category: 'entree',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 2,
-    name: 'Veggie Wrap',
-    mealType: ['lunch'],
-    diets: ['vegetarian'],
-    category: 'entree',
-    diningHall: 'Berkshire',
-  },
-  {
-    id: 3,
-    name: 'Tofu Rice Plate',
-    mealType: ['dinner'],
-    diets: ['vegan', 'gluten-free'],
-    category: 'entree',
-    diningHall: 'Franklin',
-  },
-  {
-    id: 4,
-    name: 'Egg Sandwich',
-    mealType: ['breakfast'],
-    diets: ['vegetarian'],
-    category: 'entree',
-    diningHall: 'Worcester',
-  },
-  {
-    id: 5,
-    name: 'Turkey Panini',
-    mealType: ['lunch'],
-    diets: ['no-peanuts'],
-    category: 'entree',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 6,
-    name: 'Pasta Primavera',
-    mealType: ['dinner'],
-    diets: ['vegetarian'],
-    category: 'entree',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 7,
-    name: 'Breakfast Burrito',
-    mealType: ['breakfast'],
-    diets: ['no-peanuts'],
-    category: 'entree',
-    diningHall: 'Hampshire',
-  },
-])
-
-const snacksAndDrinks = ref<MenuItem[]>([
-  {
-    id: 101,
-    name: 'Fruit Cup',
-    mealType: ['breakfast', 'lunch', 'dinner'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-    category: 'snack',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 102,
-    name: 'Granola Bar',
-    mealType: ['breakfast', 'lunch'],
-    diets: ['vegetarian'],
-    category: 'snack',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 103,
-    name: 'Orange Juice',
-    mealType: ['breakfast'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-    category: 'drink',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 104,
-    name: 'Iced Tea',
-    mealType: ['lunch', 'dinner'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-    category: 'drink',
-    diningHall: 'Berkshire',
-  },
-  {
-    id: 105,
-    name: 'Yogurt Cup',
-    mealType: ['breakfast', 'lunch'],
-    diets: ['vegetarian', 'gluten-free'],
-    category: 'snack',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 106,
-    name: 'Trail Mix',
-    mealType: ['lunch', 'dinner'],
-    diets: ['vegetarian'],
-    category: 'snack',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 107,
-    name: 'Sparkling Water',
-    mealType: ['breakfast', 'lunch', 'dinner'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-    category: 'drink',
-    diningHall: 'Hampshire',
-  },
-])
-
-const cart = ref<CartItem[]>([
-  // { cartId: 1, id: 1, name: 'Grilled Chicken Bowl', price: 13.25 },
-  // { cartId: 2, id: 101, name: 'Fruit Cup', price: 3.00 },
-])
+const menuItems = ref<MenuItem[]>([])
+const cart = ref<CartItem[]>([])
+const loading = ref(false)
+const error = ref('')
 
 let nextCartId = 0
+
+async function loadMenuItems(): Promise<void> {
+  loading.value = true
+  error.value = ''
+
+  try {
+    const response = await fetch('http://localhost:8000/menu-items')
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch menu items: ${response.status}`)
+    }
+
+    const data: MenuItem[] = await response.json()
+    menuItems.value = data
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Unknown error occurred'
+  } finally {
+    loading.value = false
+  }
+}
 
 function matchesFilters(item: MenuItem): boolean {
   const mealMatches =
