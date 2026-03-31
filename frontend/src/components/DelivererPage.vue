@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 const headers = [
   "Southwest",
   "Honors",
@@ -48,11 +49,15 @@ const cellColors = [
 </script>
 
 <template>
-  <section class="deliverer-page">
-    <table class="orders-table">
+  <section class="w-full p-4">
+    <table class="w-full min-h-[800px] table-fixed border-collapse border border-gray-300">
       <thead>
-        <tr>
-          <th v-for="header in headers" :key="header">
+        <tr class="bg-gray-200">
+          <th
+            v-for="header in headers"
+            :key="header"
+            class="border border-gray-300 p-3 text-center font-medium"
+          >
             {{ header }}
           </th>
         </tr>
@@ -62,6 +67,7 @@ const cellColors = [
           <td
             v-for="(order, columnIndex) in row"
             :key="`${rowIndex}-${columnIndex}`"
+            :class="`font-semibold p-3 text-center `"
             :style="{ backgroundColor: cellColors[rowIndex][columnIndex] }"
           >
             {{ order }}
@@ -72,30 +78,3 @@ const cellColors = [
   </section>
 </template>
 
-<style scoped>
-.deliverer-page {
-  width: 100%;
-}
-
-.orders-table {
-  width: 100%;
-  min-height: 800px;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.orders-table th,
-.orders-table td {
-  padding: 0.75rem;
-  border: 1px solid #cfcfcf;
-  text-align: center;
-}
-
-.orders-table th {
-  background: #f4f4f4;
-}
-
-.orders-table td {
-  font-weight: 600;
-}
-</style>
