@@ -1,4 +1,16 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import DelivererPopup from './DelivererPopup.vue'
+
+const popupOpen = ref(false);
+const popOrderName = ref("None")
+const popOrderContent = ref("None")
+
+const orderClicked = (orderName, content) => {
+  popOrderName.value = orderName
+  popOrderContent.value = content
+  popupOpen.value = true
+}
 
 const headers = [
   "Southwest",
@@ -49,6 +61,15 @@ const cellColors = [
 </script>
 
 <template>
+  <div class="modal" v-show="popupOpen">
+    <div>
+      <DelivererPopup
+        :order-number="popOrderName"
+        :content="popOrderContent"
+        @close="popupOpen=false"
+      />
+    </div>
+  </div>
   <section class="w-full p-4">
     <table class="w-full min-h-[800px] table-fixed border-collapse border border-gray-300">
       <thead>
@@ -69,6 +90,7 @@ const cellColors = [
             :key="`${rowIndex}-${columnIndex}`"
             :class="`font-semibold p-3 text-center `"
             :style="{ backgroundColor: cellColors[rowIndex][columnIndex] }"
+            @click="orderClicked(order, 'Nothing yet')"
           >
             {{ order }}
           </td>
@@ -78,3 +100,24 @@ const cellColors = [
   </section>
 </template>
 
+<style> 
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal > div {
+  position: fixed;
+  background-color: #ffff;
+  padding: 100px;
+  border-radius: 50px;
+}
+</style>
