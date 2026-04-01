@@ -1,7 +1,16 @@
 from fastapi import FastAPI
-from . import menu_items
+from fastapi.middleware.cors import CORSMiddleware
+from app import menu_items
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
