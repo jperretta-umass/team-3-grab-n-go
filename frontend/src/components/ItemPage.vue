@@ -130,7 +130,7 @@ async function loadMenuItems(): Promise<void> {
   error.value = ''
 
   try {
-    const response = await fetch('http://localhost:8000/menu-items')
+    const response = await fetch('/api/menu-items')
 
     if (!response.ok) {
       throw new Error(`Failed to fetch menu items: ${response.status}`)
