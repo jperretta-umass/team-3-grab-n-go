@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import { ref } from "vue"
 const headers = [
   "Southwest",
   "Honors",
@@ -28,7 +28,7 @@ const orderRows = [
   ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
 ];
 
-const cellColors = [
+const cellColors = ref([
   ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
   ["yellow", "lightblue", "lightgreen", "yellow", "red", "yellow"],
   ["lightblue", "yellow", "yellow", "lightblue", "red", "lightgreen"],
@@ -45,7 +45,16 @@ const cellColors = [
   ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
   ["lightblue", "red", "yellow", "lightblue", "red", "lightgreen"],
   ["yellow", "lightblue", "lightgreen", "yellow", "lightgreen", "yellow"],
-];
+]);
+
+function handleCellClick(row: number, col: number) {
+  const originalColor = cellColors.value[row][col]
+  cellColors.value[row][col] = "white"
+  setTimeout(() => {
+    cellColors.value[row][col] = originalColor
+  }, 500)
+}
+
 </script>
 
 <template>
@@ -56,7 +65,7 @@ const cellColors = [
           <th
             v-for="header in headers"
             :key="header"
-            class="border border-gray-300 p-3 text-center font-medium"
+            class="border border-gray-400 p-3 text-center font-medium bg-gray-200"
           >
             {{ header }}
           </th>
@@ -67,8 +76,9 @@ const cellColors = [
           <td
             v-for="(order, columnIndex) in row"
             :key="`${rowIndex}-${columnIndex}`"
-            :class="`font-semibold p-3 text-center `"
+            class="border border-gray-400 p-3 text-center font-semibold"
             :style="{ backgroundColor: cellColors[rowIndex][columnIndex] }"
+            @click="handleCellClick(rowIndex, columnIndex)"
           >
             {{ order }}
           </td>
