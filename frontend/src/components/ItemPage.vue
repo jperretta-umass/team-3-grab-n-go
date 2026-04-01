@@ -145,6 +145,10 @@ async function loadMenuItems(): Promise<void> {
   }
 }
 
+onMounted(() => {
+  void loadMenuItems()
+})
+
 function matchesFilters(item: MenuItem): boolean {
   const mealMatches =
     !selectedMeal.value || item.mealType.includes(selectedMeal.value as MealType)
@@ -156,6 +160,14 @@ function matchesFilters(item: MenuItem): boolean {
 
   return mealMatches && dietMatches && hallMatches
 }
+
+const entrees = computed(() => {
+  return menuItems.value.filter(item => item.category === 'entree')
+})
+
+const snacksAndDrinks = computed(() => {
+  return menuItems.value.filter(item => item.category === 'snack' || item.category === 'drink')
+})
 
 const filteredEntrees = computed(() => {
   return entrees.value.filter(matchesFilters)
