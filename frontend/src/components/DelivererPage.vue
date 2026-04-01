@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
+import DelivererPopup from './DelivererPopup.vue'
+
 const headers = [
   "Southwest",
   "Honors",
@@ -47,17 +49,33 @@ const cellColors = ref([
   ["yellow", "lightblue", "lightgreen", "yellow", "lightgreen", "yellow"],
 ]);
 
+const popupOpen = ref(false);
+const popOrderName = ref("None")
+const popOrderContent = ref("None")
+
 function handleCellClick(row: number, col: number) {
   const originalColor = cellColors.value[row][col]
   cellColors.value[row][col] = "white"
   setTimeout(() => {
     cellColors.value[row][col] = originalColor
-  }, 500)
+  }, 200)
+  popOrderName.value = orderRows[row][col]
+  popOrderContent.value = "To be added!"
+  popupOpen.value = true
 }
 
 </script>
 
 <template>
+  <div class="modal" v-show="popupOpen">
+    <div>
+      <DelivererPopup
+        :order-number="popOrderName"
+        :content="popOrderContent"
+        @close="popupOpen=false"
+      />
+    </div>
+  </div>
   <section class="w-full p-4">
     <table class="w-full min-h-[800px] table-fixed border-collapse border border-gray-300">
       <thead>
@@ -88,3 +106,24 @@ function handleCellClick(row: number, col: number) {
   </section>
 </template>
 
+<style> 
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal > div {
+  position: fixed;
+  background-color: #ffff;
+  padding: 100px;
+  border-radius: 50px;
+}
+</style>
