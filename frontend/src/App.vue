@@ -1,10 +1,9 @@
-<script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
-</script>
+<!-- Works like a container of all pages -->
+
 
 <template>
-  <div id="app">
-    <h1>Grab-n-Go</h1>
-    <HelloWorld msg="Welcome to Grab-n-Go" />
-  </div>
+
+ 
+  <router-view></router-view> 
+  
 </template>
