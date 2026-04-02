@@ -1,23 +1,43 @@
-from fastapi import FastAPI, Depends, HTTPException
+"""
+FOR FUTURE DEVELOPMENT:
+
+These endpoints are used by the test suite as integration tests.
+
+If you change:
+- route paths
+- request/response formats
+- business logic
+
+You MUST update:
+- tests/test_customer_api.py
+
+The current endpoints act as a reference for how DB-backed routes should behave.
+"""
+
+
+from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, get_db
 from app.models import Cart, CartItem, DiningHall, Item
+
 Base.metadata.create_all(bind=engine)
+
+app = FastAPI(root_path="/api")
 
 
 class CartItemUpdate(BaseModel):
     quantity: int
 
-app = FastAPI(root_path="/api")
 
 @app.get("/")
 def root():
     return {"message": "Hello"}
 
-@app.get("/")
-def root():
+
+@app.get("/health")
+def health():
     return {"message": "Hello"}
 
 

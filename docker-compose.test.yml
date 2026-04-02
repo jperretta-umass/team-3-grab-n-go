@@ -1,7 +1,27 @@
+# services:
+#   backend:
+#     env_file: .env.test
+#     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+#     depends_on:
+#       test_db:
+#         condition: service_healthy
+
+#   test_db:
+#     image: postgres:16-alpine
+#     env_file: .env.test
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 30
+
 services:
   backend:
+    build: ./backend
     env_file: .env.test
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      PYTHONPATH: /app
+    command: python -m pytest -v
     depends_on:
       test_db:
         condition: service_healthy
