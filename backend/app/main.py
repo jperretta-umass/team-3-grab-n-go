@@ -3,7 +3,7 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-@app.geet("/")
+@app.get("/")
 def root():
     return {"message": "Hello"}
 
