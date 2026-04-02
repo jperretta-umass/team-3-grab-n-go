@@ -44,7 +44,7 @@
     source .venv/bin/activate #mac/linux 
     # .venv\Scripts\activate #windows
 
-    pip install -r requirements.txt 
+    pip-sync requirements.txt requirements-dev.txt
 
     #run locally 
     uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -55,6 +55,13 @@
     If steps followed correctly should be accessable at 
     https://localhost:8000
     https://localhost:8000/docs
+
+    #runing linter:
+
+        black --check .
+        isort --check-only .
+        pycodestyle .
+        pyright
 
 
     Frontend (Vite)

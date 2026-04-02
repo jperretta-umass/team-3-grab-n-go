@@ -1,4 +1,4 @@
--r requirements.in
+-c requirements.txt
 pytest
 black
 isort
