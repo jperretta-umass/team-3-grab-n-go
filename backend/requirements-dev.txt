@@ -40,7 +40,7 @@ pycodestyle==2.14.0
     # via -r requirements-dev.in
 pyright==1.1.408
     # via -r requirements-dev.in
-pytest==4.4.2
+pytest>=7.4
     # via -r requirements-dev.in
 pytokens==0.4.1
     # via black
