@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app import menu_items
+from backend.app.init_db import menu_items
+from init_db import init_database
 
 app = FastAPI()
 
@@ -14,6 +15,7 @@ app.add_middleware(
 
 @app.get("/")
 def root():
+    init_database()
     return {"message": "Hello"}
 
 @app.get("/menu-items")
