@@ -13,3 +13,6 @@ exclude = ".venv,build,dist,.git,__pycache__"
 [tool.pyright]
 typeCheckingMode = "basic"
 include = ["app", "tests"]
+
+[tool.pytest.ini_options]
+pythonpath = "."
