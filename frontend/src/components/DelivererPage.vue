@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ref } from "vue"
+import DelivererPopup from './DelivererPopup.vue'
+
 const headers = [
   "Southwest",
   "Honors",
@@ -27,7 +30,7 @@ const orderRows = [
   ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
 ];
 
-const cellColors = [
+const cellColors = ref([
   ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
   ["yellow", "lightblue", "lightgreen", "yellow", "red", "yellow"],
   ["lightblue", "yellow", "yellow", "lightblue", "red", "lightgreen"],
@@ -44,15 +47,44 @@ const cellColors = [
   ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
   ["lightblue", "red", "yellow", "lightblue", "red", "lightgreen"],
   ["yellow", "lightblue", "lightgreen", "yellow", "lightgreen", "yellow"],
-];
+]);
+
+const popupOpen = ref(false);
+const popOrderName = ref("None")
+const popOrderContent = ref("None")
+
+function handleCellClick(row: number, col: number) {
+  const originalColor = cellColors.value[row][col]
+  cellColors.value[row][col] = "white"
+  setTimeout(() => {
+    cellColors.value[row][col] = originalColor
+  }, 200)
+  popOrderName.value = orderRows[row][col]
+  popOrderContent.value = "To be added!"
+  popupOpen.value = true
+}
+
 </script>
 
 <template>
-  <section class="deliverer-page">
-    <table class="orders-table">
+  <div class="modal" v-show="popupOpen">
+    <div>
+      <DelivererPopup
+        :order-number="popOrderName"
+        :content="popOrderContent"
+        @close="popupOpen=false"
+      />
+    </div>
+  </div>
+  <section class="w-full p-4">
+    <table class="w-full min-h-[800px] table-fixed border-collapse border border-gray-300">
       <thead>
-        <tr>
-          <th v-for="header in headers" :key="header">
+        <tr class="bg-gray-200">
+          <th
+            v-for="header in headers"
+            :key="header"
+            class="border border-gray-400 p-3 text-center font-medium bg-gray-200"
+          >
             {{ header }}
           </th>
         </tr>
@@ -62,7 +94,9 @@ const cellColors = [
           <td
             v-for="(order, columnIndex) in row"
             :key="`${rowIndex}-${columnIndex}`"
+            class="border border-gray-400 p-3 text-center font-semibold"
             :style="{ backgroundColor: cellColors[rowIndex][columnIndex] }"
+            @click="handleCellClick(rowIndex, columnIndex)"
           >
             {{ order }}
           </td>
@@ -72,30 +106,24 @@ const cellColors = [
   </section>
 </template>
 
-<style scoped>
-.deliverer-page {
+<style> 
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
 }
 
-.orders-table {
-  width: 100%;
-  min-height: 800px;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.orders-table th,
-.orders-table td {
-  padding: 0.75rem;
-  border: 1px solid #cfcfcf;
-  text-align: center;
-}
-
-.orders-table th {
-  background: #f4f4f4;
-}
-
-.orders-table td {
-  font-weight: 600;
+.modal > div {
+  position: fixed;
+  background-color: #ffff;
+  padding: 100px;
+  border-radius: 50px;
 }
 </style>
