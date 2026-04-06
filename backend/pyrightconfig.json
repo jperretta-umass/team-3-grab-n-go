@@ -1,0 +1,10 @@
+{
+    "include": ["app"],
+    "exclude": [
+      "**/__pycache__",
+      "venv"
+    ],
+    "typeCheckingMode": "strict",
+    "reportMissingImports": true,
+    "pythonVersion": "3.11"
+  }
