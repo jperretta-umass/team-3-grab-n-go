@@ -1,8 +1,6 @@
--c requirements.txt
+-r requirements.txt
 pytest
-fastapi
 black
 isort
 pycodestyle
 pyright
-httpx
