@@ -27,7 +27,7 @@ jobs:
           pycodestyle .
           pyright
       - name: Tests
-        run: pytest -q
+        run: python3 -m pytest -q
 
   frontend:
     runs-on: ubuntu-latest
