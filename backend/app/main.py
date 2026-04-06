@@ -8,6 +8,6 @@ def root():
     return {"message": "Hello"}
 
 
-@app.get("/api/health")
+@app.get("/health")
 def health():
     return {"ok": True}
