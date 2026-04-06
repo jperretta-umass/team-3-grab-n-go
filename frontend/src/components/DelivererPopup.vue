@@ -1,17 +1,37 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
+import {Order} from "./Order.ts"
 
 defineProps({
-    orderNumber: String,
-    content: String
+    orderObj: Order
 })
 
 defineEmits("['close']")
 
+//Berk 0, Hamp 1, Woo 2, Frank 3
+const dHalls = ["Berkshire", "Hampshire", "Wocester", "Franklin"];
+
+//Burger 0, Pizza 1, Salad 2
+const mains = ["Burger", "Pizza", "Salad"];
+
+//Fries 0, Chips 1, Fruit 2
+const sides = ["Fries", "Chips", "Fruit"];
+
+//Same as dhalls
+const letters = ["B", "H", "W", "F"];
+
+//SW, Honors, Central, NE, OHill, Sylvan
+const dorms = ["SW", "Honors", "Central", "NE", "Ohill", "Sylvan"];
 </script>
+
 <template>
-  <h1> {{ orderNumber }} </h1>
-  <p> {{ content }} </p>
+  <h1> Order ID: {{ orderObj.oId }} </h1>
+  <p> Dining Hall: {{dHalls[orderObj.dId]}} </p>
+  <p> Main Dish: {{mains[orderObj.mainId[0]]}} </p>
+  <p> Sides: {{sides[orderObj.sideId[0]]}} </p>
+  <p> Price ${{orderObj.price}} </p>
+  <p> Special Instructions: {{orderObj.specialInstructions}} </p>
+  <p> Delivery Instructions: {{orderObj.deliveryInstructions}} </p>
   <button class="popButton" @click="$emit('close')"> 
     Close 
   </button>

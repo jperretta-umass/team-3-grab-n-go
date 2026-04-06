@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import DelivererPopup from './DelivererPopup.vue'
+import {Order} from "./Order.ts"
+
+const order0 = new Order(0, 0, 12, 150, 15.00, "12:00", [1], [0,1,1,2], "None", "None");
+const order1 = new Order(1, 1, 10, 16, 30.00, "1:00", [2], [0,1,1,2,2,2,2,0], "None", "None");
+const order2 = new Order(2, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
+const order3 = new Order(3, 0, 12, 150, 15.00, "12:00", [2], [0,1,1,2], "None", "None");
+const order4 = new Order(4, 1, 10, 16, 30.00, "1:00", [1], [0,1,1,2,2,2,2,0], "None", "None");
+const order5 = new Order(5, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
 
 const headers = [
   "Southwest",
@@ -11,24 +19,7 @@ const headers = [
   "Sylvan",
 ];
 
-const orderRows = [
-  ["SW Order #1", "Honors Order #1", "Central Order #1", "NE Order #1", "OHill Order #1", "Sylvan Order #1"],
-  ["SW Order #2", "Honors Order #2", "Central Order #2", "NE Order #2", "OHill Order #2", "Sylvan Order #2"],
-  ["SW Order #3", "Honors Order #3", "Central Order #3", "NE Order #3", "OHill Order #3", "Sylvan Order #3"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-];
+
 
 const cellColors = ref([
   ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
@@ -49,20 +40,49 @@ const cellColors = ref([
   ["yellow", "lightblue", "lightgreen", "yellow", "lightgreen", "yellow"],
 ]);
 
+//Berk 0, Hamp 1, Woo 2, Frank 3
+const dHalls = ["Berkshire", "Hampshire", "Wocester", "Franklin"];
+
+const colors = ["red", "green", "blue", "yellow"];
+
+//Burger 0, Pizza 1, Salad 2
+const mains = ["Burger", "Pizza", "Salad"];
+
+//Fries 0, Chips 1, Fruit 2
+const sides = ["Fries", "Chips", "Fruit"];
+
+//Same as dhalls
+const letters = ["B", "H", "W", "F"];
+
+
+//SW, Honors, Central, NE, OHill, Sylvan
+const dorms = ["SW", "Honors", "Central", "NE", "Ohill", "Sylvan"];
+
+
+
 const popupOpen = ref(false);
-const popOrderName = ref("None")
-const popOrderContent = ref("None")
+const popOrderName = ref(order0);
 
 function handleCellClick(row: number, col: number) {
-  const originalColor = cellColors.value[row][col]
-  cellColors.value[row][col] = "white"
+  const originalColor = cellColors.value[row][col];
+  cellColors.value[row][col] = "white";
   setTimeout(() => {
     cellColors.value[row][col] = originalColor
-  }, 200)
-  popOrderName.value = orderRows[row][col]
-  popOrderContent.value = "To be added!"
-  popupOpen.value = true
+  }, 200);
+  popOrderName.value = orderRows[row][col];
+  popupOpen.value = true;
 }
+
+
+
+
+
+const orderRows = [
+  [order0, order1, order2, order3, order4, order5],
+  [order0, order1, order2, order3, order4, order5],
+  [order0, order1, order2, order3, order4, order5],
+  [order0, order1, order2, order3, order4, order5],
+];
 
 </script>
 
@@ -70,8 +90,7 @@ function handleCellClick(row: number, col: number) {
   <div class="modal" v-show="popupOpen">
     <div>
       <DelivererPopup
-        :order-number="popOrderName"
-        :content="popOrderContent"
+        :orderObj="popOrderName"
         @close="popupOpen=false"
       />
     </div>
@@ -98,7 +117,7 @@ function handleCellClick(row: number, col: number) {
             :style="{ backgroundColor: cellColors[rowIndex][columnIndex] }"
             @click="handleCellClick(rowIndex, columnIndex)"
           >
-            {{ order }}
+            {{ dorms[order.dormId] }}
           </td>
         </tr>
       </tbody>
@@ -123,7 +142,7 @@ function handleCellClick(row: number, col: number) {
 .modal > div {
   position: fixed;
   background-color: #ffff;
-  padding: 100px;
-  border-radius: 50px;
+  padding: 10px;
+  border-radius: 25px;
 }
 </style>
