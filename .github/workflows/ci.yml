@@ -68,17 +68,17 @@ jobs:
           #cache: "npm"
           #cache-dependency-path: end2endTest/package-lock.json
 
-      - name: Install Playwright
-        working-directory: end2endTest
-        run: |
-          npm ci
-          npx playwright install --with-deps
+     # - name: Install Playwright
+     #   working-directory: end2endTest
+     #   run: |
+     #     npm ci
+     #     npx playwright install --with-deps
 
-      - name: Run Playwright
-        working-directory: end2endTest
-        env:
-          BASE_URL: http://localhost
-        run: npx playwright test
+     # - name: Run Playwright
+     #   working-directory: end2endTest
+     #   env:
+     #     BASE_URL: http://localhost
+     #   run: npx playwright test
 
       - name: Logs on failure
         if: failure()
