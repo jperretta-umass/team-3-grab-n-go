@@ -43,7 +43,7 @@
     python -m venv .venv
     source .venv/bin/activate #mac/linux 
     # .venv\Scripts\activate #windows
-
+    pip install pip-tools
     pip-sync requirements.txt requirements-dev.txt
 
     #run locally 
