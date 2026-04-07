@@ -23,8 +23,8 @@ def init_database():
     for item in mock_items:
        menu_item = MenuItems(
           name=item['name'],
-          meal_type=','.join(item['mealType']),
-          diets=','.join(item['diets']),
+          meal_type=item['mealType'],
+          diets=item['diets'],
           category=item['category'],
           price=item['price'],
           dining_hall=item['diningHall']
@@ -35,12 +35,6 @@ def init_database():
 
 if __name__ == '__main__':
     init_database()
-
-
-
-
-
-
 
 #menu_items = [
 #   {

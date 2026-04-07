@@ -1,6 +1,6 @@
 from . import db
 from typing import List
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float, Boolean, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class User(db.model):
@@ -21,8 +21,8 @@ class MenuItems(db.model):
     __tablename__ = 'menu_items'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    meal_type: Mapped[str] = mapped_column(String(50), nullable=False)
-    diets: Mapped[str] = mapped_column(String(200), nullable=False)
+    meal_type: Mapped[List[str]] = mapped_column(JSON, nullable=False)
+    diets: Mapped[List[str]] = mapped_column(JSON, nullable=False)
     category: Mapped[str] = mapped_column(String(50), nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
     dining_hall_id: Mapped[int] = mapped_column(Integer, ForeignKey('dining_halls.id'), nullable=False)
@@ -43,11 +43,3 @@ class CartItem(db.model):
     quantity: Mapped[int] = mapped_column(Integer, default=1)
     cart: Mapped[List[Cart]] = relationship('Cart', back_populates='items')
     menu_item: Mapped[MenuItems] = relationship('MenuItems')
-
-
-
-
-
-
-
-

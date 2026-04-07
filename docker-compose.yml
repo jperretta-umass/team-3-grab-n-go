@@ -29,6 +29,7 @@ services:
 
   db:
     image: postgres:16-alpine
+    expose: ["5432"]
     env_file: .env
     volumes:
       - pgdata:/var/lib/postgresql/data
