@@ -1,6 +1,7 @@
--r requirements.txt
+-c requirements.txt
 pytest
 black
 isort
 pycodestyle
 pyright
+httpx
