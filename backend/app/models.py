@@ -122,6 +122,19 @@ class CartItem(Base):
     cart_id: Mapped[int] = mapped_column(Integer, ForeignKey('carts.id'), primary_key=True)
     menu_item_id: Mapped[int] = mapped_column(Integer, ForeignKey('menu_items.id'), primary_key=True)
     quantity: Mapped[int] = mapped_column(Integer, default=1)
+<<<<<<< HEAD
     cart: Mapped[Cart] = relationship('Cart', back_populates='items')
     menu_item: Mapped[MenuItem] = relationship('MenuItem')
 
+=======
+    cart: Mapped[List[Cart]] = relationship('Cart', back_populates='items')
+    menu_item: Mapped[MenuItems] = relationship('MenuItems')
+
+class Order(db.model):
+    __tablename__ = 'orders'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    total_price: Mapped[float] = mapped_column(Float, nullable=False)
+    created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    user: Mapped[User] = relationship('User')
+>>>>>>> 5a4d67d (order skeleton maybe)

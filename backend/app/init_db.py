@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 from app.database import MockSession, Base, engine
 from app.models import User, DiningHall, MenuItems, Cart, CartItem
 
 db = MockSession()
+=======
+from . import db
+from models import User, DiningHall, MenuItems, Cart, CartItem
+>>>>>>> 2000d26 (order skeleton maybe)
 def init_database():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
