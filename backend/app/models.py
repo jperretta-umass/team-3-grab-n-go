@@ -16,7 +16,6 @@ You MUST update:
 
 The current test suite assumes:
 - specific relationships between User, CustomerProfile, DelivererProfile
-- existence of DiningHall, Item, Cart, CartItem tables
 """
 
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
