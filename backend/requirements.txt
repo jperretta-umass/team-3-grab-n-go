@@ -16,14 +16,14 @@ click==8.1.8
     # via uvicorn
 fastapi==0.128.8
     # via -r requirements.in
-greenlet==3.3.2
-    # via sqlalchemy
 h11==0.16.0
     # via uvicorn
 httptools==0.7.1
     # via uvicorn
 idna==3.11
     # via anyio
+psycopg2-binary==2.9.11
+    # via -r requirements.in
 pydantic==2.12.5
     # via fastapi
 pydantic-core==2.41.5
