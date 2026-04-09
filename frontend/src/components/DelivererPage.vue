@@ -2,13 +2,14 @@
 import { ref } from "vue"
 import DelivererPopup from './DelivererPopup.vue'
 import {Order} from "./Order.ts"
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 const order0 = new Order(0, 0, 12, 150, 15.00, "12:00", [1], [0,1,1,2], "None", "None");
 const order1 = new Order(1, 1, 10, 16, 30.00, "1:00", [2], [0,1,1,2,2,2,2,0], "None", "None");
 const order2 = new Order(2, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
-const order3 = new Order(3, 0, 12, 150, 15.00, "12:00", [2], [0,1,1,2], "None", "None");
-const order4 = new Order(4, 1, 10, 16, 30.00, "1:00", [1], [0,1,1,2,2,2,2,0], "None", "None");
-const order5 = new Order(5, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
+const order3 = new Order(3, 3, 12, 150, 15.00, "12:00", [2], [0,1,1,2], "None", "None");
+const order4 = new Order(1, 1, 10, 16, 30.00, "1:00", [1], [0,1,1,2,2,2,2,0], "None", "None");
+const order5 = new Order(0, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
 
 const headers = [
   "Southwest",
@@ -19,31 +20,10 @@ const headers = [
   "Sylvan",
 ];
 
-
-
-const cellColors = ref([
-  ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "red", "yellow"],
-  ["lightblue", "yellow", "yellow", "lightblue", "red", "lightgreen"],
-  ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
-  ["lightblue", "yellow", "yellow", "lightblue", "red", "lightgreen"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "lightgreen", "yellow"],
-  ["lightblue", "yellow", "yellow", "lightblue", "lightblue", "lightgreen"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "red", "yellow"],
-  ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
-  ["lightblue", "yellow", "yellow", "lightblue", "red", "lightgreen"],
-  ["yellow", "red", "lightgreen", "yellow", "lightgreen", "yellow"],
-  ["lightblue", "yellow", "yellow", "lightblue", "lightblue", "lightgreen"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "red", "yellow"],
-  ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
-  ["lightblue", "red", "yellow", "lightblue", "red", "lightgreen"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "lightgreen", "yellow"],
-]);
-
 //Berk 0, Hamp 1, Woo 2, Frank 3
 const dHalls = ["Berkshire", "Hampshire", "Wocester", "Franklin"];
 
-const colors = ["red", "green", "blue", "yellow"];
+const colors = ["red", "lightgreen", "lightblue", "yellow"];
 
 //Burger 0, Pizza 1, Salad 2
 const mains = ["Burger", "Pizza", "Salad"];
@@ -62,27 +42,28 @@ const dorms = ["SW", "Honors", "Central", "NE", "Ohill", "Sylvan"];
 
 const popupOpen = ref(false);
 const popOrderName = ref(order0);
+const curRow = ref(0);
+const curCol = ref(0);
 
-function handleCellClick(row: number, col: number) {
-  const originalColor = cellColors.value[row][col];
-  cellColors.value[row][col] = "white";
-  setTimeout(() => {
-    cellColors.value[row][col] = originalColor
-  }, 200);
-  popOrderName.value = orderRows[row][col];
+function handleCellClick(order: Order, rowIndex : number, columnIndex : number) {
+  popOrderName.value = order;
   popupOpen.value = true;
+  curRow.value = rowIndex;
+  curCol.value = columnIndex;
 }
 
-
-
-
-
 const orderRows = [
-  [order0, order1, order2, order3, order4, order5],
-  [order0, order1, order2, order3, order4, order5],
-  [order0, order1, order2, order3, order4, order5],
-  [order0, order1, order2, order3, order4, order5],
+  [order0, order0, order0, order0, order0, order0],
+  [order1, order1, order1, order1, order1, order1],
+  [order2, order2, order2, order2, order2, order2],
+  [order3, order3, order3, order3, order3, order3],
 ];
+
+function handleAccept() {
+  alert('Order Claimed!');
+  orderRows[curRow.value].splice(curCol.value,1)
+  popupOpen.value = false;
+}
 
 </script>
 
@@ -92,6 +73,7 @@ const orderRows = [
       <DelivererPopup
         :orderObj="popOrderName"
         @close="popupOpen=false"
+        @accept="handleAccept"
       />
     </div>
   </div>
@@ -114,8 +96,8 @@ const orderRows = [
             v-for="(order, columnIndex) in row"
             :key="`${rowIndex}-${columnIndex}`"
             class="border border-gray-400 p-3 text-center font-semibold"
-            :style="{ backgroundColor: cellColors[rowIndex][columnIndex] }"
-            @click="handleCellClick(rowIndex, columnIndex)"
+            :style="{ backgroundColor: colors[order.dId] }"
+            @click="handleCellClick(order, rowIndex, columnIndex)"
           >
             {{ dorms[order.dormId] }}
           </td>

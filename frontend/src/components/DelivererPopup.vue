@@ -6,7 +6,7 @@ defineProps({
     orderObj: Order
 })
 
-defineEmits("['close']")
+defineEmits("['close', 'accept']")
 
 //Berk 0, Hamp 1, Woo 2, Frank 3
 const dHalls = ["Berkshire", "Hampshire", "Wocester", "Franklin"];
@@ -32,8 +32,11 @@ const dorms = ["SW", "Honors", "Central", "NE", "Ohill", "Sylvan"];
   <p> Price ${{orderObj.price}} </p>
   <p> Special Instructions: {{orderObj.specialInstructions}} </p>
   <p> Delivery Instructions: {{orderObj.deliveryInstructions}} </p>
-  <button class="popButton" @click="$emit('close')"> 
-    Close 
+  <button class="border border-gray-400 p-3 text-center font-semibold bg-red-700" @click="$emit('close')"> 
+    Cancel 
+  </button>
+  <button class="border border-gray-400 p-3 text-center font-semibold bg-green-700" @click="$emit('accept')">
+    Accept
   </button>
 </template>
 
