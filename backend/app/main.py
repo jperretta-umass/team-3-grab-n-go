@@ -46,3 +46,4 @@ def commit_order(Order):
 def get_orders():
     orders = db.query(Order).all()
     return {"orders": [order.to_dict() for order in orders]}
+

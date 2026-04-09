@@ -42,6 +42,7 @@ def init_database():
         db.rollback()
         print(f"Error initializing database: {e}")
 
+
 if __name__ == '__main__':
     init_database()
 
