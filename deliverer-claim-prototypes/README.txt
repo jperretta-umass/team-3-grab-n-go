@@ -1,0 +1,1 @@
+This is where we will create + store the Vue prototypes we make for the deliverer claiming part of Minute Meals. Waiting on vue setup to create prototypes.
