@@ -1,4 +1,4 @@
-from .init_db import db
+from . import db
 from models import User, DiningHall, MenuItems, Cart, CartItem
 def init_database():
     db.create_all()
