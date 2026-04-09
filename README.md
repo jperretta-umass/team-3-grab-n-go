@@ -63,6 +63,9 @@
         pycodestyle .
         pyright
 
+    #Running pytest 
+        docker run -d  -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -p 9003:5432 postgres:16
+        DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:9003/postgres pytest -vv
 
     Frontend (Vite)
 ```Frontend 
