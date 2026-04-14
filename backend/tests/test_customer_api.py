@@ -2,7 +2,7 @@
 #     """
 #     Example integration test for a DB-backed GET endpoint.
 
-#     Verifies that dining halls seeded during test setup are returned correctly.
+#Verifies that dining halls seeded during test setup are returned correctly.
 
 #     IMPORTANT FOR FUTURE DATABASE IMPLEMENTATION:
 #     If the endpoint path, response format, or seed data changes,
