@@ -2,14 +2,20 @@
 import { ref } from "vue"
 import DelivererPopup from './DelivererPopup.vue'
 import {Order} from "./Order.ts"
-import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 const order0 = new Order(0, 0, 12, 150, 15.00, "12:00", [1], [0,1,1,2], "None", "None");
 const order1 = new Order(1, 1, 10, 16, 30.00, "1:00", [2], [0,1,1,2,2,2,2,0], "None", "None");
 const order2 = new Order(2, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
 const order3 = new Order(3, 3, 12, 150, 15.00, "12:00", [2], [0,1,1,2], "None", "None");
-const order4 = new Order(1, 1, 10, 16, 30.00, "1:00", [1], [0,1,1,2,2,2,2,0], "None", "None");
-const order5 = new Order(0, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
+const order4 = new Order(1, 4, 10, 16, 30.00, "1:00", [1], [0,1,1,2,2,2,2,0], "None", "None");
+const order5 = new Order(0, 5, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
+const order6 = new Order(3, 0, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
+const order7 = new Order(1, 1, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
+const order8 = new Order(0, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
+const order9 = new Order(1, 3, 12, 150, 15.00, "12:00", [2], [0,1,1,2], "None", "None");
+const order10 = new Order(2, 4, 10, 16, 30.00, "1:00", [1], [0,1,1,2,2,2,2,0], "None", "None");
+const order11 = new Order(1, 5, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
+
 
 const headers = [
   "Southwest",
@@ -36,32 +42,35 @@ const letters = ["B", "H", "W", "F"];
 
 
 //SW, Honors, Central, NE, OHill, Sylvan
-const dorms = ["SW", "Honors", "Central", "NE", "Ohill", "Sylvan"];
-
+const dorms = ["Prince Hall", "Oak Hall", "Central Hall", "NE Apartment", "Ohill", "Sylvan"];
 
 
 const popupOpen = ref(false);
 const popOrderName = ref(order0);
-const curRow = ref(0);
+const curInd = ref(0);
 const curCol = ref(0);
 
-function handleCellClick(order: Order, rowIndex : number, columnIndex : number) {
+function handleCellClick(order: Order, currentIndex : number, currentColumn : number) {
   popOrderName.value = order;
   popupOpen.value = true;
-  curRow.value = rowIndex;
-  curCol.value = columnIndex;
+  curInd.value = currentColumn;
+  curCol.value = currentIndex;
 }
 
-const orderRows = [
-  [order0, order0, order0, order0, order0, order0],
-  [order1, order1, order1, order1, order1, order1],
-  [order2, order2, order2, order2, order2, order2],
-  [order3, order3, order3, order3, order3, order3],
-];
+const orderRows = ref([
+  [order0, order6, order0, order6, order0, order0, order0, order6, order0, order0, order0, order0],
+  [order1, order1, order7, order1, order1, order7],
+  [order8, order2, order2, order2, order8, order2],
+  [order3, order9, order3, order3, order3, order3],
+  [order10, order4, order4],
+  [order5,order5,order11,order5,order5,order11]
+]);
+
+const longest = ref(orderRows.value.reduce((num, arr) => Math.max(num, arr.length), 0));
 
 function handleAccept() {
   alert('Order Claimed!');
-  orderRows[curRow.value].splice(curCol.value,1)
+  orderRows.value[curInd.value].splice(curCol.value,1)
   popupOpen.value = false;
 }
 
@@ -78,7 +87,7 @@ function handleAccept() {
     </div>
   </div>
   <section class="w-full p-4">
-    <table class="w-full min-h-[800px] table-fixed border-collapse border border-gray-300">
+    <table class="border-separate border-spacing-2 w-full min-h-[800px] table-fixed border-collapse border border-gray-300">
       <thead>
         <tr class="bg-gray-200">
           <th
@@ -91,15 +100,15 @@ function handleAccept() {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, rowIndex) in orderRows" :key="`row-${rowIndex}`">
+        <tr v-for="i in longest" :key="i">
           <td
-            v-for="(order, columnIndex) in row"
-            :key="`${rowIndex}-${columnIndex}`"
-            class="border border-gray-400 p-3 text-center font-semibold"
-            :style="{ backgroundColor: colors[order.dId] }"
-            @click="handleCellClick(order, rowIndex, columnIndex)"
+            v-for="(col, j) in orderRows"
+            :key="`${i}-${j}`"
+            class="rounded-xl overflow-hidden p-3 text-center font-semibold"
+            :style="col[i - 1] ? { backgroundColor: colors[col[i - 1].dId] } : { backgroundColor : 'lightgrey'}"
+            @click="col[i - 1] && handleCellClick(col[i - 1], i - 1, j)"
           >
-            {{ dorms[order.dormId] }}
+            {{ col[i - 1] ? dorms[col[i - 1].dormId] : ' ' }}
           </td>
         </tr>
       </tbody>
