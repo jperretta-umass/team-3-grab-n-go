@@ -18,10 +18,9 @@ The current test suite assumes:
 - specific relationships between User, CustomerProfile, DelivererProfile
 """
 
+from app.database import Base
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-
-from app.database import Base
 
 
 class User(Base):
