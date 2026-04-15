@@ -25,19 +25,21 @@ const dorms = ["SW", "Honors", "Central", "NE", "Ohill", "Sylvan"];
 </script>
 
 <template>
-  <h1> Order ID: {{ orderObj.oId }} </h1>
-  <p> Dining Hall: {{dHalls[orderObj.dId]}} </p>
-  <p> Main Dish: {{mains[orderObj.mainId[0]]}} </p>
-  <p> Sides: {{sides[orderObj.sideId[0]]}} </p>
-  <p> Price ${{orderObj.price}} </p>
-  <p> Special Instructions: {{orderObj.specialInstructions}} </p>
-  <p> Delivery Instructions: {{orderObj.deliveryInstructions}} </p>
-  <button class="border border-gray-400 p-3 text-center font-semibold bg-red-700" @click="$emit('close')"> 
-    Cancel 
-  </button>
-  <button class="border border-gray-400 p-3 text-center font-semibold bg-green-700" @click="$emit('accept')">
-    Accept
-  </button>
+  <h1 class="text-2xl font-sans font-bold text-gray-900"> Order ID: {{ orderObj.oId }} </h1>
+  <p class="pt-1"> Dining Hall: {{dHalls[orderObj.dId]}} </p>
+  <p class="pt-1"> Main Dish: {{mains[orderObj.mainId[0]]}} </p>
+  <p class="pt-1"> Sides: {{sides[orderObj.sideId[0]]}} </p>
+  <p class="pt-1"> Price ${{orderObj.price}} </p>
+  <p class="pt-1"> Special Instructions: {{orderObj.specialInstructions}} </p>
+  <p class="pt-1"> Delivery Instructions: {{orderObj.deliveryInstructions}} </p>
+  <nav class="flex gap-3 justify-center pt-3">
+    <button class="rounded-lg p-2 text-center text-slate-900 font-semibold bg-red-400" @click="$emit('close')"> 
+      Cancel 
+    </button>
+    <button class="rounded-lg p-2 text-center text-slate-900 font-semibold bg-green-400" @click="$emit('accept')">
+      Accept
+    </button>
+  </nav>
 </template>
 
 <style>

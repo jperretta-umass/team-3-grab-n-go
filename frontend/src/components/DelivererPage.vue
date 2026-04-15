@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import DelivererPopup from './DelivererPopup.vue'
 import {Order} from "./Order.ts"
 
@@ -27,7 +27,7 @@ const headers = [
 ];
 
 //Berk 0, Hamp 1, Woo 2, Frank 3
-const dHalls = ["Berkshire", "Hampshire", "Wocester", "Franklin"];
+const dHalls = ["Berkshire", "Hampshire", "Worcester", "Franklin"];
 
 const colors = ["red", "lightgreen", "lightblue", "yellow"];
 
@@ -68,16 +68,41 @@ const orderRows = ref([
 
 const longest = ref(orderRows.value.reduce((num, arr) => Math.max(num, arr.length), 0));
 
+const claimNotifVis = ref(false);
+// code for alert found here! https://v1.tailwindcss.com/components/alerts
+
 function handleAccept() {
-  alert('Order Claimed!');
-  orderRows.value[curInd.value].splice(curCol.value,1)
+  claimNotifVis.value = true;
+  setTimeout(() => {
+      claimNotifVis.value = false;
+    }, 3000);
+  orderRows.value[curInd.value].splice(curCol.value,1);
   popupOpen.value = false;
 }
 
 </script>
 
 <template>
-  <div class="modal" v-show="popupOpen">
+  <header class="bg-white shadow-lg">
+    <nav aria-label="Global" class="flex mx-auto items-center justify-between p-5 lg:px-7">
+      <div class="flex lg:flex-1">
+        <a href="/" class="-m-1.5 p-1.5">
+          <span class="sr-only">MinuteMeals</span>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1280px-UMass_Amherst_athletics_logo.svg.png" alt="" class="h-8 w-auto" />
+        </a>
+      </div><div class="flex lg:flex-15">
+        <a class="text-4xl/6 font-sans font-semibold text-gray-900">Available Orders</a>
+      </div>
+      <div>
+        <a class="text-lg/6 font-sans font-semibold text-gray-900">My Account</a>
+      </div>
+    </nav>
+  </header>
+  <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-md" role="alert" v-if="claimNotifVis">
+    <strong class="font-bold">Order Claimed!</strong>
+    <span class="block sm:inline"> You have claimed this order. </span>
+  </div>
+  <div class="modal flex justify-between p-5 lg:px-7" v-show="popupOpen">
     <div>
       <DelivererPopup
         :orderObj="popOrderName"
@@ -93,7 +118,7 @@ function handleAccept() {
           <th
             v-for="header in headers"
             :key="header"
-            class="border border-gray-400 p-3 text-center font-medium bg-gray-200"
+            class="border border-gray-400 p-3 text-center font-medium bg-gray-200 shadow-sm"
           >
             {{ header }}
           </th>
@@ -104,7 +129,7 @@ function handleAccept() {
           <td
             v-for="(col, j) in orderRows"
             :key="`${i}-${j}`"
-            class="rounded-xl overflow-hidden p-3 text-center font-semibold"
+            class="rounded-xl overflow-hidden p-3 text-center font-semibold shadow-md"
             :style="col[i - 1] ? { backgroundColor: colors[col[i - 1].dId] } : { backgroundColor : 'lightgrey'}"
             @click="col[i - 1] && handleCellClick(col[i - 1], i - 1, j)"
           >
@@ -133,7 +158,8 @@ function handleAccept() {
 .modal > div {
   position: fixed;
   background-color: #ffff;
-  padding: 10px;
+  padding: 25px;
   border-radius: 25px;
+  box-shadow: 5px 5px 10px rgba(0,0,0,0.5);
 }
 </style>
