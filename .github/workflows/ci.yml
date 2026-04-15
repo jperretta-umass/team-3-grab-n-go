@@ -22,8 +22,8 @@ jobs:
           pip-sync requirements.txt requirements-dev.txt
       - name: Lint + typecheck
         run: |
+          isort --check-only --profile black .
           black --check .
-          isort --check-only .
           pycodestyle backend/app backend/tests --max-line-length=88
           pycodestyle end2endTest --max-line-length=88
           pyright
