@@ -11,5 +11,5 @@ ignore = ["E203", "W503"]  # common black compatibility
 exclude = ".venv,build,dist,.git,__pycache__"
 
 [tool.pyright]
-typeCheckingMode = "basic"
+typeCheckingMode = "strict"
 include = ["app", "tests"]
