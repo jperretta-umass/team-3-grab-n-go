@@ -4,6 +4,8 @@ line-length = 88
 [tool.isort]
 profile = "black"
 line_length = 88
+known_first_party = ["app"]
+src_paths = ["backend"]
 
 [tool.pycodestyle]
 max-line-length = 88
