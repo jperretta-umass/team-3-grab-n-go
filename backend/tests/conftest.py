@@ -1,13 +1,16 @@
 import os
 
 import pytest
+
 # Import the SQLAlchemy Base so tests can create/drop the schema
 # in the dedicated test database.
 # get_db is imported so we can override the normal FastAPI database
 # dependency and force the app to use the test session during tests.
 from app.database import Base, get_db
+
 # Import the FastAPI app instance used by TestClient.
 from app.main import app
+
 # These are the current models used by the test template.
 # IMPORTANT FOR FUTURE DATABASE IMPLEMENTATION:
 # If models.py changes (field names, relationships, required columns, etc.),
