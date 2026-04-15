@@ -24,8 +24,8 @@ jobs:
         run: |
           isort --check-only --profile black .
           black --check .
-          pycodestyle backend/app backend/tests --max-line-length=88
-          pycodestyle end2endTest --max-line-length=88
+          pycodestyle app tests --max-line-length=88
+          pycodestyle ../end2endTest --max-line-length=88
           pyright
       - name: Tests
         run: python3 -m pytest -q
