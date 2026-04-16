@@ -17,11 +17,8 @@ const mains = ["Burger", "Pizza", "Salad"];
 //Fries 0, Chips 1, Fruit 2
 const sides = ["Fries", "Chips", "Fruit"];
 
-//Same as dhalls
-const letters = ["B", "H", "W", "F"];
-
 //SW, Honors, Central, NE, OHill, Sylvan
-const dorms = ["SW", "Honors", "Central", "NE", "Ohill", "Sylvan"];
+//const dorms = ["SW", "Honors", "Central", "NE", "Ohill", "Sylvan"];
 </script>
 
 <template>

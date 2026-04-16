@@ -27,18 +27,16 @@ const headers = [
 ];
 
 //Berk 0, Hamp 1, Woo 2, Frank 3
-const dHalls = ["Berkshire", "Hampshire", "Worcester", "Franklin"];
+//const dHalls = ["Berkshire", "Hampshire", "Worcester", "Franklin"];
 
 const colors = ["red", "lightgreen", "lightblue", "yellow"];
 
 //Burger 0, Pizza 1, Salad 2
-const mains = ["Burger", "Pizza", "Salad"];
+//const mains = ["Burger", "Pizza", "Salad"];
 
 //Fries 0, Chips 1, Fruit 2
-const sides = ["Fries", "Chips", "Fruit"];
+//const sides = ["Fries", "Chips", "Fruit"];
 
-//Same as dhalls
-const letters = ["B", "H", "W", "F"];
 
 
 //SW, Honors, Central, NE, OHill, Sylvan
