@@ -30,6 +30,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, nullable=False, index=True)
     email = Column(String, unique=True, nullable=False, index=True)
+    password_hash = Column(String, nullable=False)
     phone_num = Column(String, nullable=True)
     has_deliverer_profile = Column(Boolean, nullable=False, default=False)
     deliverer_id = Column(
