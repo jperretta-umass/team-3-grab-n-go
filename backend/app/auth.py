@@ -32,3 +32,26 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         email=user.email,
         is_deliverer=user.has_deliverer_profile,
     )
+
+
+@router.post("/register", response_model=AuthResponse)
+def register(payload: RegisterRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == payload.email).first()
+    if user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    user = User(
+        username=payload.username,
+        email=payload.email,
+        password_hash=get_password_hash(payload.password),
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    return AuthResponse(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        is_deliverer=user.has_deliverer_profile,
+    )
