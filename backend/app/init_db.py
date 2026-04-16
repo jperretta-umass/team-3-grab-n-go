@@ -22,6 +22,8 @@ def init_database():
             {"name": 'Turkey Panini', "mealType": ['lunch'], "diets": ['no-peanuts'], "category": 'entree', "diningHall": hampshire, "price": 11.00},
             {"name": 'Pasta Primavera', "mealType": ['dinner'], "diets": ['vegetarian'], "category": 'entree', "diningHall": hampshire, "price": 12.50},
             {"name": 'Breakfast Burrito', "mealType": ['breakfast'], "diets": ['no-peanuts'], "category": 'entree', "diningHall": hampshire, "price": 9.00},
+            {"name": 'Fruit Cup', "mealType": ['breakfast', 'lunch'], "diets": ['vegan', 'gluten-free'], "category": 'snack', "diningHall": hampshire, "price": 3.00}
+
         ]
 
         for item in mock_items:
