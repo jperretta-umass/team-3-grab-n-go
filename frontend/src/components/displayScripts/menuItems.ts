@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 
 import { computed, ref } from 'vue'
 
+=======
+import { computed, ref } from 'vue'
+>>>>>>> 61b152e (quick adjustments to some bugs)
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner'
 export type DietType = 'no-peanuts' | 'vegan' | 'gluten-free' | 'vegetarian'
@@ -30,9 +34,13 @@ export const error = ref<string | null>(null)
 export const selectedMeal = ref('')
 export const selectedDiet = ref('')
 export const selectedHall = ref('Hampshire')
+<<<<<<< HEAD
 
 const API_BASE = 'http://localhost:8000' // Change this to your backend URL if different
 
+=======
+const API_BASE = 'http://localhost:8000' // Change this to your backend URL if different
+>>>>>>> 61b152e (quick adjustments to some bugs)
 
 export const cart = ref<CartItem[]>([])
 let nextCartId = 0
@@ -84,7 +92,10 @@ function matchesFilters(item: MenuItem): boolean {
     !selectedDiet.value || item.diets.includes(selectedDiet.value as DietType)
 
   const hallMatches = !selectedHall.value || item.diningHall === selectedHall.value
+<<<<<<< HEAD
 
+=======
+>>>>>>> 61b152e (quick adjustments to some bugs)
   return mealMatches && dietMatches && hallMatches
 }
 
