@@ -1,32 +1,41 @@
 <template>
-    <header>
-        <h2> Register Page </h2>
-        <div class="field">
-            <label for="email">Email:</label>
-                <input
-                id="email"
-                v-model="email"
-                type="text"
-                placeholder="Enter Email"
-                class="border rounded px-3 py-2"
-                />
-        </div>
-        <div class="field">
-            <label for="password">Password:</label>
-                <input
-                id="password"
-                v-model="password"
-                type="text"
-                placeholder="Enter password"
-                class="border rounded px-3 py-2"
-                />
-        </div>
-        <div>
-            <button type="submit" class="login-button"> 
-                Login 
-            </button>
-        </div>
-    </header>
+  <header>
+    <h2>Login</h2>
+
+    <form class="form" @submit.prevent="onSubmit">
+      <div class="field">
+        <label for="email">Email:</label>
+        <input
+          id="email"
+          v-model="email"
+          type="email"
+          placeholder="Enter Email"
+          class="border rounded px-3 py-2"
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Password:</label>
+        <input
+          id="password"
+          v-model="password"
+          type="password"
+          placeholder="Enter password"
+          class="border rounded px-3 py-2"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <p v-if="error" class="error">{{ error }}</p>
+
+      <div>
+        <button type="submit" class="login-button" :disabled="loading">
+          {{ loading ? 'Signing in...' : 'Login' }}
+        </button>
+      </div>
+    </form>
+  </header>
 </template>
 
 <script setup lang="ts">
@@ -35,6 +44,38 @@ import { ref } from 'vue'
 
 const email = ref('')
 const password = ref('')
+const loading = ref(false)
+const error = ref<string | null>(null)
+
+const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? 'http://localhost:8000'
+
+async function onSubmit() {
+  error.value = null
+  loading.value = true
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
+    })
+
+    const data = await res.json().catch(() => null)
+    if (!res.ok) {
+      error.value = (data && (data.detail as string)) || 'Login failed'
+      return
+    }
+
+    // Save auth response so other frontend files can access it.
+    localStorage.setItem('auth', JSON.stringify(data))
+  } catch {
+    error.value = 'Network error (is the backend running?)'
+  } finally {
+    loading.value = false
+  }
+}
 
 
 </script>
@@ -58,5 +99,10 @@ const password = ref('')
   gap: 8px;          /* spacing between label and input */
   margin-bottom: 16px; /* spacing between fields */
   max-width: 300px;
+}
+
+.error {
+  color: #b91c1c;
+  margin: 8px 0 16px;
 }
 </style>
