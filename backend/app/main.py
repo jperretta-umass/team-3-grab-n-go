@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
@@ -6,15 +7,21 @@ from app.init_db import init_database, db
 from app.models import MenuItems, Order
 =======
 <<<<<<< HEAD
+=======
+
+>>>>>>> 7ed9756 (complete db overhaul fixed)
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-=======
-from fastapi import FastAPI
 from . import db
 from init_db import init_database
 from models import MenuItems, Order
+<<<<<<< HEAD
 >>>>>>> 5a4d67d (order skeleton maybe)
 >>>>>>> 2000d26 (order skeleton maybe)
+=======
+
+
+>>>>>>> 7ed9756 (complete db overhaul fixed)
 
 app = FastAPI()
 app.add_middleware(

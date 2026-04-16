@@ -95,9 +95,13 @@ import { menuItems } from ./displayScripts
 </template>
 
 <script setup lang="ts"> 
+<<<<<<< HEAD
 import { onMounted } from 'vue'
 import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 onMounted(fetchMenuItems)
+=======
+import {selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart} from './displayScripts/menuItems'
+>>>>>>> 7ed9756 (complete db overhaul fixed)
 </script>
 
 <style scoped>
