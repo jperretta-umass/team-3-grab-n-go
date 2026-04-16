@@ -103,6 +103,7 @@ async function onSubmit() {
       body: JSON.stringify({
         username: username.value,
         email: email.value,
+        phone_num: phone_num.value,
         password: password.value,
       }),
     })
