@@ -34,6 +34,9 @@ def init_database():
             {"name": 'Pasta Primavera', "mealType": ['dinner'], "diets": ['vegetarian'], "category": 'entree', "diningHall": hampshire, "price": 12.50},
             {"name": 'Breakfast Burrito', "mealType": ['breakfast'], "diets": ['no-peanuts'], "category": 'entree', "diningHall": hampshire, "price": 9.00},
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 61b152e (quick adjustments to some bugs)
             {"name": 'Fruit Cup', "mealType": ['breakfast', 'lunch'], "diets": ['vegan', 'gluten-free'], "category": 'snack', "diningHall": hampshire, "price": 3.00}
 
         ]

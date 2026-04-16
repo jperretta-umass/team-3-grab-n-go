@@ -9,7 +9,11 @@ from app.models import MenuItems, Order
 <<<<<<< HEAD
 =======
 
+<<<<<<< HEAD
 >>>>>>> 7ed9756 (complete db overhaul fixed)
+=======
+
+>>>>>>> 61b152e (quick adjustments to some bugs)
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from . import db
@@ -19,6 +23,16 @@ from models import MenuItems, Order
 >>>>>>> 5a4d67d (order skeleton maybe)
 >>>>>>> 2000d26 (order skeleton maybe)
 =======
+
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost", "http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 
 >>>>>>> 7ed9756 (complete db overhaul fixed)
