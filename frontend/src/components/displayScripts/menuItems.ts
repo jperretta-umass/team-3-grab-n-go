@@ -1,4 +1,4 @@
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner'
 export type DietType = 'no-peanuts' | 'vegan' | 'gluten-free' | 'vegetarian'
@@ -28,7 +28,7 @@ export const error = ref<string | null>(null)
 export const selectedMeal = ref('')
 export const selectedDiet = ref('')
 export const selectedHall = ref('Hampshire')
-const API_BASE = ''
+const API_BASE = 'http://localhost:8000' // Change this to your backend URL if different
 
 export const cart = ref<CartItem[]>([])
 let nextCartId = 0
@@ -37,10 +37,10 @@ function convert(data: any): MenuItem {
   return {
     id: data.id,
     name: data.name,
-    mealType: data.mealType as MealType[],
-    diets: data.diets as DietType[],
+    mealType: data.mealType ?? [],
+    diets: data.diets ?? [],
     category: data.category,
-    diningHall: data.diningHall as DiningHall,
+    diningHall: data.dining_hall as DiningHall,
     price: data.price
   }
 }
@@ -63,7 +63,6 @@ export async function fetchMenuItems(): Promise<void> {
       loading.value = false
     }
 }
-onMounted(fetchMenuItems)
 
 export const entrees = computed(() => items.value.filter((item => item.category === 'entree')))
 export const snacksAndDrinks = computed(() => items.value.filter((item => item.category !== 'entree')))
@@ -80,8 +79,7 @@ function matchesFilters(item: MenuItem): boolean {
   const dietMatches =
     !selectedDiet.value || item.diets.includes(selectedDiet.value as DietType)
 
-  const hallMatches = item.diningHall === selectedHall.value
-
+  const hallMatches = !selectedHall.value || item.diningHall === selectedHall.value
   return mealMatches && dietMatches && hallMatches
 }
 
