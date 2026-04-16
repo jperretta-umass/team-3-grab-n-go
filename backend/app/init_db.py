@@ -1,12 +1,18 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7ed9756 (complete db overhaul fixed)
 from app.database import MockSession, Base, engine
 from app.models import User, DiningHall, MenuItems, Cart, CartItem
 
 db = MockSession()
+<<<<<<< HEAD
 =======
 from . import db
 from models import User, DiningHall, MenuItems, Cart, CartItem
 >>>>>>> 2000d26 (order skeleton maybe)
+=======
+>>>>>>> 7ed9756 (complete db overhaul fixed)
 def init_database():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -27,10 +33,15 @@ def init_database():
             {"name": 'Turkey Panini', "mealType": ['lunch'], "diets": ['no-peanuts'], "category": 'entree', "diningHall": hampshire, "price": 11.00},
             {"name": 'Pasta Primavera', "mealType": ['dinner'], "diets": ['vegetarian'], "category": 'entree', "diningHall": hampshire, "price": 12.50},
             {"name": 'Breakfast Burrito', "mealType": ['breakfast'], "diets": ['no-peanuts'], "category": 'entree', "diningHall": hampshire, "price": 9.00},
+<<<<<<< HEAD
             {"name": 'Fruit Cup', "mealType": ['breakfast', 'lunch'], "diets": ['vegan', 'gluten-free'], "category": 'snack', "diningHall": hampshire, "price": 3.00}
 
         ]
 
+=======
+        ]
+
+>>>>>>> 7ed9756 (complete db overhaul fixed)
         for item in mock_items:
             menu_item = MenuItems(
                 name=item['name'],
@@ -41,12 +52,20 @@ def init_database():
                 dining_hall=item['diningHall']
             )
             db.add(menu_item)
+<<<<<<< HEAD
 
         db.commit()
     except Exception as e:
         db.rollback()
         print(f"Error initializing database: {e}")
 
+=======
+
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Error initializing database: {e}")
+>>>>>>> 7ed9756 (complete db overhaul fixed)
 
 if __name__ == '__main__':
     init_database()
