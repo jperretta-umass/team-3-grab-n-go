@@ -1,37 +1,44 @@
-from . import db
-from models import User, DiningHall, MenuItems, Cart, CartItem
+from app.database import MockSession, Base, engine
+from app.models import User, DiningHall, MenuItems, Cart, CartItem
+
+db = MockSession()
 def init_database():
-    db.create_all()
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 
-    hampshire = DiningHall(name='Hampshire', is_open=True)
-    berkshire = DiningHall(name='Berkshire', is_open=True)
-    franklin = DiningHall(name='Franklin', is_open=True)
-    worcester = DiningHall(name='Worcester', is_open=True)
-    db.session.add_all([hampshire, berkshire, franklin, worcester])
-    db.session.flush()
+    try: 
+        hampshire = DiningHall(name='Hampshire', is_open=True)
+        berkshire = DiningHall(name='Berkshire', is_open=True)
+        franklin = DiningHall(name='Franklin', is_open=True)
+        worcester = DiningHall(name='Worcester', is_open=True)
+        db.add_all([hampshire, berkshire, franklin, worcester])
+        db.flush()
 
-    mock_items = [
-        {"name": 'Grilled Chicken Bowl', "mealType": ['dinner'], "diets": ['gluten-free'], "category": 'entree', "diningHall": hampshire, "price": 13.00},
-        {"name": 'Veggie Wrap', "mealType": ['lunch'], "diets": ['vegetarian'], "category": 'entree', "diningHall": berkshire, "price": 10.00},
-        {"name": 'Tofu Rice Plate', "mealType": ['dinner'], "diets": ['vegan', 'gluten-free'], "category": 'entree', "diningHall": franklin, "price": 12.00},
-        {"name": 'Egg Sandwich', "mealType": ['breakfast'], "diets": ['vegetarian'], "category": 'entree', "diningHall": worcester, "price": 8.00},
-        {"name": 'Turkey Panini', "mealType": ['lunch'], "diets": ['no-peanuts'], "category": 'entree', "diningHall": hampshire, "price": 11.00},
-        {"name": 'Pasta Primavera', "mealType": ['dinner'], "diets": ['vegetarian'], "category": 'entree', "diningHall": hampshire, "price": 12.50},
-        {"name": 'Breakfast Burrito', "mealType": ['breakfast'], "diets": ['no-peanuts'], "category": 'entree', "diningHall": hampshire, "price": 9.00},
-    ]
+        mock_items = [
+            {"name": 'Grilled Chicken Bowl', "mealType": ['dinner'], "diets": ['gluten-free'], "category": 'entree', "diningHall": hampshire, "price": 13.00},
+            {"name": 'Veggie Wrap', "mealType": ['lunch'], "diets": ['vegetarian'], "category": 'entree', "diningHall": berkshire, "price": 10.00},
+            {"name": 'Tofu Rice Plate', "mealType": ['dinner'], "diets": ['vegan', 'gluten-free'], "category": 'entree', "diningHall": franklin, "price": 12.00},
+            {"name": 'Egg Sandwich', "mealType": ['breakfast'], "diets": ['vegetarian'], "category": 'entree', "diningHall": worcester, "price": 8.00},
+            {"name": 'Turkey Panini', "mealType": ['lunch'], "diets": ['no-peanuts'], "category": 'entree', "diningHall": hampshire, "price": 11.00},
+            {"name": 'Pasta Primavera', "mealType": ['dinner'], "diets": ['vegetarian'], "category": 'entree', "diningHall": hampshire, "price": 12.50},
+            {"name": 'Breakfast Burrito', "mealType": ['breakfast'], "diets": ['no-peanuts'], "category": 'entree', "diningHall": hampshire, "price": 9.00},
+        ]
 
-    for item in mock_items:
-       menu_item = MenuItems(
-          name=item['name'],
-          meal_type=item['mealType'],
-          diets=item['diets'],
-          category=item['category'],
-          price=item['price'],
-          dining_hall=item['diningHall']
-      )
-    db.session.add(menu_item)
+        for item in mock_items:
+            menu_item = MenuItems(
+                name=item['name'],
+                meal_type=item['mealType'],
+                diets=item['diets'],
+                category=item['category'],
+                price=item['price'],
+                dining_hall=item['diningHall']
+            )
+            db.add(menu_item)
 
-    db.session.commit()
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Error initializing database: {e}")
 
 if __name__ == '__main__':
     init_database()

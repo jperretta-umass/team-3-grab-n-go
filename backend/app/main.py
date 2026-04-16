@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from . import db
-from init_db import init_database
-from models import MenuItems, Order
+from fastapi.middleware.cors import CORSMiddleware
+from typing import List, Optional
+from app.init_db import init_database, db
+from app.models import MenuItems, Order
 
 app = FastAPI()
 
@@ -18,12 +19,23 @@ def health():
     return {"ok": True}
 
 @app.get("/api/menu-items")
-def get_menu_items(db):
-    menu_items = db.session.query(MenuItems).all()
+def get_menu_items():
+    menu_items = db.query(MenuItems).all()
     return {"menu_items": [item.to_dict() for item in menu_items]}
 
 @app.post("/api/menu-items")
-def commit_order(db, Order):
-    db.session.add(Order)
-    db.session.commit()
+def commit_order(Order):
+    order = Order(
+        user_id=Order.user_id,
+        total_price=Order.total_price,
+        created_at=Order.created_at,
+        dining_hall_id=Order.dining_hall_id
+    )
+    db.add(Order)
+    db.commit()
     return {"message": "Order committed successfully"}
+
+@app.get("/api/DelivererPage")
+def get_orders():
+    orders = db.query(Order).all()
+    return {"orders": [order.to_dict() for order in orders]}
