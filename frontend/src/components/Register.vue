@@ -1,7 +1,7 @@
 <template>
     <header>
         <h2> Register Page </h2>
-        <div>
+        <div class="field">
             <label for="username">Username:</label>
                 <input
                 id="username"
@@ -11,7 +11,7 @@
                 class="border rounded px-3 py-2"
                 />
         </div>
-        <div>
+        <div class="field">
             <label for="email">Email:</label>
                 <input
                 id="email"
@@ -21,7 +21,7 @@
                 class="border rounded px-3 py-2"
                 />
         </div>
-        <div>
+        <div class="field">
             <label for="password">Password:</label>
                 <input
                 id="password"
@@ -31,7 +31,7 @@
                 class="border rounded px-3 py-2"
                 />
         </div>
-        <div>
+        <div class="field">
             <label for="confirmPassword">Confirm Password:</label>
                 <input
                 id="confirmPassword"
@@ -72,5 +72,13 @@ const rePassword = ref('')
   cursor: pointer;
   display: block;
   transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;          /* spacing between label and input */
+  margin-bottom: 16px; /* spacing between fields */
+  max-width: 300px;
 }
 </style>
