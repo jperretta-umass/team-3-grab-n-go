@@ -16,7 +16,7 @@ const router = createRouter({
        { path: '/', component: HomeView },
         {path: "/DelivererPage", component: DelivererPage },
         {path: "/SingleOrder", component: SingleOrder },
-        {path: "/ItemPage", component: ItemPage } 
+        {path: "/menu-items", component: ItemPage } 
     ]
 });
 
