@@ -109,6 +109,17 @@ class MenuItem(Base):
     dining_hall_id: Mapped[int] = mapped_column(Integer, ForeignKey('dining_halls.id'), nullable=False)
     dining_hall: Mapped[DiningHall] = relationship('DiningHall', back_populates='menu_items')
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "mealType": self.meal_type,
+            "diets": self.diets,
+            "category": self.category,
+            "price": self.price,
+            "dining_hall": self.dining_hall.name if self.dining_hall else None,
+        }
+
 class Cart(Base):
     __tablename__ = 'carts'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
