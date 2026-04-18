@@ -1,4 +1,3 @@
-import { menuItems } from ./displayScripts
 <template>
   <div class="page">
     <header class="top-bar">
@@ -94,20 +93,10 @@ import { menuItems } from ./displayScripts
   </div>
 </template>
 
-<script setup lang="ts"> 
-<<<<<<< HEAD
-<<<<<<< HEAD
+<script setup lang="ts">
 import { onMounted } from 'vue'
 import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 onMounted(fetchMenuItems)
-=======
-import {selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart} from './displayScripts/menuItems'
->>>>>>> 7ed9756 (complete db overhaul fixed)
-=======
-import { onMounted } from 'vue'
-import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
-onMounted(fetchMenuItems)
->>>>>>> 61b152e (quick adjustments to some bugs)
 </script>
 
 <style scoped>
