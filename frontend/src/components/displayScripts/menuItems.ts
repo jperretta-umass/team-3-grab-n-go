@@ -35,7 +35,99 @@ export const selectedHall = ref('Hampshire')
 
 const API_BASE = 'http://localhost:8000' // Change this to your backend URL if different
 
-
+// Mock data for fallback/testing when API is unavailable
+const MOCK_ITEMS: MenuItem[] = [
+  {
+    id: 1,
+    name: 'Grilled Chicken Bowl',
+    mealType: ['lunch', 'dinner'],
+    diets: ['gluten-free'],
+    category: 'entree',
+    diningHall: 'Hampshire',
+    price: 13.25,
+  },
+  {
+    id: 2,
+    name: 'Vegetarian Pasta',
+    mealType: ['lunch', 'dinner'],
+    diets: ['vegetarian', 'vegan'],
+    category: 'entree',
+    diningHall: 'Berkshire',
+    price: 12.50,
+  },
+  {
+    id: 3,
+    name: 'Caesar Salad',
+    mealType: ['lunch'],
+    diets: ['vegetarian', 'gluten-free'],
+    category: 'entree',
+    diningHall: 'Franklin',
+    price: 11.00,
+  },
+  {
+    id: 101,
+    name: 'Fruit Cup',
+    mealType: ['breakfast', 'lunch'],
+    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
+    category: 'snack',
+    diningHall: 'Hampshire',
+    price: 3.00,
+  },
+  {
+    id: 102,
+    name: 'Greek Yogurt',
+    mealType: ['breakfast'],
+    diets: ['vegetarian', 'gluten-free'],
+    category: 'snack',
+    diningHall: 'Berkshire',
+    price: 2.50,
+  },
+  {
+    id: 103,
+    name: 'Lemonade',
+    mealType: ['breakfast'],
+    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
+    category: 'drink',
+    diningHall: 'Hampshire',
+    price: 2.00,
+  },
+  {
+    id: 104,
+    name: 'Iced Tea',
+    mealType: ['lunch', 'dinner'],
+    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
+    category: 'drink',
+    diningHall: 'Berkshire',
+    price: 2.00,
+  },
+  {
+    id: 105,
+    name: 'Yogurt Cup',
+    mealType: ['breakfast', 'lunch'],
+    diets: ['vegetarian', 'gluten-free'],
+    category: 'snack',
+    diningHall: 'Hampshire',
+    price: 2.50,
+  },
+  {
+    id: 106,
+    name: 'Trail Mix',
+    mealType: ['lunch', 'dinner'],
+    diets: ['vegetarian'],
+    category: 'snack',
+    diningHall: 'Hampshire',
+    price: 4.00,
+  },
+  {
+    id: 107,
+    name: 'Sparkling Water',
+    mealType: ['breakfast', 'lunch', 'dinner'],
+    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
+    category: 'drink',
+    diningHall: 'Hampshire',
+    price: 2.50,
+  },
+]
 
 export const cart = ref<CartItem[]>([])
 let nextCartId = 0
@@ -64,8 +156,8 @@ export async function fetchMenuItems(): Promise<void> {
       const list = data.menu_items ?? []
       items.value = list.map((item: any) => convert(item))
     } catch (err: any) {
-      error.value = err.message || 'Failed to fetch menu items.'
-      items.value = []
+      error.value = err.message || 'Failed to fetch menu items. Using mock data.'
+      items.value = MOCK_ITEMS
     } finally {
       loading.value = false
     }
