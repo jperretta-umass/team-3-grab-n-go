@@ -136,4 +136,21 @@ class CartItem(Base):
     cart: Mapped[Cart] = relationship('Cart', back_populates='items')
     menu_item: Mapped[MenuItem] = relationship('MenuItem')
 
+class Order(Base):
+    __tablename__ = 'orders'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    total_price: Mapped[float] = mapped_column(Float, nullable=False)
+    status: Mapped[str] = mapped_column(String(50), nullable=False)
+    created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
+    user: Mapped[User] = relationship('User')
+    items: Mapped[List['OrderItem']] = relationship('OrderItem', back_populates='order')
+
+class OrderItem(Base):
+    __tablename__ = 'order_items'
+    order_id: Mapped[int] = mapped_column(Integer, ForeignKey('orders.id'), primary_key=True)
+    menu_item_id: Mapped[int] = mapped_column(Integer, ForeignKey('menu_items.id'), primary_key=True)
+    quantity: Mapped[int] = mapped_column(Integer, default=1)
+    order: Mapped[Order] = relationship('Order', back_populates='items')
+    menu_item: Mapped[MenuItem] = relationship('MenuItem')
 
