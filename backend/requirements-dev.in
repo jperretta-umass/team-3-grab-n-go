@@ -6,3 +6,4 @@ pycodestyle
 pyright
 httpx
 passlib[bcrypt]
+uvicorn[standard]
