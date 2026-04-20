@@ -4,3 +4,4 @@ SQLAlchemy
 psycopg2-binary
 passlib[bcrypt]
 email-validator
+passlib

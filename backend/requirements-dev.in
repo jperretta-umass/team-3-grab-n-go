@@ -5,3 +5,4 @@ isort
 pycodestyle
 pyright
 httpx
+passlib[bcrypt]
