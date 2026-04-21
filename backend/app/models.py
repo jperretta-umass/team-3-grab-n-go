@@ -1,4 +1,3 @@
-
 """
 FOR FUTURE DEVELOPMENT:
 
@@ -20,9 +19,10 @@ The current test suite assumes:
 """
 
 from typing import List
-from sqlalchemy import Integer, String, DateTime, ForeignKey, Float, Boolean, JSON
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
 from app.database import Base
 
 
@@ -30,10 +30,14 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    username: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
+    username: Mapped[str] = mapped_column(
+        String, unique=True, nullable=False, index=True
+    )
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
     phone_num: Mapped[str] = mapped_column(String, nullable=True)
-    has_deliverer_profile: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    has_deliverer_profile: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
     deliverer_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("deliverer_profiles.id"),
@@ -92,22 +96,29 @@ class DelivererProfile(Base):
 
 
 class DiningHall(Base):
-    __tablename__ = 'dining_halls'
+    __tablename__ = "dining_halls"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     is_open: Mapped[bool] = mapped_column(Boolean, default=True)
-    menu_items: Mapped[List['MenuItem']] = relationship('MenuItem', back_populates='dining_hall')
+    menu_items: Mapped[List["MenuItem"]] = relationship(
+        "MenuItem", back_populates="dining_hall"
+    )
+
 
 class MenuItem(Base):
-    __tablename__ = 'menu_items'
+    __tablename__ = "menu_items"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     meal_type: Mapped[List[str]] = mapped_column(JSON, nullable=False)
     diets: Mapped[List[str]] = mapped_column(JSON, nullable=False)
     category: Mapped[str] = mapped_column(String(50), nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
-    dining_hall_id: Mapped[int] = mapped_column(Integer, ForeignKey('dining_halls.id'), nullable=False)
-    dining_hall: Mapped[DiningHall] = relationship('DiningHall', back_populates='menu_items')
+    dining_hall_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("dining_halls.id"), nullable=False
+    )
+    dining_hall: Mapped[DiningHall] = relationship(
+        "DiningHall", back_populates="menu_items"
+    )
 
     def to_dict(self):
         return {
@@ -120,34 +131,47 @@ class MenuItem(Base):
             "dining_hall": self.dining_hall.name if self.dining_hall else None,
         }
 
+
 class Cart(Base):
-    __tablename__ = 'carts'
+    __tablename__ = "carts"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=False
+    )
     quantity: Mapped[int] = mapped_column(Integer, default=1)
-    user: Mapped[User] = relationship('User')
-    items: Mapped[List['CartItem']] = relationship('CartItem', back_populates='cart')
+    user: Mapped[User] = relationship("User")
+    items: Mapped[List["CartItem"]] = relationship("CartItem", back_populates="cart")
+
 
 class CartItem(Base):
-    __tablename__ = 'cart_items'
-    cart_id: Mapped[int] = mapped_column(Integer, ForeignKey('carts.id'), primary_key=True)
-    menu_item_id: Mapped[int] = mapped_column(Integer, ForeignKey('menu_items.id'), primary_key=True)
+    __tablename__ = "cart_items"
+    cart_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("carts.id"), primary_key=True
+    )
+    menu_item_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("menu_items.id"), primary_key=True
+    )
     quantity: Mapped[int] = mapped_column(Integer, default=1)
-    cart: Mapped[Cart] = relationship('Cart', back_populates='items')
-    menu_item: Mapped[MenuItem] = relationship('MenuItem')
+    cart: Mapped[Cart] = relationship("Cart", back_populates="items")
+    menu_item: Mapped[MenuItem] = relationship("MenuItem")
+
 
 class Order(Base):
-    __tablename__ = 'orders'
+    __tablename__ = "orders"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
-    dining_hall_id: Mapped[int] = mapped_column(Integer, ForeignKey('dining_halls.id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id"), nullable=False
+    )
+    dining_hall_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("dining_halls.id"), nullable=False
+    )
     total_price: Mapped[float] = mapped_column(Float, nullable=False)
     status: Mapped[str] = mapped_column(String(50), nullable=False)
-    created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
-    user: Mapped[User] = relationship('User')
-    dining_hall: Mapped[DiningHall] = relationship('DiningHall')
-    items: Mapped[List['OrderItem']] = relationship('OrderItem', back_populates='order')
-    
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    user: Mapped[User] = relationship("User")
+    dining_hall: Mapped[DiningHall] = relationship("DiningHall")
+    items: Mapped[List["OrderItem"]] = relationship("OrderItem", back_populates="order")
+
     def to_dict(self):
         return {
             "id": self.id,
@@ -168,10 +192,13 @@ class Order(Base):
 
 
 class OrderItem(Base):
-    __tablename__ = 'order_items'
-    order_id: Mapped[int] = mapped_column(Integer, ForeignKey('orders.id'), primary_key=True)
-    menu_item_id: Mapped[int] = mapped_column(Integer, ForeignKey('menu_items.id'), primary_key=True)
+    __tablename__ = "order_items"
+    order_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("orders.id"), primary_key=True
+    )
+    menu_item_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("menu_items.id"), primary_key=True
+    )
     quantity: Mapped[int] = mapped_column(Integer, default=1)
-    order: Mapped[Order] = relationship('Order', back_populates='items')
-    menu_item: Mapped[MenuItem] = relationship('MenuItem')
-
+    order: Mapped[Order] = relationship("Order", back_populates="items")
+    menu_item: Mapped[MenuItem] = relationship("MenuItem")

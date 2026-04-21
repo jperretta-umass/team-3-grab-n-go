@@ -1,44 +1,103 @@
-from app.database import Base, engine, SessionLocal
-from app.models import DiningHall, MenuItem, Order, OrderItem, User
 from datetime import datetime
+
+from app.database import Base, SessionLocal, engine
+from app.models import DiningHall, MenuItem, Order, OrderItem, User
 
 
 def init_database():
     if SessionLocal is None:
-        raise RuntimeError("DATABASE_URL is not set. Set DATABASE_URL before calling init_database().")
+        raise RuntimeError(
+            "DATABASE_URL is not set. Set DATABASE_URL before calling init_database()."
+        )
 
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
     try:
-        hampshire = DiningHall(name='Hampshire', is_open=True)
-        berkshire = DiningHall(name='Berkshire', is_open=True)
-        franklin = DiningHall(name='Franklin', is_open=True)
-        worcester = DiningHall(name='Worcester', is_open=True)
+        hampshire = DiningHall(name="Hampshire", is_open=True)
+        berkshire = DiningHall(name="Berkshire", is_open=True)
+        franklin = DiningHall(name="Franklin", is_open=True)
+        worcester = DiningHall(name="Worcester", is_open=True)
 
         db.add_all([hampshire, berkshire, franklin, worcester])
         db.flush()
 
         mock_items = [
-            {"name": 'Grilled Chicken Bowl', "mealType": ['dinner'], "diets": ['gluten-free'], "category": 'entree', "dining_hall": hampshire, "price": 13.00},
-            {"name": 'Veggie Wrap', "mealType": ['lunch'], "diets": ['vegetarian'], "category": 'entree', "dining_hall": berkshire, "price": 10.00},
-            {"name": 'Tofu Rice Plate', "mealType": ['dinner'], "diets": ['vegan', 'gluten-free'], "category": 'entree', "dining_hall": franklin, "price": 12.00},
-            {"name": 'Egg Sandwich', "mealType": ['breakfast'], "diets": ['vegetarian'], "category": 'entree', "dining_hall": worcester, "price": 8.00},
-            {"name": 'Turkey Panini', "mealType": ['lunch'], "diets": ['no-peanuts'], "category": 'entree', "dining_hall": hampshire, "price": 11.00},
-            {"name": 'Pasta Primavera', "mealType": ['dinner'], "diets": ['vegetarian'], "category": 'entree', "dining_hall": hampshire, "price": 12.50},
-            {"name": 'Breakfast Burrito', "mealType": ['breakfast'], "diets": ['no-peanuts'], "category": 'entree', "dining_hall": hampshire, "price": 9.00},
-            {"name": 'Fruit Cup', "mealType": ['breakfast', 'lunch'], "diets": ['vegan', 'gluten-free'], "category": 'snack', "dining_hall": hampshire, "price": 3.00}
+            {
+                "name": "Grilled Chicken Bowl",
+                "mealType": ["dinner"],
+                "diets": ["gluten-free"],
+                "category": "entree",
+                "dining_hall": hampshire,
+                "price": 13.00,
+            },
+            {
+                "name": "Veggie Wrap",
+                "mealType": ["lunch"],
+                "diets": ["vegetarian"],
+                "category": "entree",
+                "dining_hall": berkshire,
+                "price": 10.00,
+            },
+            {
+                "name": "Tofu Rice Plate",
+                "mealType": ["dinner"],
+                "diets": ["vegan", "gluten-free"],
+                "category": "entree",
+                "dining_hall": franklin,
+                "price": 12.00,
+            },
+            {
+                "name": "Egg Sandwich",
+                "mealType": ["breakfast"],
+                "diets": ["vegetarian"],
+                "category": "entree",
+                "dining_hall": worcester,
+                "price": 8.00,
+            },
+            {
+                "name": "Turkey Panini",
+                "mealType": ["lunch"],
+                "diets": ["no-peanuts"],
+                "category": "entree",
+                "dining_hall": hampshire,
+                "price": 11.00,
+            },
+            {
+                "name": "Pasta Primavera",
+                "mealType": ["dinner"],
+                "diets": ["vegetarian"],
+                "category": "entree",
+                "dining_hall": hampshire,
+                "price": 12.50,
+            },
+            {
+                "name": "Breakfast Burrito",
+                "mealType": ["breakfast"],
+                "diets": ["no-peanuts"],
+                "category": "entree",
+                "dining_hall": hampshire,
+                "price": 9.00,
+            },
+            {
+                "name": "Fruit Cup",
+                "mealType": ["breakfast", "lunch"],
+                "diets": ["vegan", "gluten-free"],
+                "category": "snack",
+                "dining_hall": hampshire,
+                "price": 3.00,
+            },
         ]
 
         for item in mock_items:
             menu_item = MenuItem(
-                name=item['name'],
-                meal_type=item['mealType'],
-                diets=item['diets'],
-                category=item['category'],
-                price=item['price'],
-                dining_hall=item['dining_hall'],
+                name=item["name"],
+                meal_type=item["mealType"],
+                diets=item["diets"],
+                category=item["category"],
+                price=item["price"],
+                dining_hall=item["dining_hall"],
             )
             db.add(menu_item)
 
@@ -53,7 +112,9 @@ def init_database():
         db.add(demo_user)
         db.flush()
 
-        breakfast_burrito = db.query(MenuItem).filter(MenuItem.name == "Breakfast Burrito").first()
+        breakfast_burrito = (
+            db.query(MenuItem).filter(MenuItem.name == "Breakfast Burrito").first()
+        )
         if breakfast_burrito is None:
             raise RuntimeError("Failed to seed Breakfast Burrito menu item")
 
@@ -78,7 +139,6 @@ def init_database():
 
         db.add(mock_order_item)
 
-
         db.commit()
     except Exception as e:
         db.rollback()
@@ -86,10 +146,11 @@ def init_database():
     finally:
         db.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     init_database()
 
-#menu_items = [
+# menu_items = [
 #   {
 #     "id": 1,
 #     "name": 'Grilled Chicken Bowl',
@@ -204,7 +265,7 @@ if __name__ == '__main__':
 #   },
 # ]
 
-#menu_items = [
+# menu_items = [
 #   {
 #     "id": 1,
 #     "name": 'Grilled Chicken Bowl',
