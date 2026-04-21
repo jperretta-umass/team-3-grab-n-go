@@ -1,5 +1,6 @@
 from app.database import Base, engine, SessionLocal
-from app.models import DiningHall, MenuItem
+from app.models import DiningHall, MenuItem, Order, OrderItem
+from datetime import datetime
 
 
 def init_database():
@@ -40,6 +41,30 @@ def init_database():
                 dining_hall=item['dining_hall'],
             )
             db.add(menu_item)
+
+        
+        # db.flush()
+
+        # breakfast_burrito = db.query(MenuItem).filter(MenuItem.name == "Breakfast Burrito").first()
+
+        # quantity = 2
+        # line_total = breakfast_burrito.price * quantity
+
+        # mock_order = Order(
+        #     user_id=1,
+        #     total_price=line_total,
+        #     status="pending",
+        #     created_at=datetime.utcnow(),
+        # )
+
+        # mock_order_item = OrderItem(
+        #     order=mock_order,
+        #     menu_item=breakfast_burrito,
+        #     quantity=quantity,
+        # )
+
+        # db.add_all([mock_order, mock_order_item])
+
 
         db.commit()
     except Exception as e:

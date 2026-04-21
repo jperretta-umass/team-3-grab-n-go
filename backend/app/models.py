@@ -145,6 +145,23 @@ class Order(Base):
     created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     user: Mapped[User] = relationship('User')
     items: Mapped[List['OrderItem']] = relationship('OrderItem', back_populates='order')
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "total_price": self.total_price,
+            "status": self.status,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "items": [
+                {
+                    "menu_item_id": item.menu_item_id,
+                    "quantity": item.quantity,
+                }
+                for item in self.items
+            ],
+        }
+
 
 class OrderItem(Base):
     __tablename__ = 'order_items'

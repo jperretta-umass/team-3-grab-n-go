@@ -23,3 +23,14 @@ export class Order {
     this.deliveryInstructions = deliveryInstructions;
   }
 }
+
+// make the data reactive
+
+// create a order item object (for frontend)
+
+// Create a convert function that turns JSON data into order object
+
+// Create fetch function
+//   - converts the data into order object
+
+// Update values using computed() onto the UI 
