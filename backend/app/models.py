@@ -140,16 +140,20 @@ class Order(Base):
     __tablename__ = 'orders'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    dining_hall_id: Mapped[int] = mapped_column(Integer, ForeignKey('dining_halls.id'), nullable=False)
     total_price: Mapped[float] = mapped_column(Float, nullable=False)
     status: Mapped[str] = mapped_column(String(50), nullable=False)
     created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     user: Mapped[User] = relationship('User')
+    dining_hall: Mapped[DiningHall] = relationship('DiningHall')
     items: Mapped[List['OrderItem']] = relationship('OrderItem', back_populates='order')
     
     def to_dict(self):
         return {
             "id": self.id,
             "user_id": self.user_id,
+            "dining_hall_id": self.dining_hall_id,
+            "dining_hall": self.dining_hall.name if self.dining_hall else None,
             "total_price": self.total_price,
             "status": self.status,
             "created_at": self.created_at.isoformat() if self.created_at else None,

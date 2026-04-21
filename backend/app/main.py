@@ -33,18 +33,6 @@ def get_menu_items(db: Session = Depends(get_db)):
     return {"menu_items": [item.to_dict() for item in menu_items]}
 
 @app.get("/api/orders")
-def get_order():
-    return {
-        "orders": [
-            {
-                "id": 1,
-                "user_id": 999,
-                "total_price": 18.0,
-                "status": "pending",
-                "created_at": "2026-04-20T12:00:00Z",
-                "items": [
-                    {"menu_item_id": 7, "quantity": 2}
-                ],
-            }
-        ]
-    }
+def get_order(db: Session = Depends(get_db)):
+    orders = db.query(Order).all()
+    return {"orders": [order.to_dict() for order in orders]}

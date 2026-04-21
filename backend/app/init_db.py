@@ -1,5 +1,5 @@
 from app.database import Base, engine, SessionLocal
-from app.models import DiningHall, MenuItem, Order, OrderItem
+from app.models import DiningHall, MenuItem, Order, OrderItem, User
 from datetime import datetime
 
 
@@ -42,28 +42,41 @@ def init_database():
             )
             db.add(menu_item)
 
-        
-        # db.flush()
+        db.flush()
 
-        # breakfast_burrito = db.query(MenuItem).filter(MenuItem.name == "Breakfast Burrito").first()
+        demo_user = User(
+            username="demo_customer",
+            email="demo_customer@example.com",
+            phone_num="555-0100",
+            has_deliverer_profile=False,
+        )
+        db.add(demo_user)
+        db.flush()
 
-        # quantity = 2
-        # line_total = breakfast_burrito.price * quantity
+        breakfast_burrito = db.query(MenuItem).filter(MenuItem.name == "Breakfast Burrito").first()
+        if breakfast_burrito is None:
+            raise RuntimeError("Failed to seed Breakfast Burrito menu item")
 
-        # mock_order = Order(
-        #     user_id=1,
-        #     total_price=line_total,
-        #     status="pending",
-        #     created_at=datetime.utcnow(),
-        # )
+        quantity = 3
+        line_total = breakfast_burrito.price * quantity
 
-        # mock_order_item = OrderItem(
-        #     order=mock_order,
-        #     menu_item=breakfast_burrito,
-        #     quantity=quantity,
-        # )
+        mock_order = Order(
+            user_id=demo_user.id,
+            dining_hall_id=breakfast_burrito.dining_hall_id,
+            total_price=line_total,
+            status="pending",
+            created_at=datetime.utcnow(),
+        )
+        db.add(mock_order)
+        db.flush()
 
-        # db.add_all([mock_order, mock_order_item])
+        mock_order_item = OrderItem(
+            order_id=mock_order.id,
+            menu_item_id=breakfast_burrito.id,
+            quantity=quantity,
+        )
+
+        db.add(mock_order_item)
 
 
         db.commit()
