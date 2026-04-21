@@ -2,8 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import router as auth_router
+from app.database import Base, engine
+from app import models  # important: registers User/CustomerProfile/DelivererProfile
 
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,11 +22,9 @@ app.add_middleware(
 
 app.include_router(auth_router)
 
-
 @app.get("/")
 def root():
     return {"message": "Hello"}
-
 
 @app.get("/health")
 def health():
