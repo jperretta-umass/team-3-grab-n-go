@@ -4,10 +4,19 @@
 #
 #    pip-compile requirements-dev.in
 #
+annotated-doc==0.0.4
+    # via
+    #   -c requirements.txt
+    #   fastapi
+annotated-types==0.7.0
+    # via
+    #   -c requirements.txt
+    #   pydantic
 anyio==4.12.1
     # via
     #   -c requirements.txt
     #   httpx
+    #   starlette
     #   watchfiles
 bcrypt==5.0.0
     # via
@@ -24,11 +33,23 @@ click==8.1.8
     #   -c requirements.txt
     #   black
     #   uvicorn
+dnspython==2.7.0
+    # via
+    #   -c requirements.txt
+    #   email-validator
+email-validator==2.3.0
+    # via
+    #   -c requirements.txt
+    #   -r requirements-dev.in
 exceptiongroup==1.3.1
     # via
     #   -c requirements.txt
     #   anyio
     #   pytest
+fastapi==0.128.8
+    # via
+    #   -c requirements.txt
+    #   -r requirements-dev.in
 h11==0.16.0
     # via
     #   -c requirements.txt
@@ -46,6 +67,7 @@ idna==3.11
     # via
     #   -c requirements.txt
     #   anyio
+    #   email-validator
     #   httpx
 importlib-metadata==8.7.1
     # via isort
@@ -71,8 +93,20 @@ platformdirs==4.4.0
     # via black
 pluggy==1.6.0
     # via pytest
+psycopg2-binary==2.9.11
+    # via
+    #   -c requirements.txt
+    #   -r requirements-dev.in
 pycodestyle==2.14.0
     # via -r requirements-dev.in
+pydantic==2.12.5
+    # via
+    #   -c requirements.txt
+    #   fastapi
+pydantic-core==2.41.5
+    # via
+    #   -c requirements.txt
+    #   pydantic
 pygments==2.20.0
     # via pytest
 pyright==1.1.408
@@ -89,6 +123,14 @@ pyyaml==6.0.3
     # via
     #   -c requirements.txt
     #   uvicorn
+sqlalchemy==2.0.49
+    # via
+    #   -c requirements.txt
+    #   -r requirements-dev.in
+starlette==0.49.3
+    # via
+    #   -c requirements.txt
+    #   fastapi
 tomli==2.4.1
     # via
     #   black
@@ -99,8 +141,19 @@ typing-extensions==4.15.0
     #   anyio
     #   black
     #   exceptiongroup
+    #   fastapi
+    #   pydantic
+    #   pydantic-core
     #   pyright
+    #   sqlalchemy
+    #   starlette
+    #   typing-inspection
     #   uvicorn
+typing-inspection==0.4.2
+    # via
+    #   -c requirements.txt
+    #   fastapi
+    #   pydantic
 uvicorn[standard]==0.39.0
     # via
     #   -c requirements.txt
