@@ -54,6 +54,8 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     user = User(
         username=payload.username,
         email=payload.email,
+        phone_num=payload.phone_num,
+        has_deliverer_profile=payload.is_deliverer,
         password_hash=get_password_hash(payload.password),
     )
     db.add(user)
@@ -65,4 +67,5 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
         username=user.username,
         email=user.email,
         is_deliverer=user.has_deliverer_profile,
+        phone_num=user.phone_num,
     )
