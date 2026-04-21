@@ -18,3 +18,4 @@ class AuthResponse(BaseModel):
     username: str
     email: EmailStr
     is_deliverer: bool
+    phone_num: str
