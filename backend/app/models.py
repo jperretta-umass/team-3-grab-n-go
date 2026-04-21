@@ -18,11 +18,12 @@ The current test suite assumes:
 - specific relationships between User, CustomerProfile, DelivererProfile
 """
 
+from datetime import datetime
 from typing import List
 
 from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import datetime
+
 from app.database import Base
 
 

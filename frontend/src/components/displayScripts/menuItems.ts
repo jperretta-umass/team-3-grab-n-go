@@ -132,15 +132,15 @@ const MOCK_ITEMS: MenuItem[] = [
 export const cart = ref<CartItem[]>([])
 let nextCartId = 0
 
-function convert(data: any): MenuItem {
+function convert(data: Record<string, unknown>): MenuItem {
   return {
-    id: data.id,
-    name: data.name,
-    mealType: data.mealType ?? [],
-    diets: data.diets ?? [],
-    category: data.category,
+    id: data.id as number,
+    name: data.name as string,
+    mealType: (data.mealType as MealType[] | undefined) ?? [],
+    diets: (data.diets as DietType[] | undefined) ?? [],
+    category: data.category as 'entree' | 'snack' | 'drink',
     diningHall: data.dining_hall as DiningHall,
-    price: data.price
+    price: data.price as number
   }
 }
 
@@ -154,9 +154,10 @@ export async function fetchMenuItems(): Promise<void> {
       }
       const data = await response.json()
       const list = data.menu_items ?? []
-      items.value = list.map((item: any) => convert(item))
-    } catch (err: any) {
-      error.value = err.message || 'Failed to fetch menu items. Using mock data.'
+      items.value = list.map((item: Record<string, unknown>) => convert(item))
+    } catch (err: unknown) {
+      const typedErr = err as Error
+      error.value = typedErr.message || 'Failed to fetch menu items. Using mock data.'
       items.value = MOCK_ITEMS
     } finally {
       loading.value = false
@@ -192,7 +193,7 @@ export const filteredSnacksAndDrinks = computed(() => {
 })
 
 export const cartTotal = computed(() => {
-  return cart.value.reduce((total: any, item: { price: any; }) => total + item.price, 0).toFixed(2)
+  return cart.value.reduce((total: number, item: { price: number }) => total + item.price, 0).toFixed(2)
 })
 
 export function addToCart(item: MenuItem): void {
