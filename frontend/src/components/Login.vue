@@ -1,8 +1,12 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <header>
     <h2>Login</h2>
 
-    <form class="form" @submit.prevent="onSubmit">
+    <form
+      class="form"
+      @submit.prevent="onSubmit"
+    >
       <div class="field">
         <label for="email">Email:</label>
         <input
@@ -12,7 +16,7 @@
           placeholder="Enter Email"
           class="border rounded px-3 py-2"
           autocomplete="email"
-        />
+        >
       </div>
 
       <div class="field">
@@ -24,13 +28,22 @@
           placeholder="Enter password"
           class="border rounded px-3 py-2"
           autocomplete="current-password"
-        />
+        >
       </div>
 
-      <p v-if="error" class="error">{{ error }}</p>
+      <p
+        v-if="error"
+        class="error"
+      >
+        {{ error }}
+      </p>
 
       <div>
-        <button type="submit" class="login-button" :disabled="loading">
+        <button
+          type="submit"
+          class="login-button"
+          :disabled="loading"
+        >
           {{ loading ? 'Signing in...' : 'Login' }}
         </button>
       </div>

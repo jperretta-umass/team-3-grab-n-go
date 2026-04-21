@@ -1,8 +1,12 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <header>
     <h2>Register</h2>
 
-    <form class="form" @submit.prevent="onSubmit">
+    <form
+      class="form"
+      @submit.prevent="onSubmit"
+    >
       <div class="field">
         <label for="username">Username:</label>
         <input
@@ -12,7 +16,7 @@
           placeholder="Enter username"
           class="border rounded px-3 py-2"
           autocomplete="username"
-        />
+        >
       </div>
 
       <div class="field">
@@ -24,7 +28,7 @@
           placeholder="Enter Email"
           class="border rounded px-3 py-2"
           autocomplete="email"
-        />
+        >
       </div>
 
       <div class="field">
@@ -36,15 +40,18 @@
           placeholder="Enter Phone Number"
           class="border rounded px-3 py-2"
           autocomplete="phone_num"
-        />
+        >
       </div>
       <div class="field">
-        <label for="isDeliverer" class="flex items-center gap-2">
+        <label
+          for="isDeliverer"
+          class="flex items-center gap-2"
+        >
           <input
             id="isDeliverer"
             v-model="isDeliverer"
             type="checkbox"
-          />
+          >
           Register as a deliverer
         </label>
       </div>
@@ -58,7 +65,7 @@
           placeholder="Enter password"
           class="border rounded px-3 py-2"
           autocomplete="new-password"
-        />
+        >
       </div>
 
       <div class="field">
@@ -70,13 +77,22 @@
           placeholder="Re-enter password"
           class="border rounded px-3 py-2"
           autocomplete="new-password"
-        />
+        >
       </div>
 
-      <p v-if="error" class="error">{{ error }}</p>
+      <p
+        v-if="error"
+        class="error"
+      >
+        {{ error }}
+      </p>
 
       <div>
-        <button type="submit" class="login-button" :disabled="loading">
+        <button
+          type="submit"
+          class="login-button"
+          :disabled="loading"
+        >
           {{ loading ? 'Creating account...' : 'Register Account' }}
         </button>
       </div>
