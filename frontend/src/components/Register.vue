@@ -76,6 +76,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const username = ref('')
 const email = ref('')
@@ -86,6 +87,8 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 
 const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? 'http://localhost:8000'
+
+const router = useRouter()
 
 async function onSubmit() {
   error.value = null
@@ -115,6 +118,7 @@ async function onSubmit() {
     }
 
     localStorage.setItem('auth', JSON.stringify(data))
+    router.push('/')
   } catch {
     error.value = 'Network error (is the backend running?)'
   } finally {
