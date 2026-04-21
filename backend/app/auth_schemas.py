@@ -17,5 +17,5 @@ class AuthResponse(BaseModel):
     id: int
     username: str
     email: EmailStr
+    phone_num: str | None = None
     is_deliverer: bool
-    phone_num: str
