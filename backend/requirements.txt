@@ -12,7 +12,7 @@ anyio==4.12.1
     # via
     #   starlette
     #   watchfiles
-bcrypt==5.0.0
+bcrypt==4.0.1
     # via passlib
 click==8.1.8
     # via uvicorn
