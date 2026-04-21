@@ -38,6 +38,16 @@
           autocomplete="phone_num"
         />
       </div>
+      <div class="field">
+        <label for="isDeliverer" class="flex items-center gap-2">
+          <input
+            id="isDeliverer"
+            v-model="isDeliverer"
+            type="checkbox"
+          />
+          Register as a deliverer
+        </label>
+      </div>
 
       <div class="field">
         <label for="password">Password:</label>
@@ -85,6 +95,7 @@ const phone_num = ref('')
 const confirmPassword = ref('')
 const loading = ref(false)
 const error = ref<string | null>(null)
+const isDeliverer = ref(false)
 
 const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? 'http://localhost:8000'
 
@@ -107,6 +118,7 @@ async function onSubmit() {
         username: username.value,
         email: email.value,
         phone_num: phone_num.value,
+        is_deliverer: isDeliverer.value,
         password: password.value,
       }),
     })
