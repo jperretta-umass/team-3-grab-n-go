@@ -1,9 +1,8 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
 from app import models
 from app.auth import router as auth_router
 from app.database import Base, engine
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -22,9 +21,11 @@ app.add_middleware(
 
 app.include_router(auth_router)
 
+
 @app.get("/")
 def root():
     return {"message": "Hello"}
+
 
 @app.get("/health")
 def health():
