@@ -10,6 +10,17 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+MAX_BCRYPT_PASSWORD_BYTES = 72
+MIN_BCRYPT_PASSWORD_BYTES = 8
+
+def password_too_long(password: str) -> bool:
+    return len(password.encode("utf-8")) > MAX_BCRYPT_PASSWORD_BYTES
+
+
+def password_too_short(password: str) -> bool:
+    return len(password.encode("utf-8")) < MIN_BCRYPT_PASSWORD_BYTES
+
+
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
@@ -39,6 +50,12 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
     if user:
         raise HTTPException(status_code=400, detail="Email already registered")
+
+    if password_too_long(payload.password):
+        raise HTTPException(status_code=400, detail="Password too long")
+
+    if password_too_short(payload.password):
+        raise HTTPException(status_code=400, detail="Password too short")
 
     user = User(
         username=payload.username,
