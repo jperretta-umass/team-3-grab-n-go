@@ -1,10 +1,11 @@
 # Delete this after SQLAlchemy classes
 from typing import List, Optional
 
-from app.main import app
 from fastapi.testclient import TestClient
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+from app.main import app
 
 
 def test_health():
