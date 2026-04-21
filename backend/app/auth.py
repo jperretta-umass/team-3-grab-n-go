@@ -10,16 +10,6 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-MAX_BCRYPT_PASSWORD_BYTES = 72
-MIN_PASSWORD_BYTES = 8
-
-def password_too_long(password: str) -> bool:
-    return len(password.encode("utf-8")) > MAX_BCRYPT_PASSWORD_BYTES
-
-
-def password_too_short(password: str) -> bool:
-    return len(password.encode("utf-8")) < MIN_PASSWORD_BYTES
-
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
@@ -48,14 +38,18 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 @router.post("/register", response_model=AuthResponse)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
+
+    print("Password length (chars):", len(payload.password))
+    print("Password length (bytes):", len(payload.password.encode("utf-8")))
+
     if user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    if password_too_long(payload.password):
-        raise HTTPException(status_code=400, detail="Password too long")
+    if len(payload.password.encode("utf-8")) > 72:
+        raise HTTPException(status_code=400, detail="Password too long (max 72 bytes)")
 
-    if password_too_short(payload.password):
-        raise HTTPException(status_code=400, detail="Password too short")
+    if len(payload.password.encode("utf-8")) < 8:
+        raise HTTPException(status_code=400, detail="Password too short (min 8 bytes)")
 
     user = User(
         username=payload.username,
