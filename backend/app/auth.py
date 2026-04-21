@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from passlib.context import CryptContext
-from sqlalchemy.orm import Session
-
 from app.auth_schemas import AuthResponse, LoginRequest, RegisterRequest
 from app.database import get_db
 from app.models import CustomerProfile, DelivererProfile, User
+from fastapi import APIRouter, Depends, HTTPException, status
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -17,6 +16,7 @@ def get_password_hash(password: str) -> str:
 
 def verify_password(plain_password: str, password_hash: str) -> bool:
     return pwd_context.verify(plain_password, password_hash)
+
 
 @router.post("/login", response_model=AuthResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
