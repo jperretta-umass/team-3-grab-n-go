@@ -66,6 +66,6 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
         id=user.id,
         username=user.username,
         email=user.email,
-        is_deliverer=user.has_deliverer_profile,
         phone_num=user.phone_num,
+        is_deliverer=user.has_deliverer_profile,
     )
