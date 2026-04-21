@@ -5,7 +5,7 @@
       <h1>Grab &amp; Go Menu</h1>
       <div class="hall">Dining Hall:
         <select class="red-select" v-model="selectedHall">
-          <option value="Hampshire">Hampsire</option>
+          <option value="Hampshire">Hampshire</option>
           <option value="Berkshire">Berkshire</option>
           <option value="Franklin">Franklin</option>
           <option value="Worcester">Worcester</option>
@@ -44,10 +44,12 @@
       <section class="panel fixed-panel">
         <h2>Entrées</h2>
         <div class="panel-scroll">
+          <p v-if="loading">Loading menu...</p>
+          <p v-if="error" class="error">{{ error }}</p>
           <ul v-if="filteredEntrees.length">
             <li v-for="item in filteredEntrees" :key="item.id">
               <div class="item-info">
-                <span class="item-name">{{ item.name }}</span>
+                <span class="item-name">{{ item.name }} - ${{ item.price }}</span>
                 <span class="item-meta">{{ formatTags(item) }}</span>
               </div>
               <button class="add-btn green" @click="addToCart(item)">Add</button>
@@ -92,199 +94,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-
-type MealType = 'breakfast' | 'lunch' | 'dinner'
-type DietType = 'no-peanuts' | 'vegan' | 'gluten-free' | 'vegetarian'
-type DiningHall = 'Hampshire' | 'Berkshire' | 'Franklin' | 'Worcester' 
-
-type MenuItem = {
-  id: number
-  name: string
-  mealType: MealType[]
-  diets: DietType[]
-  category: 'entree' | 'snack' | 'drink'
-  diningHall: DiningHall
-}
-
-type CartItem = {
-  cartId: number
-  id: number
-  name: string
-  price: number
-}
-
-const selectedMeal = ref('')
-const selectedDiet = ref('')
-const selectedHall = ref('Hampshire')
-
-const entrees = ref<MenuItem[]>([
-  {
-    id: 1,
-    name: 'Grilled Chicken Bowl',
-    mealType: ['lunch', 'dinner'],
-    diets: ['gluten-free'],
-    category: 'entree',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 2,
-    name: 'Veggie Wrap',
-    mealType: ['lunch'],
-    diets: ['vegetarian'],
-    category: 'entree',
-    diningHall: 'Berkshire',
-  },
-  {
-    id: 3,
-    name: 'Tofu Rice Plate',
-    mealType: ['dinner'],
-    diets: ['vegan', 'gluten-free'],
-    category: 'entree',
-    diningHall: 'Franklin',
-  },
-  {
-    id: 4,
-    name: 'Egg Sandwich',
-    mealType: ['breakfast'],
-    diets: ['vegetarian'],
-    category: 'entree',
-    diningHall: 'Worcester',
-  },
-  {
-    id: 5,
-    name: 'Turkey Panini',
-    mealType: ['lunch'],
-    diets: ['no-peanuts'],
-    category: 'entree',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 6,
-    name: 'Pasta Primavera',
-    mealType: ['dinner'],
-    diets: ['vegetarian'],
-    category: 'entree',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 7,
-    name: 'Breakfast Burrito',
-    mealType: ['breakfast'],
-    diets: ['no-peanuts'],
-    category: 'entree',
-    diningHall: 'Hampshire',
-  },
-])
-
-const snacksAndDrinks = ref<MenuItem[]>([
-  {
-    id: 101,
-    name: 'Fruit Cup',
-    mealType: ['breakfast', 'lunch', 'dinner'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-    category: 'snack',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 102,
-    name: 'Granola Bar',
-    mealType: ['breakfast', 'lunch'],
-    diets: ['vegetarian'],
-    category: 'snack',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 103,
-    name: 'Orange Juice',
-    mealType: ['breakfast'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-    category: 'drink',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 104,
-    name: 'Iced Tea',
-    mealType: ['lunch', 'dinner'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-    category: 'drink',
-    diningHall: 'Berkshire',
-  },
-  {
-    id: 105,
-    name: 'Yogurt Cup',
-    mealType: ['breakfast', 'lunch'],
-    diets: ['vegetarian', 'gluten-free'],
-    category: 'snack',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 106,
-    name: 'Trail Mix',
-    mealType: ['lunch', 'dinner'],
-    diets: ['vegetarian'],
-    category: 'snack',
-    diningHall: 'Hampshire',
-  },
-  {
-    id: 107,
-    name: 'Sparkling Water',
-    mealType: ['breakfast', 'lunch', 'dinner'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-    category: 'drink',
-    diningHall: 'Hampshire',
-  },
-])
-
-const cart = ref<CartItem[]>([
-  // { cartId: 1, id: 1, name: 'Grilled Chicken Bowl', price: 13.25 },
-  // { cartId: 2, id: 101, name: 'Fruit Cup', price: 3.00 },
-])
-
-let nextCartId = 0
-
-function matchesFilters(item: MenuItem): boolean {
-  const mealMatches =
-    !selectedMeal.value || item.mealType.includes(selectedMeal.value as MealType)
-
-  const dietMatches =
-    !selectedDiet.value || item.diets.includes(selectedDiet.value as DietType)
-
-  const hallMatches = item.diningHall === selectedHall.value
-
-  return mealMatches && dietMatches && hallMatches
-}
-
-const filteredEntrees = computed(() => {
-  return entrees.value.filter(matchesFilters)
-})
-
-const filteredSnacksAndDrinks = computed(() => {
-  return snacksAndDrinks.value.filter(matchesFilters)
-})
-
-const cartTotal = computed(() => {
-  return cart.value.reduce((total, item) => total + item.price, 0).toFixed(2)
-})
-
-function addToCart(item: MenuItem): void {
-  cart.value.push({
-    cartId: nextCartId++,
-    id: item.id,
-    name: item.name,
-    price: item.category === 'entree' ? 13.25 : 3.00,
-  })
-}
-
-function removeFromCart(cartId: number): void {
-  cart.value = cart.value.filter(item => item.cartId !== cartId)
-}
-
-function formatTags(item: MenuItem): string {
-  const meals = item.mealType.join(', ')
-  const diets = item.diets.length ? item.diets.join(', ') : 'none'
-  return `Meal: ${meals} | Diet: ${diets}`
-}
+import { onMounted } from 'vue'
+import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
+onMounted(fetchMenuItems)
 </script>
 
 <style scoped>
