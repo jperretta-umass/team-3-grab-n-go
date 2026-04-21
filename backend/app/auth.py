@@ -11,14 +11,14 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 MAX_BCRYPT_PASSWORD_BYTES = 72
-MIN_BCRYPT_PASSWORD_BYTES = 8
+MIN_PASSWORD_BYTES = 8
 
 def password_too_long(password: str) -> bool:
     return len(password.encode("utf-8")) > MAX_BCRYPT_PASSWORD_BYTES
 
 
 def password_too_short(password: str) -> bool:
-    return len(password.encode("utf-8")) < MIN_BCRYPT_PASSWORD_BYTES
+    return len(password.encode("utf-8")) < MIN_PASSWORD_BYTES
 
 
 def get_password_hash(password: str) -> str:
