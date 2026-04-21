@@ -5,6 +5,15 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+# These are the current models used by the test template.
+# IMPORTANT FOR FUTURE DATABASE IMPLEMENTATION:
+# If models.py changes (field names, relationships, required columns, etc.),
+# this file will likely need updates in:
+# - seed_test_data()
+# - imported model list
+# - any assumptions used by the tests
+from app.auth import get_password_hash
+
 # Import the SQLAlchemy Base so tests can create/drop the schema
 # in the dedicated test database.
 # get_db is imported so we can override the normal FastAPI database
@@ -69,6 +78,7 @@ def seed_test_data(db):
         email="alice@example.com",
         phone_num="111-111-1111",
         has_deliverer_profile=False,
+        password_hash=get_password_hash("password123"),
     )
 
     # Example deliverer user.
@@ -77,6 +87,7 @@ def seed_test_data(db):
         email="bob@example.com",
         phone_num="222-222-2222",
         has_deliverer_profile=True,
+        password_hash=get_password_hash("password123"),
     )
 
     db.add_all([user_1, user_2])
