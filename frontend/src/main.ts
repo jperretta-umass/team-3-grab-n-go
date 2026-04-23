@@ -9,7 +9,7 @@ import SingleOrder from "./components/SingleOrder.vue";
 import HomeView from "./components/HomeView.vue"
 import ItemPage from "./components/ItemPage.vue"
 import CustomerLandingPage from "./components/CustomerLandingPage.vue";
-
+import DelivererLanding from "./components/DelivererLandingPage.vue"
 
 
 const router = createRouter({
@@ -19,7 +19,8 @@ const router = createRouter({
         { path: "/customer", component: CustomerLandingPage },
         {path: "/DelivererPage", component: DelivererPage },
         {path: "/SingleOrder", component: SingleOrder },
-        {path: "/ItemPage", component: ItemPage } 
+        {path: "/ItemPage", component: ItemPage }, 
+        {path: "/Deliverer", component: DelivererLanding }
     ]
 });
 
