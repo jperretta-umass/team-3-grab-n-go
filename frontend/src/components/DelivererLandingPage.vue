@@ -1,9 +1,9 @@
 <template>
   <div class="page">
     <div class="page-shell">
-      <h1 class="page-title">Customer Landing Page</h1>
+      <h1 class="page-title">Deliverer Landing Page</h1>
       <p class="page-subtitle">
-        Check your current order, review past orders, or start a new one.
+        Claim new order, review your past orders, or claim a new one.
       </p>
 
       <section class="top-row">
@@ -40,7 +40,7 @@
 
       <section class="panel history-panel">
         <div class="panel-header">
-          <h2>Recent Orders</h2>
+          <h2>Recently Delivered Orders</h2>
         </div>
 
         <div class="history-list">
@@ -49,7 +49,7 @@
               <p class="history-title">Berkshire Dining Hall</p>
               <p class="history-meta">Order #1018 • Completed</p>
             </div>
-            <button class="small-btn">Reorder</button>
+            <button class="small-btn">View</button>
           </div>
 
           <div class="history-item">
@@ -57,7 +57,7 @@
               <p class="history-title">Franklin Dining Hall</p>
               <p class="history-meta">Order #1009 • Completed</p>
             </div>
-            <button class="small-btn">Reorder</button>
+            <button class="small-btn">View</button>
           </div>
 
           <div class="history-item">
