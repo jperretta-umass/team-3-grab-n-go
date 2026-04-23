@@ -1,17 +1,46 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${SOURCE_DB:?Need SOURCE_DB}"
-: "${DB_SUPERUSER:?Need DB_SUPERUSER}"
-: "${DB_SUPERPASS:?Need DB_SUPERPASS}"
-: "${BACKEND_HEALTH_URL:=http://127.0.0.1:8000/api/health}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+cd "${PROJECT_ROOT}"
+
+if [ -f .env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+
+: "${POSTGRES_USER:?Need POSTGRES_USER in .env or the environment}"
+: "${POSTGRES_PASSWORD:?Need POSTGRES_PASSWORD in .env or the environment}"
+: "${POSTGRES_DB:?Need POSTGRES_DB in .env or the environment}"
+: "${SOURCE_DB:=${POSTGRES_DB}}"
+: "${DB_SUPERUSER:=${POSTGRES_USER}}"
+: "${DB_SUPERPASS:=${POSTGRES_PASSWORD}}"
+: "${BACKEND_HEALTH_URL:=http://127.0.0.1:8000/health}"
 : "${FRONTEND_URL:=http://127.0.0.1:5173}"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
 TEMP_DB="${SOURCE_DB}_e2e_${STAMP}_$RANDOM"
+ORIGINAL_DATABASE_URL="${DATABASE_URL:-}"
+
+backend_was_running=0
+frontend_was_running=0
+
+if [ "$(docker compose ps -q backend 2>/dev/null | wc -l | tr -d ' ')" != "0" ]; then
+  backend_was_running=1
+fi
+
+if [ "$(docker compose ps -q frontend 2>/dev/null | wc -l | tr -d ' ')" != "0" ]; then
+  frontend_was_running=1
+fi
 
 cleanup() {
-  echo "Cleaning up temp DB and containers..."
+  echo "Cleaning up e2e services and temp DB..."
+
+  docker compose stop backend frontend >/dev/null 2>&1 || true
 
   docker compose exec -T db bash -lc "
     export PGPASSWORD='${DB_SUPERPASS}';
@@ -25,7 +54,14 @@ cleanup() {
     dropdb -U '${DB_SUPERUSER}' --if-exists '${TEMP_DB}' || true
   " || true
 
-  docker compose down
+  if [ "${backend_was_running}" -eq 1 ] || [ "${frontend_was_running}" -eq 1 ]; then
+    echo "Restoring services that were running before e2e..."
+    if [ -n "${ORIGINAL_DATABASE_URL}" ]; then
+      DATABASE_URL="${ORIGINAL_DATABASE_URL}" docker compose up -d backend frontend >/dev/null 2>&1 || true
+    else
+      docker compose up -d backend frontend >/dev/null 2>&1 || true
+    fi
+  fi
 }
 trap cleanup EXIT
 
@@ -59,13 +95,12 @@ docker compose exec -T db bash -lc "
 
 echo "Starting backend and frontend against cloned DB..."
 DATABASE_URL="postgresql+psycopg2://${DB_SUPERUSER}:${DB_SUPERPASS}@db:5432/${TEMP_DB}" \
-docker compose up -d backend frontend
+docker compose up -d --force-recreate backend frontend
 
 echo "Waiting for backend..."
 unset READY
 for i in {1..60}; do
-  if curl -fsS "${BACKEND_HEALTH_URL}" >/dev/null 2>&1 || \
-     curl -fsS http://127.0.0.1:8000/health >/dev/null 2>&1; then
+  if curl -fsS "${BACKEND_HEALTH_URL}" >/dev/null 2>&1; then
     READY=1
     break
   fi
@@ -92,9 +127,16 @@ if [ "${READY:-0}" -ne 1 ]; then
   exit 1
 fi
 
-echo "Installing Playwright dependencies..."
-npm ci
-npx playwright install --with-deps
+cd "${SCRIPT_DIR}"
+
+if [ ! -d node_modules ]; then
+  echo "Installing Playwright dependencies..."
+  npm ci
+fi
+
+if [ "${SKIP_PLAYWRIGHT_BROWSER_INSTALL:-0}" != "1" ]; then
+  npx playwright install
+fi
 
 echo "Running Playwright..."
 npx playwright test
