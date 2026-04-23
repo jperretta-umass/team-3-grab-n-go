@@ -20,7 +20,7 @@ const router = createRouter({
         {path: "/DelivererPage", component: DelivererPage },
         {path: "/SingleOrder", component: SingleOrder },
         {path: "/ItemPage", component: ItemPage }, 
-        {path: "/Deliverer", component: DelivererLanding }
+        {path: "/DelivererLanding", component: DelivererLanding }
     ]
 });
 
