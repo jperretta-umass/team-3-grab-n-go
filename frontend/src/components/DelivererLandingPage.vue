@@ -3,14 +3,14 @@
     <div class="page-shell">
       <h1 class="page-title">Deliverer Landing Page</h1>
       <p class="page-subtitle">
-        Claim new order, review your past orders, or claim a new one.
+        Claim new order or Review your past orders
       </p>
 
       <section class="top-row">
         <div class="panel current-order-panel">
           <div class="panel-header">
             <h2>Current Order Status</h2>
-            <span class="status-pill">Preparing</span>
+            <span class="status-pill">On The Way</span>
           </div>
 
           <div class="order-details">
