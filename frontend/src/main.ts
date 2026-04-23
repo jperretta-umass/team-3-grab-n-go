@@ -26,7 +26,7 @@ const router = createRouter({
         {path: "/Register", component: Register },
         {path: "/Login", component: Login },
         { path: "/success", component: Success },
-        {path: "/Deliverer", component: DelivererLanding }
+        {path: "/DelivererLanding", component: DelivererLanding }
     ]
 });
 
