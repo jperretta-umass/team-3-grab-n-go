@@ -1,1 +1,1 @@
-{"root":["./src/env.d.ts","./src/main.ts","./src/__tests__/app.spec.ts","./src/components/__tests__/helloworld.spec.ts","./src/app.vue","./src/components/delivererpage.vue","./src/components/singleorder.vue"],"version":"5.7.3"}
+{"root":["./src/env.d.ts","./src/main.ts","./src/__tests__/app.spec.ts","./src/components/__tests__/helloworld.spec.ts","./src/app.vue","./src/components/delivererpage.vue","./src/components/homeview.vue","./src/components/itempage.vue","./src/components/singleorder.vue"],"version":"5.7.3"}
