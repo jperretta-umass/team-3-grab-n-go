@@ -6,7 +6,7 @@
       </p>
       <h1 class="page-title">Deliverer Landing Page</h1>
       <p class="page-subtitle">
-        Claim new order or Review your past orders
+        Check your current order, review past orders, or start a new one.
       </p>
 
       <section class="top-row">
