@@ -51,8 +51,7 @@ coverage.xml
 .pytest_cache/
 cover/
 
-
-
+frontend/tsconfig.tsbuildinfo
 # Translations
 *.mo
 *.pot
@@ -179,7 +178,6 @@ dmypy.json
 
 # pytype static type analyzer
 .pytype/
-
 # Cython debug symbols
 cython_debug/
 
