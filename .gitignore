@@ -55,7 +55,7 @@ frontend/tsconfig.tsbuildinfo
 # Translations
 *.mo
 *.pot
-
+test-results
 # Django stuff:
 *.log
 local_settings.py
@@ -157,7 +157,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+.
 # Spyder project settings
 .spyderproject
 .spyproject
