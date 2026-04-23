@@ -2,7 +2,7 @@
   "name": "end2endtest",
   "private": true,
   "scripts": {
-    "test:": "./run-clone-db",
+    "test": "./run-clone-db",
     "test:plain": "playwright test",
     "test:ui": "playwright test --ui"
   },
