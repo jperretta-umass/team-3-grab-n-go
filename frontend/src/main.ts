@@ -23,8 +23,7 @@ const router = createRouter({
         {path: "/ItemPage", component: ItemPage },
         {path: "/Register", component: Register },
         {path: "/Login", component: Login },
-        {path: "/Deliverer", component: DelivererLanding },
-        { path: "/success", component: Success }
+        {path: "/DelivererLanding", component: DelivererLanding }
     ]
 });
 
