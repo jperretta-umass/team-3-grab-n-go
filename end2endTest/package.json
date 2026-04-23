@@ -2,11 +2,7 @@
   "name": "end2endtest",
   "private": true,
   "scripts": {
-<<<<<<< HEAD
     "test": "bash ./run-clone-db",
-=======
-    "test": "./run-clone-db",
->>>>>>> 5258217 (Configured actions file for e2e tests,)
     "test:plain": "playwright test",
     "test:ui": "playwright test --ui"
   },
