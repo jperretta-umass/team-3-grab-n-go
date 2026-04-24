@@ -1,9 +1,6 @@
 import os
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 # These are the current models used by the test template.
 # IMPORTANT FOR FUTURE DATABASE IMPLEMENTATION:
@@ -31,6 +28,9 @@ from app.main import app
 # - imported model list
 # - any assumptions used by the tests
 from app.models import CustomerProfile, DelivererProfile, User
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 # This points tests to the separate Dockerized test database.
 # If the test database service name, database name, or DB driver changes,
