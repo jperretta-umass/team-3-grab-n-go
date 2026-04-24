@@ -32,7 +32,7 @@
             <button class="action-btn neutral-btn">Past Orders</button>
             <button class="action-btn neutral-btn">Track Current Order</button>
             <RouterLink to="/DelivererPage" class="action-btn primary-btn">
-              Slect New Deliverer Order
+              Select New Deliverer Order
             </RouterLink>
           </div>
         </div>
