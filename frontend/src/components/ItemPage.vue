@@ -1,7 +1,9 @@
 <template>
   <div class="page">
     <header class="top-bar">
-      <button class="back-btn">&lt; BACK</button>
+      <RouterLink to="/" class="back-btn orange">
+        BACK
+      </RouterLink>
       <h1>Grab &amp; Go Menu</h1>
       <div class="hall">Dining Hall:
         <select class="red-select" v-model="selectedHall">
@@ -329,6 +331,9 @@ function formatTags(item: MenuItem): string {
   padding: 10px 14px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .back-btn,
