@@ -9,7 +9,7 @@
       <br />
       <RouterLink to="/ItemPage">--Item Table</RouterLink>
       <br />
-      <RouterLink to="/customer">--Customer Landing</RouterLink>
+      <RouterLink to="/CustomerLanding">--Customer Landing</RouterLink>
       <br />
       <RouterLink to="/DelivererLanding">--Deliver Landing</RouterLink>
     </nav>
