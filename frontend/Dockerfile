@@ -1,7 +1,7 @@
 FROM node:22 AS base
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci
 COPY . .
 
 FROM base AS dev

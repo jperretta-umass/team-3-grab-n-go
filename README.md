@@ -46,16 +46,7 @@
     pip install pip-tools
     pip-sync requirements.txt requirements-dev.txt
 
-    #run locally 
-    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-    #if code change is made 
-    uvicorn --reload 
-    ``` 
-    If steps followed correctly should be accessable at 
-    https://localhost:8000
-    https://localhost:8000/docs
-
+    
     #runing linter:
 
         black --check .
@@ -71,30 +62,23 @@
 ```Frontend 
     cd frontend
 
-    npm install
+    npm ci
 
     npm run dev -- --host 0.0.0.0 --port 5173
 
 ```
 
 should be accessable at 
-htttps://localhost:5173
+http://localhost:5173
 
-# Docker Image Building 
-    ```
-    docker build -t my-backend ./backend 
-    docker build -t my-frontend ./frontend
-    ```
+To view API docs: 
+http://localhost:8000/docs while the docker stack is running.
+# Running Dev Stack
 
-    ```
-    docker run -d \ 
-    -e POSTGRES_USER=postgres \ 
-    -e POSTGRES_PASSWORD=postgres \ 
-    -e POSTGRES_DB=myapp \ 
-    -p 5432:5432 \ 
-    postgres:16-alpine
-    ```
-    Docker Compose Commands(Most useful once everything is approved on PRs)
+    ```docker compose up --build backend #rebuilds one service entirely```
+    In the browser visit localhost:80 to visit the running site.
+    
+    docker Compose Commands(Most useful once everything is approved on PRs)
     docker compose up --build # builds whole app 
     docker compose up [WHICH THING YOU WANT RUNNING] # This will start just one container call can be made once to start multiple containers eg. 
     "docker compose up backend db"
@@ -102,8 +86,6 @@ htttps://localhost:5173
     docker compose down #stops everything 
     docker compose stop [thing] # stops the specifc container
     docker compose restart [thing] #stops then starts container you want 
-
-    docker compose up --build backend #rebuilds one service entirely 
 
     Other Docker Commands that may be useful: 
     docker ps #lists running containers

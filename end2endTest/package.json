@@ -2,7 +2,8 @@
   "name": "end2endtest",
   "private": true,
   "scripts": {
-    "test": "playwright test",
+    "test": "bash ./run-clone-db",
+    "test:plain": "playwright test",
     "test:ui": "playwright test --ui"
   },
   "devDependencies": {
