@@ -211,6 +211,9 @@ onMounted(fetchMenuItems)
   padding: 10px 14px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .back-btn,
