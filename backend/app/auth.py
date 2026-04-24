@@ -1,12 +1,12 @@
 from typing import cast
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from app.auth_schemas import AuthResponse, LoginRequest, RegisterRequest
 from app.database import get_db
-from app.models import CustomerProfile, DelivererProfile, User
+from app.models import User
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
