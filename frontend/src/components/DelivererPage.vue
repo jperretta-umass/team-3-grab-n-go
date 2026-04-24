@@ -63,7 +63,10 @@ const cellColors = [
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, rowIndex) in orderRows" :key="`row-${rowIndex}`">
+        <tr
+          v-for="(row, rowIndex) in orderRows"
+          :key="`row-${rowIndex}`"
+        >
           <td
             v-for="(order, columnIndex) in row"
             :key="`${rowIndex}-${columnIndex}`"

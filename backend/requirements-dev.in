@@ -5,3 +5,9 @@ isort
 pycodestyle
 pyright
 httpx
+passlib[bcrypt]
+uvicorn[standard]
+fastapi
+sqlalchemy
+psycopg2-binary
+email-validator
