@@ -17,7 +17,8 @@ import DelivererLanding from "./components/DelivererLandingPage.vue"
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-       { path: '/', component: HomeView },
+        { path: '/', component: HomeView },
+        { path: "/CustomerLanding", component: CustomerLandingPage },
         {path: "/DelivererPage", component: DelivererPage },
         {path: "/SingleOrder", component: SingleOrder },
         {path: "/ItemPage", component: ItemPage },
