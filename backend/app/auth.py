@@ -43,9 +43,6 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
 
-    print("Password length (chars):", len(payload.password))
-    print("Password length (bytes):", len(payload.password.encode("utf-8")))
-
     if user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
