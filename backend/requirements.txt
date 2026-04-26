@@ -12,8 +12,10 @@ anyio==4.12.1
     # via
     #   starlette
     #   watchfiles
-bcrypt==5.0.0
-    # via passlib
+bcrypt==4.0.1
+    # via
+    #   -r requirements.in
+    #   passlib
 click==8.1.8
     # via uvicorn
 dnspython==2.8.0
