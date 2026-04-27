@@ -20,7 +20,7 @@ fi
 : "${DB_SUPERUSER:=${POSTGRES_USER}}"
 : "${DB_SUPERPASS:=${POSTGRES_PASSWORD}}"
 : "${BACKEND_HEALTH_URL:=http://127.0.0.1:8000/health}"
-: "${FRONTEND_URL:=http://127.0.0.1:5173}"
+: "${FRONTEND_URL:=http://127.0.0.1}"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
 TEMP_DB="${SOURCE_DB}_e2e_${STAMP}_$RANDOM"
