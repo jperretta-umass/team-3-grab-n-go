@@ -10,18 +10,21 @@
         <div class="panel current-order-panel">
           <div class="panel-header">
             <h2>Current Order Status</h2>
-            <span class="status-pill">Preparing</span>
+            <span class="status-pill">{{ activeOrder ? activeOrder.status : 'None' }}</span>
           </div>
 
           <div class="order-details">
-            <p><strong>Dining Hall:</strong> Hampshire</p>
-            <p><strong>Order #:</strong> 1024</p>
-            <p><strong>Pickup Estimate:</strong> 10–15 min</p>
-            <p><strong>Items:</strong> Grilled Chicken Bowl, Fruit Cup</p>
+            <template v-if="activeOrder">
+              <p><strong>Dining Hall:</strong> {{ activeOrder.dining_hall }}</p>
+              <p><strong>Order #:</strong> {{ activeOrder.id }}</p>
+              <p><strong>Items:</strong> {{ activeOrder.items.map((i) => i.name).join(', ') }}</p>
+              <p><strong>Total:</strong> ${{ activeOrder.total_price.toFixed(2) }}</p>
+            </template>
+            <p v-else>No active orders.</p>
           </div>
 
           <div class="panel-actions">
-            <button class="secondary-btn">View Current Order</button>
+            <button class="secondary-btn" :disabled="!activeOrder">View Current Order</button>
           </div>
         </div>
 
@@ -29,8 +32,8 @@
           <h2>Quick Actions</h2>
 
           <div class="action-stack">
-            <button class="action-btn neutral-btn">Past Orders</button>
-            <button class="action-btn neutral-btn">Track Current Order</button>
+            <button class="action-btn neutral-btn">Past Orders ({{ profile ? profile.past_orders_count : 0 }})</button>
+            <button class="action-btn neutral-btn" :disabled="!activeOrder">Track Current Order</button>
             <RouterLink to="/ItemPage" class="action-btn primary-btn">
               Start New Order
             </RouterLink>
@@ -44,28 +47,13 @@
         </div>
 
         <div class="history-list">
-          <div class="history-item">
+          <p v-if="pastOrders.length === 0" style="color: #666;">No past orders yet.</p>
+          <div v-for="order in pastOrders" :key="order.id" class="history-item">
             <div>
-              <p class="history-title">Berkshire Dining Hall</p>
-              <p class="history-meta">Order #1018 • Completed</p>
+              <p class="history-title">{{ order.dining_hall }} Dining Hall</p>
+              <p class="history-meta">Order #{{ order.id }} • {{ order.status }}</p>
             </div>
             <button class="small-btn">Reorder</button>
-          </div>
-
-          <div class="history-item">
-            <div>
-              <p class="history-title">Franklin Dining Hall</p>
-              <p class="history-meta">Order #1009 • Completed</p>
-            </div>
-            <button class="small-btn">Reorder</button>
-          </div>
-
-          <div class="history-item">
-            <div>
-              <p class="history-title">Worcester Dining Hall</p>
-              <p class="history-meta">Order #998 • Cancelled</p>
-            </div>
-            <button class="small-btn">View</button>
           </div>
         </div>
       </section>
@@ -74,7 +62,30 @@
 </template>
 
 <script setup lang="ts">
-// Prototype page for now — static mock content
+import { onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
+
+const USER_ID = 1
+const BASE = 'http://localhost:8000'
+
+const profile = ref<any>(null)
+const activeOrder = ref<any>(null)
+const pastOrders = ref<any[]>([])
+
+onMounted(async () => {
+  try {
+    const [profileData, activeData, pastData] = await Promise.all([
+      fetch(`${BASE}/api/customers/${USER_ID}/profile`).then(r => r.json()),
+      fetch(`${BASE}/api/customers/${USER_ID}/active-orders`).then(r => r.json()),
+      fetch(`${BASE}/api/customers/${USER_ID}/past-orders`).then(r => r.json()),
+    ])
+    profile.value = profileData
+    activeOrder.value = activeData.length > 0 ? activeData[0] : null
+    pastOrders.value = pastData
+  } catch (e) {
+    console.error('Failed to load customer data', e)
+  }
+})
 </script>
 
 <style scoped>
