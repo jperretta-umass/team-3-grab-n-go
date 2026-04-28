@@ -3,9 +3,11 @@ from datetime import datetime, timezone
 
 from fastapi import Body, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
-from app.database import get_db
+from app.auth import router as auth_router
+from app.database import Base, get_db
 from app.init_db import init_database
 from app.models import MenuItem, Order
 
@@ -24,7 +26,8 @@ async def lifespan(app: FastAPI):
     init_database()
     yield
 
-Base.metadata.create_all(bind=engine)
+
+Base.metadata.create_all(bind=Engine)
 
 app.add_middleware(
     CORSMiddleware,
