@@ -1,7 +1,8 @@
+from datetime import datetime, timezone
+
 from fastapi import Depends, FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from datetime import datetime
 
 from app.database import get_db
 from app.init_db import init_database
@@ -56,7 +57,7 @@ def create_order(
         dining_hall_id=dining_hall_id,
         total_price=total_price,
         status=status,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
     db.add(new_order)
     db.commit()
