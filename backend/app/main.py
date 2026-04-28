@@ -1,6 +1,7 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from app.database import get_db
 from app.init_db import init_database
@@ -41,3 +42,23 @@ def get_menu_items(db: Session = Depends(get_db)):
 def get_order(db: Session = Depends(get_db)):
     orders = db.query(Order).all()
     return {"orders": [order.to_dict() for order in orders]}
+
+@app.post("/api/orders")
+def create_order(
+    user_id: int = Body(...),
+    dining_hall_id: int = Body(...),
+    total_price: float = Body(...),
+    status: str = Body(...),
+    db: Session = Depends(get_db),
+):
+    new_order = Order(
+        user_id=user_id,
+        dining_hall_id=dining_hall_id,
+        total_price=total_price,
+        status=status,
+        created_at=datetime.utcnow(),
+    )
+    db.add(new_order)
+    db.commit()
+    db.refresh(new_order)
+    return {"message": "Order committed successfully", "order": new_order.to_dict()}
