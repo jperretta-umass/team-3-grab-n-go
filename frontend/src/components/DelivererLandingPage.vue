@@ -1,6 +1,9 @@
 <template>
   <div class="page">
     <div class="page-shell">
+      <p class="welcome-banner">
+        Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
+      </p>
       <h1 class="page-title">Deliverer Landing Page</h1>
       <p class="page-subtitle">
         Claim new order or Review your past orders
@@ -74,7 +77,11 @@
 </template>
 
 <script setup lang="ts">
-// Prototype page for now — static mock content
+import { computed } from 'vue'
+import { getAuthUser } from '../utils/auth'
+
+const authUser = getAuthUser()
+const currentUsername = computed(() => authUser?.username ?? '')
 </script>
 
 <style scoped>
@@ -92,6 +99,16 @@
 .page-shell {
   max-width: 1400px;
   margin: 0 auto;
+}
+
+.welcome-banner {
+  margin: 0 0 12px 0;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #4caf50;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .page-title {
