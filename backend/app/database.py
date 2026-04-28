@@ -1,12 +1,13 @@
 import os
+from typing import Optional
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 engine = None
-SessionLocal = None
+SessionLocal: Optional[sessionmaker[Session]] = None
 Base = declarative_base()
 
 if DATABASE_URL:

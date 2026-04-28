@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.database import Base, SessionLocal, engine
 from app.models import DiningHall, MenuItem, Order, OrderItem, User
@@ -126,7 +126,7 @@ def init_database():
             dining_hall_id=breakfast_burrito.dining_hall_id,
             total_price=line_total,
             status="pending",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         db.add(mock_order)
         db.flush()

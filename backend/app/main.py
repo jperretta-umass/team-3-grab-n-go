@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from fastapi import Body, Depends, FastAPI
@@ -18,9 +19,10 @@ app.add_middleware(
 )
 
 
-@app.on_event("startup")
-def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     init_database()
+    yield
 
 
 @app.get("/")
