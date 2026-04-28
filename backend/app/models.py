@@ -35,7 +35,10 @@ class User(Base):
         String, unique=True, nullable=False, index=True
     )
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
+<<<<<<< HEAD
     password_hash = mapped_column(String, nullable=False)
+=======
+>>>>>>> 5c74acb (Add customer API endpoints and new order tables)
     phone_num: Mapped[str] = mapped_column(String, nullable=True)
     has_deliverer_profile: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False
@@ -202,5 +205,43 @@ class OrderItem(Base):
         Integer, ForeignKey("menu_items.id"), primary_key=True
     )
     quantity: Mapped[int] = mapped_column(Integer, default=1)
+<<<<<<< HEAD
     order: Mapped[Order] = relationship("Order", back_populates="items")
     menu_item: Mapped[MenuItem] = relationship("MenuItem")
+=======
+    special_instructions: Mapped[str] = mapped_column(String, nullable=True)
+    delivery_instructions: Mapped[str] = mapped_column(String, nullable=True)
+    order: Mapped[Order] = relationship("Order", back_populates="items")
+    menu_item: Mapped[MenuItem] = relationship("MenuItem")
+
+
+class PastOrder(Base):
+    __tablename__ = "past_orders"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    order_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("orders.id"), nullable=False, unique=True
+    )
+    order: Mapped[Order] = relationship("Order")
+
+
+class UnclaimedOrder(Base):
+    __tablename__ = "unclaimed_orders"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    order_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("orders.id"), nullable=False, unique=True
+    )
+    order: Mapped[Order] = relationship("Order")
+
+
+class CurrentOrder(Base):
+    __tablename__ = "current_orders"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    order_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("orders.id"), nullable=False, unique=True
+    )
+    deliverer_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("deliverer_profiles.id"), nullable=True
+    )
+    order: Mapped[Order] = relationship("Order")
+    deliverer: Mapped["DelivererProfile"] = relationship("DelivererProfile")
+>>>>>>> 5c74acb (Add customer API endpoints and new order tables)

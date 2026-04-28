@@ -9,7 +9,7 @@ from app.auth import router as auth_router
 from app.database import get_db
 from app.init_db import init_database
 from app.models import MenuItem, Order
-
+from app.routers import customer
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,6 +32,12 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(customer.router)
+
+
+@app.on_event("startup")
+def startup_event():
+    init_database()
 
 
 @app.get("/")
@@ -54,6 +60,7 @@ def get_menu_items(db: Session = Depends(get_db)):
 def get_order(db: Session = Depends(get_db)):
     orders = db.query(Order).all()
     return {"orders": [order.to_dict() for order in orders]}
+<<<<<<< HEAD
 
 
 @app.post("/api/orders")
@@ -75,3 +82,5 @@ def create_order(
     db.commit()
     db.refresh(new_order)
     return {"message": "Order committed successfully", "order": new_order.to_dict()}
+=======
+>>>>>>> 5c74acb (Add customer API endpoints and new order tables)
