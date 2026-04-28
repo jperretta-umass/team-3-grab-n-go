@@ -44,6 +44,7 @@ def get_order(db: Session = Depends(get_db)):
     orders = db.query(Order).all()
     return {"orders": [order.to_dict() for order in orders]}
 
+
 @app.post("/api/orders")
 def create_order(
     user_id: int = Body(...),
