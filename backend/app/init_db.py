@@ -183,23 +183,40 @@ def init_database():
         )
         db.add(past_order)
         db.flush()
-        db.add(OrderItem(order_id=past_order.id, menu_item_id=breakfast_burrito.id, quantity=2))
+        db.add(
+            OrderItem(
+                order_id=past_order.id, menu_item_id=breakfast_burrito.id, quantity=2
+            )
+        )
         db.add(PastOrder(order_id=past_order.id))
 
         # Seed an active (in-delivery) order
         active_order = Order(
             user_id=demo_user.id,
-            dining_hall_id=veggie_wrap.dining_hall_id if veggie_wrap else breakfast_burrito.dining_hall_id,
-            total_price=(veggie_wrap.price if veggie_wrap else breakfast_burrito.price) + (fruit_cup.price if fruit_cup else 0),
+            dining_hall_id=(
+                veggie_wrap.dining_hall_id
+                if veggie_wrap
+                else breakfast_burrito.dining_hall_id
+            ),
+            total_price=(veggie_wrap.price if veggie_wrap else breakfast_burrito.price)
+            + (fruit_cup.price if fruit_cup else 0),
             status="active",
             created_at=datetime.utcnow(),
         )
         db.add(active_order)
         db.flush()
         if veggie_wrap:
-            db.add(OrderItem(order_id=active_order.id, menu_item_id=veggie_wrap.id, quantity=1))
+            db.add(
+                OrderItem(
+                    order_id=active_order.id, menu_item_id=veggie_wrap.id, quantity=1
+                )
+            )
         if fruit_cup:
-            db.add(OrderItem(order_id=active_order.id, menu_item_id=fruit_cup.id, quantity=1))
+            db.add(
+                OrderItem(
+                    order_id=active_order.id, menu_item_id=fruit_cup.id, quantity=1
+                )
+            )
         db.add(CurrentOrder(order_id=active_order.id, deliverer_id=None))
 
         # Seed an unclaimed order
@@ -212,12 +229,14 @@ def init_database():
         )
         db.add(unclaimed_order)
         db.flush()
-        db.add(OrderItem(
-            order_id=unclaimed_order.id,
-            menu_item_id=breakfast_burrito.id,
-            quantity=3,
-            special_instructions="Extra hot sauce please",
-        ))
+        db.add(
+            OrderItem(
+                order_id=unclaimed_order.id,
+                menu_item_id=breakfast_burrito.id,
+                quantity=3,
+                special_instructions="Extra hot sauce please",
+            )
+        )
         db.add(UnclaimedOrder(order_id=unclaimed_order.id))
 >>>>>>> 5c74acb (Add customer API endpoints and new order tables)
 
