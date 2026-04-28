@@ -1,12 +1,11 @@
 from datetime import datetime, timezone
 
-from fastapi import Depends, FastAPI, Body
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-
 from app.database import get_db
 from app.init_db import init_database
 from app.models import MenuItem, Order
+from fastapi import Body, Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
 app = FastAPI(title="Grab & Go Mock API")
 app.add_middleware(
@@ -43,6 +42,7 @@ def get_menu_items(db: Session = Depends(get_db)):
 def get_order(db: Session = Depends(get_db)):
     orders = db.query(Order).all()
     return {"orders": [order.to_dict() for order in orders]}
+
 
 @app.post("/api/orders")
 def create_order(
