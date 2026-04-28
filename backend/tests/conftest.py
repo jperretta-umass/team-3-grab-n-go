@@ -67,6 +67,7 @@ def seed_test_data(db):
     user_1 = User(
         username="alice",
         email="alice@example.com",
+        password_hash="seeded-test-hash-alice",
         phone_num="111-111-1111",
         has_deliverer_profile=False,
     )
@@ -75,6 +76,7 @@ def seed_test_data(db):
     user_2 = User(
         username="bob",
         email="bob@example.com",
+        password_hash="seeded-test-hash-bob",
         phone_num="222-222-2222",
         has_deliverer_profile=True,
     )
