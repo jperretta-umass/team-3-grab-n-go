@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from fastapi import Depends, FastAPI, Body
+from fastapi import Body, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
