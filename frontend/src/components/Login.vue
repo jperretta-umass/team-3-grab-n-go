@@ -55,6 +55,7 @@
 
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { getPostAuthRoute, saveAuthUser, type AuthUser } from '../utils/auth'
 
 const email = ref('')
 const password = ref('')
@@ -84,8 +85,9 @@ async function onSubmit() {
       return
     }
 
-    localStorage.setItem('auth', JSON.stringify(data))
-    router.push('/')
+    const authUser = data as AuthUser
+    saveAuthUser(authUser)
+    router.push(getPostAuthRoute(authUser))
   } catch {
     error.value = 'Network error (is the backend running?)'
   } finally {
