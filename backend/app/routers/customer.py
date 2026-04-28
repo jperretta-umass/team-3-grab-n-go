@@ -19,8 +19,8 @@ from app.models import (
 )
 from app.schemas_customer import (
     CartItemAdd,
-    CartItemUpdate,
     CartItemOut,
+    CartItemUpdate,
     CartOut,
     OrderItemOut,
     OrderOut,
@@ -49,7 +49,9 @@ def _get_or_create_cart(user_id: int, db: Session) -> Cart:
 def _order_to_out(order: Order) -> OrderOut:
     return OrderOut(
         id=order.id,
-        dining_hall=order.dining_hall.name if order.dining_hall else str(order.dining_hall_id),
+        dining_hall=(
+            order.dining_hall.name if order.dining_hall else str(order.dining_hall_id)
+        ),
         total_price=order.total_price,
         status=order.status,
         created_at=order.created_at,
@@ -73,14 +75,18 @@ def _cart_to_out(cart: Cart) -> CartOut:
     for ci in cart.items:
         subtotal = ci.menu_item.price * ci.quantity
         total += subtotal
-        items_out.append(CartItemOut(
-            menu_item_id=ci.menu_item_id,
-            name=ci.menu_item.name,
-            price=ci.menu_item.price,
-            quantity=ci.quantity,
-            subtotal=subtotal,
-        ))
-    return CartOut(cart_id=cart.id, user_id=cart.user_id, items=items_out, total=round(total, 2))
+        items_out.append(
+            CartItemOut(
+                menu_item_id=ci.menu_item_id,
+                name=ci.menu_item.name,
+                price=ci.menu_item.price,
+                quantity=ci.quantity,
+                subtotal=subtotal,
+            )
+        )
+    return CartOut(
+        cart_id=cart.id, user_id=cart.user_id, items=items_out, total=round(total, 2)
+    )
 
 
 @router.get("/{user_id}/profile")
@@ -150,7 +156,9 @@ def place_order(user_id: int, body: PlaceOrderIn, db: Session = Depends(get_db))
     for item_in in body.items:
         mi = db.query(MenuItem).filter(MenuItem.id == item_in.menu_item_id).first()
         if not mi:
-            raise HTTPException(status_code=404, detail=f"Menu item {item_in.menu_item_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Menu item {item_in.menu_item_id} not found"
+            )
         total += mi.price * item_in.quantity
         resolved.append((mi, item_in))
 
@@ -165,13 +173,15 @@ def place_order(user_id: int, body: PlaceOrderIn, db: Session = Depends(get_db))
     db.flush()
 
     for mi, item_in in resolved:
-        db.add(OrderItem(
-            order_id=order.id,
-            menu_item_id=mi.id,
-            quantity=item_in.quantity,
-            special_instructions=item_in.special_instructions,
-            delivery_instructions=item_in.delivery_instructions,
-        ))
+        db.add(
+            OrderItem(
+                order_id=order.id,
+                menu_item_id=mi.id,
+                quantity=item_in.quantity,
+                special_instructions=item_in.special_instructions,
+                delivery_instructions=item_in.delivery_instructions,
+            )
+        )
 
     db.add(UnclaimedOrder(order_id=order.id))
     db.commit()
@@ -197,15 +207,23 @@ def add_cart_item(user_id: int, body: CartItemAdd, db: Session = Depends(get_db)
 
     cart = _get_or_create_cart(user_id, db)
 
-    existing = db.query(CartItem).filter(
-        CartItem.cart_id == cart.id,
-        CartItem.menu_item_id == body.menu_item_id,
-    ).first()
+    existing = (
+        db.query(CartItem)
+        .filter(
+            CartItem.cart_id == cart.id,
+            CartItem.menu_item_id == body.menu_item_id,
+        )
+        .first()
+    )
 
     if existing:
         existing.quantity += body.quantity
     else:
-        db.add(CartItem(cart_id=cart.id, menu_item_id=body.menu_item_id, quantity=body.quantity))
+        db.add(
+            CartItem(
+                cart_id=cart.id, menu_item_id=body.menu_item_id, quantity=body.quantity
+            )
+        )
 
     db.commit()
     db.refresh(cart)
@@ -213,14 +231,20 @@ def add_cart_item(user_id: int, body: CartItemAdd, db: Session = Depends(get_db)
 
 
 @router.put("/{user_id}/cart/items/{menu_item_id}", response_model=CartOut)
-def update_cart_item(user_id: int, menu_item_id: int, body: CartItemUpdate, db: Session = Depends(get_db)):
+def update_cart_item(
+    user_id: int, menu_item_id: int, body: CartItemUpdate, db: Session = Depends(get_db)
+):
     _get_user_or_404(user_id, db)
     cart = _get_or_create_cart(user_id, db)
 
-    item = db.query(CartItem).filter(
-        CartItem.cart_id == cart.id,
-        CartItem.menu_item_id == menu_item_id,
-    ).first()
+    item = (
+        db.query(CartItem)
+        .filter(
+            CartItem.cart_id == cart.id,
+            CartItem.menu_item_id == menu_item_id,
+        )
+        .first()
+    )
     if not item:
         raise HTTPException(status_code=404, detail="Item not in cart")
 
@@ -239,10 +263,14 @@ def remove_cart_item(user_id: int, menu_item_id: int, db: Session = Depends(get_
     _get_user_or_404(user_id, db)
     cart = _get_or_create_cart(user_id, db)
 
-    item = db.query(CartItem).filter(
-        CartItem.cart_id == cart.id,
-        CartItem.menu_item_id == menu_item_id,
-    ).first()
+    item = (
+        db.query(CartItem)
+        .filter(
+            CartItem.cart_id == cart.id,
+            CartItem.menu_item_id == menu_item_id,
+        )
+        .first()
+    )
     if not item:
         raise HTTPException(status_code=404, detail="Item not in cart")
 
