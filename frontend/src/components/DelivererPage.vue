@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from "vue"
+import DelivererPopup from './DelivererPopup.vue'
+import { Order, fetchOrders, orders, ordersError, ordersLoading } from "./displayScripts/Order"
+
 
 const headers = [
   "Southwest",
@@ -9,68 +13,143 @@ const headers = [
   "Sylvan",
 ];
 
-const orderRows = [
-  ["SW Order #1", "Honors Order #1", "Central Order #1", "NE Order #1", "OHill Order #1", "Sylvan Order #1"],
-  ["SW Order #2", "Honors Order #2", "Central Order #2", "NE Order #2", "OHill Order #2", "Sylvan Order #2"],
-  ["SW Order #3", "Honors Order #3", "Central Order #3", "NE Order #3", "OHill Order #3", "Sylvan Order #3"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-  ["SW Order", "Honors Order", "Central Order", "NE Order", "OHill Order", "Sylvan Order"],
-];
+const diningHallColors: Record<string, string> = {
+  Berkshire: "red",
+  Hampshire: "lightgreen",
+  Worcester: "lightblue",
+  Franklin: "yellow",
+};
 
-const cellColors = [
-  ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "red", "yellow"],
-  ["lightblue", "yellow", "yellow", "lightblue", "red", "lightgreen"],
-  ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
-  ["lightblue", "yellow", "yellow", "lightblue", "red", "lightgreen"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "lightgreen", "yellow"],
-  ["lightblue", "yellow", "yellow", "lightblue", "lightblue", "lightgreen"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "red", "yellow"],
-  ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
-  ["lightblue", "yellow", "yellow", "lightblue", "red", "lightgreen"],
-  ["yellow", "red", "lightgreen", "yellow", "lightgreen", "yellow"],
-  ["lightblue", "yellow", "yellow", "lightblue", "lightblue", "lightgreen"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "red", "yellow"],
-  ["red", "lightblue", "red", "yellow", "yellow", "lightblue"],
-  ["lightblue", "red", "yellow", "lightblue", "red", "lightgreen"],
-  ["yellow", "lightblue", "lightgreen", "yellow", "lightgreen", "yellow"],
-];
+const diningHallColumnMap: Record<string, number> = {
+  Berkshire: 0,
+  Hampshire: 1,
+  Franklin: 2,
+  Worcester: 3,
+};
+
+const popupOpen = ref(false);
+const popOrderName = ref<Order | null>(null);
+const curInd = ref(0);
+const curCol = ref(0);
+
+function handleCellClick(order: Order, currentIndex : number, currentColumn : number) {
+  popOrderName.value = order;
+  popupOpen.value = true;
+  curInd.value = currentColumn;
+  curCol.value = currentIndex;
+}
+
+const orderRows = computed(() => {
+  const columns: Order[][] = headers.map(() => [])
+  const overflowColumn = headers.length - 1
+
+  for (const order of orders.value) {
+    const mappedColumn = diningHallColumnMap[order.dining_hall] ?? overflowColumn
+    const safeColumn = mappedColumn < headers.length ? mappedColumn : overflowColumn
+    columns[safeColumn].push(order)
+  }
+
+  return columns
+});
+
+const longest = computed(() => orderRows.value.reduce((num, arr) => Math.max(num, arr.length), 0));
+
+const claimNotifVis = ref(false);
+// code for alert found here! https://v1.tailwindcss.com/components/alerts
+
+function handleAccept() {
+  if (!popOrderName.value) {
+    return;
+  }
+  claimNotifVis.value = true;
+  setTimeout(() => {
+      claimNotifVis.value = false;
+    }, 3000);
+  popOrderName.value.status = "claimed";
+  const updatedOrders = [...orders.value]
+  const targetColumn = orderRows.value[curInd.value] ?? []
+  const targetOrder = targetColumn[curCol.value]
+  if (targetOrder) {
+    const index = updatedOrders.findIndex((order) => order.id === targetOrder.id)
+    if (index >= 0) {
+      updatedOrders.splice(index, 1)
+      orders.value = updatedOrders
+    }
+  }
+  popupOpen.value = false;
+}
+
+onMounted(fetchOrders)
+
 </script>
 
 <template>
+  <header class="bg-white shadow-lg">
+    <nav aria-label="Global" class="flex mx-auto items-center justify-between p-5 lg:px-7">
+      <div class="flex lg:flex-1">
+        <a href="/" class="-m-1.5 p-1.5">
+          <span class="sr-only">MinuteMeals</span>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1280px-UMass_Amherst_athletics_logo.svg.png" alt="" class="h-8 w-auto" />
+        </a>
+      </div><div class="flex lg:flex-15">
+        <a class="text-4xl/6 font-sans font-semibold text-gray-900">Available Orders</a>
+      </div>
+      <div>
+        <a class="text-lg/6 font-sans font-semibold text-gray-900">My Account</a>
+      </div>
+    </nav>
+  </header>
+  <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-md" role="alert" v-if="claimNotifVis">
+    <strong class="font-bold">Order Claimed!</strong>
+    <span class="block sm:inline"> You have claimed this order. </span>
+  </div>
+  <div class="px-4 py-2 text-sm text-slate-700" v-if="ordersLoading">Loading orders...</div>
+  <div class="px-4 py-2 text-sm text-red-700" v-if="ordersError">{{ ordersError }}</div>
+  <div class="modal flex justify-between p-5 lg:px-7" v-if="popupOpen && popOrderName">
+    <div>
+      <DelivererPopup
+        :orderObj="popOrderName"
+        @close="popupOpen=false"
+        @accept="handleAccept"
+      />
+    </div>
+  </div>
   <section class="w-full p-4">
-    <table class="w-full min-h-[800px] table-fixed border-collapse border border-gray-300">
+    <table class="border-separate border-spacing-2 w-full min-h-[800px] table-fixed border-collapse border border-gray-300">
       <thead>
         <tr class="bg-gray-200">
           <th
             v-for="header in headers"
             :key="header"
-            class="border border-gray-300 p-3 text-center font-medium"
+            class="border border-gray-400 p-3 text-center font-medium bg-gray-200 shadow-sm"
           >
             {{ header }}
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, rowIndex) in orderRows" :key="`row-${rowIndex}`">
+        <tr v-for="i in longest" :key="i">
           <td
-            v-for="(order, columnIndex) in row"
-            :key="`${rowIndex}-${columnIndex}`"
-            :class="`font-semibold p-3 text-center `"
-            :style="{ backgroundColor: cellColors[rowIndex][columnIndex] }"
+            v-for="(col, j) in orderRows"
+            :key="`${i}-${j}`"
+            class="rounded-xl overflow-hidden p-3 text-center font-semibold shadow-md"
+            :style="col[i - 1]
+              ? {
+                  backgroundColor: diningHallColors[col[i - 1].dining_hall] ?? 'lightgrey'
+                }
+              : { backgroundColor: 'lightgrey' }"
+            @click="col[i - 1] && handleCellClick(col[i - 1], i - 1, j)"
           >
-            {{ order }}
+            <div v-if="col[i - 1]" class="leading-tight">
+              <div>Order #{{ col[i - 1].id }}</div>
+              <div>User {{ col[i - 1].user_id }}</div>
+              <div>{{ col[i - 1].dining_hall }}</div>
+              <div>${{ col[i - 1].total_price.toFixed(2) }}</div>
+              <div>{{ col[i - 1].status }}</div>
+              <div>{{ col[i - 1].created_at }}</div>
+              <div>Items: {{ col[i - 1].items.length }}</div>
+            </div>
+            <span v-else> </span>
           </td>
         </tr>
       </tbody>
@@ -78,3 +157,25 @@ const cellColors = [
   </section>
 </template>
 
+<style> 
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal > div {
+  position: fixed;
+  background-color: #ffff;
+  padding: 25px;
+  border-radius: 25px;
+  box-shadow: 5px 5px 10px rgba(0,0,0,0.5);
+}
+</style>
