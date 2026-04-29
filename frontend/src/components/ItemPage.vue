@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <header class="top-bar">
-      <button class="back-btn">&lt; BACK</button>
+      <button class="back-btn" @click="goHome">&lt; BACK</button>
       <h1>Grab &amp; Go Menu</h1>
       <div class="hall">Dining Hall:
         <select class="red-select" v-model="selectedHall">
@@ -72,6 +72,7 @@
           </ul>
           <p v-else>Your cart is empty.</p>
         </div>
+        <button v-if="cart.length" class="add-btn green">Checkout</button>
       </section>
     </main>
 
@@ -95,7 +96,15 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
+
+const router = useRouter()
+
+function goHome() {
+  router.push('/')
+}
+
 onMounted(fetchMenuItems)
 </script>
 
