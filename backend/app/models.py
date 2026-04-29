@@ -35,6 +35,7 @@ class User(Base):
         String, unique=True, nullable=False, index=True
     )
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
+    password_hash = mapped_column(String, nullable=False)
     phone_num: Mapped[str] = mapped_column(String, nullable=True)
     has_deliverer_profile: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False

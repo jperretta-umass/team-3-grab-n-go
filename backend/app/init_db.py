@@ -106,6 +106,7 @@ def init_database():
         demo_user = User(
             username="demo_customer",
             email="demo_customer@example.com",
+            password_hash="string3214",
             phone_num="555-0100",
             has_deliverer_profile=False,
         )
