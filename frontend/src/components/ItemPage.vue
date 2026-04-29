@@ -70,6 +70,7 @@
           </ul>
           <p v-else>Your cart is empty.</p>
         </div>
+        <button v-if="cart.length" class="add-btn green">Checkout</button>
       </section>
     </main>
 

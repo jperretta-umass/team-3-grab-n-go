@@ -1,5 +1,3 @@
-from typing import cast
-
 from fastapi import APIRouter, Depends, HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -27,15 +25,15 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    if not verify_password(payload.password, cast(str, user.password_hash)):
+    if not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     return AuthResponse(
-        id=cast(int, user.id),
-        username=cast(str, user.username),
-        email=cast(str, user.email),
-        phone_num=cast(str | None, user.phone_num),
-        is_deliverer=cast(bool, user.has_deliverer_profile),
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        phone_num=user.phone_num,
+        is_deliverer=user.has_deliverer_profile,
     )
 
 
@@ -64,9 +62,9 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     db.refresh(user)
 
     return AuthResponse(
-        id=cast(int, user.id),
-        username=cast(str, user.username),
-        email=cast(str, user.email),
-        phone_num=cast(str | None, user.phone_num),
-        is_deliverer=cast(bool, user.has_deliverer_profile),
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        phone_num=user.phone_num,
+        is_deliverer=user.has_deliverer_profile,
     )
