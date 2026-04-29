@@ -1,20 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import DelivererPopup from './DelivererPopup.vue'
-import {Order} from "./Order.ts"
-
-const order0 = new Order(0, 0, 12, 150, 15.00, "12:00", [1], [0,1,1,2], "None", "None");
-const order1 = new Order(1, 1, 10, 16, 30.00, "1:00", [2], [0,1,1,2,2,2,2,0], "None", "None");
-const order2 = new Order(2, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
-const order3 = new Order(3, 3, 12, 150, 15.00, "12:00", [2], [0,1,1,2], "None", "None");
-const order4 = new Order(1, 4, 10, 16, 30.00, "1:00", [1], [0,1,1,2,2,2,2,0], "None", "None");
-const order5 = new Order(0, 5, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
-const order6 = new Order(3, 0, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
-const order7 = new Order(1, 1, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
-const order8 = new Order(0, 2, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
-const order9 = new Order(1, 3, 12, 150, 15.00, "12:00", [2], [0,1,1,2], "None", "None");
-const order10 = new Order(2, 4, 10, 16, 30.00, "1:00", [1], [0,1,1,2,2,2,2,0], "None", "None");
-const order11 = new Order(1, 5, 1, 37, 15.00, "12:00", [0], [0,2,1,2], "None", "None");
+import { Order, fetchOrders, orders, ordersError, ordersLoading } from "./displayScripts/Order"
 
 
 const headers = [
@@ -26,25 +13,22 @@ const headers = [
   "Sylvan",
 ];
 
-//Berk 0, Hamp 1, Woo 2, Frank 3
-//const dHalls = ["Berkshire", "Hampshire", "Worcester", "Franklin"];
+const diningHallColors: Record<string, string> = {
+  Berkshire: "red",
+  Hampshire: "lightgreen",
+  Worcester: "lightblue",
+  Franklin: "yellow",
+};
 
-const colors = ["red", "lightgreen", "lightblue", "yellow"];
-
-//Burger 0, Pizza 1, Salad 2
-//const mains = ["Burger", "Pizza", "Salad"];
-
-//Fries 0, Chips 1, Fruit 2
-//const sides = ["Fries", "Chips", "Fruit"];
-
-
-
-//SW, Honors, Central, NE, OHill, Sylvan
-const dorms = ["Prince Hall", "Oak Hall", "Central Hall", "NE Apartment", "Ohill", "Sylvan"];
-
+const diningHallColumnMap: Record<string, number> = {
+  Berkshire: 0,
+  Hampshire: 1,
+  Franklin: 2,
+  Worcester: 3,
+};
 
 const popupOpen = ref(false);
-const popOrderName = ref(order0);
+const popOrderName = ref<Order | null>(null);
 const curInd = ref(0);
 const curCol = ref(0);
 
@@ -55,28 +39,47 @@ function handleCellClick(order: Order, currentIndex : number, currentColumn : nu
   curCol.value = currentIndex;
 }
 
-const orderRows = ref([
-  [order0, order6, order0, order6, order0, order0, order0, order6, order0, order0, order0, order0],
-  [order1, order1, order7, order1, order1, order7],
-  [order8, order2, order2, order2, order8, order2],
-  [order3, order9, order3, order3, order3, order3],
-  [order10, order4, order4],
-  [order5,order5,order11,order5,order5,order11]
-]);
+const orderRows = computed(() => {
+  const columns: Order[][] = headers.map(() => [])
+  const overflowColumn = headers.length - 1
 
-const longest = ref(orderRows.value.reduce((num, arr) => Math.max(num, arr.length), 0));
+  for (const order of orders.value) {
+    const mappedColumn = diningHallColumnMap[order.dining_hall] ?? overflowColumn
+    const safeColumn = mappedColumn < headers.length ? mappedColumn : overflowColumn
+    columns[safeColumn].push(order)
+  }
+
+  return columns
+});
+
+const longest = computed(() => orderRows.value.reduce((num, arr) => Math.max(num, arr.length), 0));
 
 const claimNotifVis = ref(false);
 // code for alert found here! https://v1.tailwindcss.com/components/alerts
 
 function handleAccept() {
+  if (!popOrderName.value) {
+    return;
+  }
   claimNotifVis.value = true;
   setTimeout(() => {
       claimNotifVis.value = false;
     }, 3000);
-  orderRows.value[curInd.value].splice(curCol.value,1);
+  popOrderName.value.status = "claimed";
+  const updatedOrders = [...orders.value]
+  const targetColumn = orderRows.value[curInd.value] ?? []
+  const targetOrder = targetColumn[curCol.value]
+  if (targetOrder) {
+    const index = updatedOrders.findIndex((order) => order.id === targetOrder.id)
+    if (index >= 0) {
+      updatedOrders.splice(index, 1)
+      orders.value = updatedOrders
+    }
+  }
   popupOpen.value = false;
 }
+
+onMounted(fetchOrders)
 
 </script>
 
@@ -100,7 +103,9 @@ function handleAccept() {
     <strong class="font-bold">Order Claimed!</strong>
     <span class="block sm:inline"> You have claimed this order. </span>
   </div>
-  <div class="modal flex justify-between p-5 lg:px-7" v-show="popupOpen">
+  <div class="px-4 py-2 text-sm text-slate-700" v-if="ordersLoading">Loading orders...</div>
+  <div class="px-4 py-2 text-sm text-red-700" v-if="ordersError">{{ ordersError }}</div>
+  <div class="modal flex justify-between p-5 lg:px-7" v-if="popupOpen && popOrderName">
     <div>
       <DelivererPopup
         :orderObj="popOrderName"
@@ -128,10 +133,23 @@ function handleAccept() {
             v-for="(col, j) in orderRows"
             :key="`${i}-${j}`"
             class="rounded-xl overflow-hidden p-3 text-center font-semibold shadow-md"
-            :style="col[i - 1] ? { backgroundColor: colors[col[i - 1].dId] } : { backgroundColor : 'lightgrey'}"
+            :style="col[i - 1]
+              ? {
+                  backgroundColor: diningHallColors[col[i - 1].dining_hall] ?? 'lightgrey'
+                }
+              : { backgroundColor: 'lightgrey' }"
             @click="col[i - 1] && handleCellClick(col[i - 1], i - 1, j)"
           >
-            {{ col[i - 1] ? dorms[col[i - 1].dormId] : ' ' }}
+            <div v-if="col[i - 1]" class="leading-tight">
+              <div>Order #{{ col[i - 1].id }}</div>
+              <div>User {{ col[i - 1].user_id }}</div>
+              <div>{{ col[i - 1].dining_hall }}</div>
+              <div>${{ col[i - 1].total_price.toFixed(2) }}</div>
+              <div>{{ col[i - 1].status }}</div>
+              <div>{{ col[i - 1].created_at }}</div>
+              <div>Items: {{ col[i - 1].items.length }}</div>
+            </div>
+            <span v-else> </span>
           </td>
         </tr>
       </tbody>
