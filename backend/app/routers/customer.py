@@ -142,6 +142,7 @@ def get_past_orders(user_id: int, db: Session = Depends(get_db)):
     )
     return [_order_to_out(o) for o in orders]
 
+
 @router.get("/{user_id}/orders", response_model=List[OrderOut])
 def get_orders_for_user(user_id: int, db: Session = Depends(get_db)):
     _get_user_or_404(user_id, db)
@@ -153,6 +154,7 @@ def get_orders_for_user(user_id: int, db: Session = Depends(get_db)):
         .all()
     )
     return [_order_to_out(o) for o in orders]
+
 
 @router.post("/{user_id}/orders", response_model=OrderOut, status_code=201)
 def place_order(user_id: int, body: PlaceOrderIn, db: Session = Depends(get_db)):

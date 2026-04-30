@@ -11,6 +11,7 @@ from app.init_db import init_database
 from app.models import MenuItem, Order
 from app.routers import customer
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_database()
