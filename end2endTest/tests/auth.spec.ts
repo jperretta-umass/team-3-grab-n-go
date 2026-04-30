@@ -29,8 +29,8 @@ test('User Registration', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Register Account' }).click();
 
-  await expect(page).toHaveURL('/');
-  await expect(page.getByText('Welcome to the Home Page!')).toBeVisible();
+  await expect(page).toHaveURL('/CustomerLanding');
+  await expect(page.getByRole('heading', { name: 'Customer Landing Page' })).toBeVisible();
 
   const auth = await page.evaluate(() => {
     const raw = window.localStorage.getItem('auth');
@@ -68,8 +68,8 @@ test('User Login', async ({ page, request }) => {
 
   await page.getByRole('button', { name: 'Login' }).click();
 
-  await expect(page).toHaveURL('/');
-  await expect(page.getByText('Welcome to the Home Page!')).toBeVisible();
+  await expect(page).toHaveURL('/CustomerLanding');
+  await expect(page.getByRole('heading', { name: 'Customer Landing Page' })).toBeVisible();
 
   const auth = await page.evaluate(() => {
     const raw = window.localStorage.getItem('auth');
