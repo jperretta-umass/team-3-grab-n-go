@@ -163,7 +163,7 @@ import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntre
 const router = useRouter()
 
 function goHome() {
-  router.push('/')
+  router.push('/CustomerLanding')
 }
 
 onMounted(fetchMenuItems)

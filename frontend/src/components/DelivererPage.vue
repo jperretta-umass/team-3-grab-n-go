@@ -87,7 +87,7 @@ onMounted(fetchOrders)
   <header class="bg-white shadow-lg">
     <nav aria-label="Global" class="flex mx-auto items-center justify-between p-5 lg:px-7">
       <div class="flex lg:flex-1">
-        <a href="/" class="-m-1.5 p-1.5">
+        <a href="/DelivererLanding" class="-m-1.5 p-1.5">
           <span class="sr-only">MinuteMeals</span>
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1280px-UMass_Amherst_athletics_logo.svg.png" alt="" class="h-8 w-auto" />
         </a>
