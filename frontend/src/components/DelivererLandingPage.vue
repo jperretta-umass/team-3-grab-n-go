@@ -1,9 +1,18 @@
 <template>
   <div class="page">
     <div class="page-shell">
-      <p class="welcome-banner">
-        Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
-      </p>
+      <div class="top-bar">
+        <p class="welcome-banner">
+          Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
+        </p>
+        <button
+          class="logout-btn"
+          type="button"
+          @click="logout"
+        >
+          Logout
+        </button>
+      </div>
       <h1 class="page-title">Deliverer Landing Page</h1>
       <p class="page-subtitle">
         Check your current order, review past orders, or start a new one.
@@ -78,10 +87,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getAuthUser } from '../utils/auth'
+import { useRouter } from 'vue-router'
+import { clearAuthUser, getAuthUser } from '../utils/auth'
 
+const router = useRouter()
 const authUser = getAuthUser()
 const currentUsername = computed(() => authUser?.username ?? '')
+
+function logout() {
+  clearAuthUser()
+  router.replace('/Login')
+}
 </script>
 
 <style scoped>
@@ -101,14 +117,38 @@ const currentUsername = computed(() => authUser?.username ?? '')
   margin: 0 auto;
 }
 
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
 .welcome-banner {
-  margin: 0 0 12px 0;
+  margin: 0;
   text-align: center;
   font-size: 0.95rem;
   font-weight: 700;
   color: #4caf50;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+}
+
+.logout-btn {
+  border: none;
+  border-radius: 10px;
+  background: #111;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 16px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.logout-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
 }
 
 .page-title {
@@ -269,6 +309,11 @@ const currentUsername = computed(() => authUser?.username ?? '')
 }
 
 @media (max-width: 900px) {
+  .top-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .page-title {
     font-size: 2.3rem;
   }

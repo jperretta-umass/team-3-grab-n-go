@@ -1,9 +1,18 @@
 <template>
   <div class="page">
     <div class="page-shell">
-      <p class="welcome-banner">
-        Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
-      </p>
+      <div class="top-bar">
+        <p class="welcome-banner">
+          Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
+        </p>
+        <button
+          class="logout-btn"
+          type="button"
+          @click="logout"
+        >
+          Logout
+        </button>
+      </div>
       <h1 class="page-title">Customer Landing Page</h1>
       <p class="page-subtitle">
         Check your current order, review past orders, or start a new one.
@@ -97,11 +106,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed, onMounted, ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import { clearAuthUser, getAuthUser } from '../utils/auth'
 
 const USER_ID = 1
 const BASE = 'http://localhost:8000'
+const router = useRouter()
+const authUser = getAuthUser()
+const currentUsername = computed(() => authUser?.username ?? '')
 
 // const profile = ref<any>(null)
 // const activeOrder = ref<any>(null)
@@ -139,6 +152,11 @@ const profile = ref<CustomerProfile | null>(null)
 const activeOrder = ref<Order | null>(null)
 const pastOrders = ref<Order[]>([])
 
+function logout() {
+  clearAuthUser()
+  router.replace('/Login')
+}
+
 onMounted(async () => {
   try {
     const [profileData, activeData, pastData] = await Promise.all([
@@ -172,14 +190,38 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
 .welcome-banner {
-  margin: 0 0 12px 0;
+  margin: 0;
   text-align: center;
   font-size: 0.95rem;
   font-weight: 700;
   color: #4caf50;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+}
+
+.logout-btn {
+  border: none;
+  border-radius: 10px;
+  background: #111;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 16px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.logout-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
 }
 
 .page-title {
@@ -340,6 +382,11 @@ onMounted(async () => {
 }
 
 @media (max-width: 900px) {
+  .top-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .page-title {
     font-size: 2.3rem;
   }
