@@ -8,13 +8,10 @@ import DelivererPage from "./components/DelivererPage.vue";
 import SingleOrder from "./components/SingleOrder.vue";
 import HomeView from "./components/HomeView.vue"
 import ItemPage from "./components/ItemPage.vue"
-<<<<<<< HEAD
 import Login from "./components/Login.vue"
 import Register from "./components/Register.vue"
-=======
 import CustomerLandingPage from "./components/CustomerLandingPage.vue";
 
->>>>>>> fa19b05 (Add customer landing page prototype with routing)
 
 
 const router = createRouter({

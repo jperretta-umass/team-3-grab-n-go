@@ -60,7 +60,6 @@ def get_menu_items(db: Session = Depends(get_db)):
 def get_order(db: Session = Depends(get_db)):
     orders = db.query(Order).all()
     return {"orders": [order.to_dict() for order in orders]}
-<<<<<<< HEAD
 
 
 @app.post("/api/orders")
@@ -82,5 +81,3 @@ def create_order(
     db.commit()
     db.refresh(new_order)
     return {"message": "Order committed successfully", "order": new_order.to_dict()}
-=======
->>>>>>> 5c74acb (Add customer API endpoints and new order tables)

@@ -1,10 +1,4 @@
-<<<<<<< HEAD
 from datetime import datetime, timezone
-
-from app.database import Base, SessionLocal, engine
-from app.models import DiningHall, MenuItem, Order, OrderItem, User
-=======
-from datetime import datetime
 
 from app.database import Base, SessionLocal, engine
 from app.models import (
@@ -18,7 +12,6 @@ from app.models import (
     UnclaimedOrder,
     User,
 )
->>>>>>> 5c74acb (Add customer API endpoints and new order tables)
 
 
 def init_database():
@@ -123,44 +116,13 @@ def init_database():
         demo_user = User(
             username="demo_customer",
             email="demo_customer@example.com",
-<<<<<<< HEAD
             password_hash="string3214",
-=======
->>>>>>> 5c74acb (Add customer API endpoints and new order tables)
             phone_num="555-0100",
             has_deliverer_profile=False,
         )
         db.add(demo_user)
         db.flush()
 
-<<<<<<< HEAD
-        breakfast_burrito = (
-            db.query(MenuItem).filter(MenuItem.name == "Breakfast Burrito").first()
-        )
-        if breakfast_burrito is None:
-            raise RuntimeError("Failed to seed Breakfast Burrito menu item")
-
-        quantity = 3
-        line_total = breakfast_burrito.price * quantity
-
-        mock_order = Order(
-            user_id=demo_user.id,
-            dining_hall_id=breakfast_burrito.dining_hall_id,
-            total_price=line_total,
-            status="pending",
-            created_at=datetime.now(timezone.utc),
-        )
-        db.add(mock_order)
-        db.flush()
-
-        mock_order_item = OrderItem(
-            order_id=mock_order.id,
-            menu_item_id=breakfast_burrito.id,
-            quantity=quantity,
-        )
-
-        db.add(mock_order_item)
-=======
         db.add(CustomerProfile(user_id=demo_user.id))
         db.flush()
 
@@ -183,40 +145,23 @@ def init_database():
         )
         db.add(past_order)
         db.flush()
-        db.add(
-            OrderItem(
-                order_id=past_order.id, menu_item_id=breakfast_burrito.id, quantity=2
-            )
-        )
+        db.add(OrderItem(order_id=past_order.id, menu_item_id=breakfast_burrito.id, quantity=2))
         db.add(PastOrder(order_id=past_order.id))
 
         # Seed an active (in-delivery) order
         active_order = Order(
             user_id=demo_user.id,
-            dining_hall_id=(
-                veggie_wrap.dining_hall_id
-                if veggie_wrap
-                else breakfast_burrito.dining_hall_id
-            ),
-            total_price=(veggie_wrap.price if veggie_wrap else breakfast_burrito.price)
-            + (fruit_cup.price if fruit_cup else 0),
+            dining_hall_id=veggie_wrap.dining_hall_id if veggie_wrap else breakfast_burrito.dining_hall_id,
+            total_price=(veggie_wrap.price if veggie_wrap else breakfast_burrito.price) + (fruit_cup.price if fruit_cup else 0),
             status="active",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         db.add(active_order)
         db.flush()
         if veggie_wrap:
-            db.add(
-                OrderItem(
-                    order_id=active_order.id, menu_item_id=veggie_wrap.id, quantity=1
-                )
-            )
+            db.add(OrderItem(order_id=active_order.id, menu_item_id=veggie_wrap.id, quantity=1))
         if fruit_cup:
-            db.add(
-                OrderItem(
-                    order_id=active_order.id, menu_item_id=fruit_cup.id, quantity=1
-                )
-            )
+            db.add(OrderItem(order_id=active_order.id, menu_item_id=fruit_cup.id, quantity=1))
         db.add(CurrentOrder(order_id=active_order.id, deliverer_id=None))
 
         # Seed an unclaimed order
@@ -225,20 +170,17 @@ def init_database():
             dining_hall_id=breakfast_burrito.dining_hall_id,
             total_price=breakfast_burrito.price * 3,
             status="unclaimed",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
         db.add(unclaimed_order)
         db.flush()
-        db.add(
-            OrderItem(
-                order_id=unclaimed_order.id,
-                menu_item_id=breakfast_burrito.id,
-                quantity=3,
-                special_instructions="Extra hot sauce please",
-            )
-        )
+        db.add(OrderItem(
+            order_id=unclaimed_order.id,
+            menu_item_id=breakfast_burrito.id,
+            quantity=3,
+            special_instructions="Extra hot sauce please",
+        ))
         db.add(UnclaimedOrder(order_id=unclaimed_order.id))
->>>>>>> 5c74acb (Add customer API endpoints and new order tables)
 
         db.commit()
     except Exception as e:
@@ -250,236 +192,3 @@ def init_database():
 
 if __name__ == "__main__":
     init_database()
-<<<<<<< HEAD
-=======
-
-# menu_items = [
-#   {
-#     "id": 1,
-#     "name": 'Grilled Chicken Bowl',
-#     "mealType": ['lunch', 'dinner'],
-#     "diets": ['gluten-free'],
-#     "category": 'entree',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 2,
-#     "name": 'Veggie Wrap',
-#     "mealType": ['lunch'],
-#     "diets": ['vegetarian'],
-#     "category": 'entree',
-#     "diningHall": 'Berkshire',
-#   },
-#   {
-#     "id": 3,
-#     "name": 'Tofu Rice Plate',
-#     "mealType": ['dinner'],
-#     "diets": ['vegan', 'gluten-free'],
-#     "category": 'entree',
-#     "diningHall": 'Franklin',
-#   },
-#   {
-#     "id": 4,
-#     "name": 'Egg Sandwich',
-#     "mealType": ['breakfast'],
-#     "diets": ['vegetarian'],
-#     "category": 'entree',
-#     "diningHall": 'Worcester',
-#   },
-#   {
-#     "id": 5,
-#     "name": 'Turkey Panini',
-#     "mealType": ['lunch'],
-#     "diets": ['no-peanuts'],
-#     "category": 'entree',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 6,
-#     "name": 'Pasta Primavera',
-#     "mealType": ['dinner'],
-#     "diets": ['vegetarian'],
-#     "category": 'entree',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 7,
-#     "name": 'Breakfast Burrito',
-#     "mealType": ['breakfast'],
-#     "diets": ['no-peanuts'],
-#     "category": 'entree',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 101,
-#     "name": 'Fruit Cup',
-#     "mealType": ['breakfast', 'lunch', 'dinner'],
-#     "diets": ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-#     "category": 'snack',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 102,
-#     "name": 'Granola Bar',
-#     "mealType": ['breakfast', 'lunch'],
-#     "diets": ['vegetarian'],
-#     "category": 'snack',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 103,
-#     "name": 'Orange Juice',
-#     "mealType": ['breakfast'],
-#     "diets": ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-#     "category": 'drink',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 104,
-#     "name": 'Iced Tea',
-#     "mealType": ['lunch', 'dinner'],
-#     "diets": ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-#     "category": 'drink',
-#     "diningHall": 'Berkshire',
-#   },
-#   {
-#     "id": 105,
-#     "name": 'Yogurt Cup',
-#     "mealType": ['breakfast', 'lunch'],
-#     "diets": ['vegetarian', 'gluten-free'],
-#     "category": 'snack',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 106,
-#     "name": 'Trail Mix',
-#     "mealType": ['lunch', 'dinner'],
-#     "diets": ['vegetarian'],
-#     "category": 'snack',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 107,
-#     "name": 'Sparkling Water',
-#     "mealType": ['breakfast', 'lunch', 'dinner'],
-#     "diets": ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-#     "category": 'drink',
-#     "diningHall": 'Hampshire',
-#   },
-# ]
-
-# menu_items = [
-#   {
-#     "id": 1,
-#     "name": 'Grilled Chicken Bowl',
-#     "mealType": ['lunch', 'dinner'],
-#     "diets": ['gluten-free'],
-#     "category": 'entree',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 2,
-#     "name": 'Veggie Wrap',
-#     "mealType": ['lunch'],
-#     "diets": ['vegetarian'],
-#     "category": 'entree',
-#     "diningHall": 'Berkshire',
-#   },
-#   {
-#     "id": 3,
-#     "name": 'Tofu Rice Plate',
-#     "mealType": ['dinner'],
-#     "diets": ['vegan', 'gluten-free'],
-#     "category": 'entree',
-#     "diningHall": 'Franklin',
-#   },
-#   {
-#     "id": 4,
-#     "name": 'Egg Sandwich',
-#     "mealType": ['breakfast'],
-#     "diets": ['vegetarian'],
-#     "category": 'entree',
-#     "diningHall": 'Worcester',
-#   },
-#   {
-#     "id": 5,
-#     "name": 'Turkey Panini',
-#     "mealType": ['lunch'],
-#     "diets": ['no-peanuts'],
-#     "category": 'entree',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 6,
-#     "name": 'Pasta Primavera',
-#     "mealType": ['dinner'],
-#     "diets": ['vegetarian'],
-#     "category": 'entree',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 7,
-#     "name": 'Breakfast Burrito',
-#     "mealType": ['breakfast'],
-#     "diets": ['no-peanuts'],
-#     "category": 'entree',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 101,
-#     "name": 'Fruit Cup',
-#     "mealType": ['breakfast', 'lunch', 'dinner'],
-#     "diets": ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-#     "category": 'snack',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 102,
-#     "name": 'Granola Bar',
-#     "mealType": ['breakfast', 'lunch'],
-#     "diets": ['vegetarian'],
-#     "category": 'snack',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 103,
-#     "name": 'Orange Juice',
-#     "mealType": ['breakfast'],
-#     "diets": ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-#     "category": 'drink',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 104,
-#     "name": 'Iced Tea',
-#     "mealType": ['lunch', 'dinner'],
-#     "diets": ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-#     "category": 'drink',
-#     "diningHall": 'Berkshire',
-#   },
-#   {
-#     "id": 105,
-#     "name": 'Yogurt Cup',
-#     "mealType": ['breakfast', 'lunch'],
-#     "diets": ['vegetarian', 'gluten-free'],
-#     "category": 'snack',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 106,
-#     "name": 'Trail Mix',
-#     "mealType": ['lunch', 'dinner'],
-#     "diets": ['vegetarian'],
-#     "category": 'snack',
-#     "diningHall": 'Hampshire',
-#   },
-#   {
-#     "id": 107,
-#     "name": 'Sparkling Water',
-#     "mealType": ['breakfast', 'lunch', 'dinner'],
-#     "diets": ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
-#     "category": 'drink',
-#     "diningHall": 'Hampshire',
-#   },
-# ]
->>>>>>> 5c74acb (Add customer API endpoints and new order tables)
