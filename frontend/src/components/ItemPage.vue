@@ -18,26 +18,54 @@
 
       <div class="filter-group">
         <label for="mealType">Meal Type:</label>
-        <select id="mealType" class="green-select" v-model="selectedMeal">
-          <option value="">All</option>
-          <option value="breakfast">Breakfast</option>
-          <option value="lunch">Lunch</option>
-          <option value="dinner">Dinner</option>
+        <select
+          id="mealType"
+          v-model="selectedMeal"
+          class="green-select"
+        >
+          <option value="">
+            All
+          </option>
+          <option value="breakfast">
+            Breakfast
+          </option>
+          <option value="lunch">
+            Lunch
+          </option>
+          <option value="dinner">
+            Dinner
+          </option>
         </select>
       </div>
 
       <div class="filter-group">
         <label for="dietType">Diet:</label>
-        <select id="dietType" class="orange-select" v-model="selectedDiet">
-          <option value="">None</option>
-          <option value="no-peanuts">No Peanuts</option>
-          <option value="vegan">Vegan</option>
-          <option value="gluten-free">Gluten Free</option>
-          <option value="vegetarian">Vegetarian</option>
+        <select
+          id="dietType"
+          v-model="selectedDiet"
+          class="orange-select"
+        >
+          <option value="">
+            None
+          </option>
+          <option value="no-peanuts">
+            No Peanuts
+          </option>
+          <option value="vegan">
+            Vegan
+          </option>
+          <option value="gluten-free">
+            Gluten Free
+          </option>
+          <option value="vegetarian">
+            Vegetarian
+          </option>
         </select>
       </div>
 
-      <button class="cart-tab-btn">Open Cart</button>
+      <button class="cart-tab-btn">
+        Open Cart
+      </button>
     </section>
 
     <main class="content">
@@ -47,15 +75,25 @@
           <p v-if="loading">Loading menu...</p>
           <p v-if="error" class="error">{{ error }}</p>
           <ul v-if="filteredEntrees.length">
-            <li v-for="item in filteredEntrees" :key="item.id">
+            <li
+              v-for="item in filteredEntrees"
+              :key="item.id"
+            >
               <div class="item-info">
                 <span class="item-name">{{ item.name }} - ${{ item.price }}</span>
                 <span class="item-meta">{{ formatTags(item) }}</span>
               </div>
-              <button class="add-btn green" @click="addToCart(item)">Add</button>
+              <button
+                class="add-btn green"
+                @click="addToCart(item)"
+              >
+                Add
+              </button>
             </li>
           </ul>
-          <p v-else>No entrées match your filters.</p>
+          <p v-else>
+            No entrées match your filters.
+          </p>
         </div>
       </section>
 
@@ -63,16 +101,29 @@
         <h2>Cart: ${{ cartTotal }}</h2>
         <div class="panel-scroll">
           <ul v-if="cart.length">
-            <li v-for="item in cart" :key="item.cartId">
+            <li
+              v-for="item in cart"
+              :key="item.cartId"
+            >
               <span>{{ item.name }}</span>
-              <button class="remove-btn orange" @click="removeFromCart(item.cartId)">
+              <button
+                class="remove-btn orange"
+                @click="removeFromCart(item.cartId)"
+              >
                 Remove
               </button>
             </li>
           </ul>
-          <p v-else>Your cart is empty.</p>
+          <p v-else>
+            Your cart is empty.
+          </p>
         </div>
-        <button v-if="cart.length" class="add-btn green">Checkout</button>
+        <button
+          v-if="cart.length"
+          class="add-btn green"
+        >
+          Checkout
+        </button>
       </section>
     </main>
 
@@ -80,15 +131,25 @@
       <h2>Snacks and Drinks</h2>
       <div class="panel-scroll">
         <ul v-if="filteredSnacksAndDrinks.length">
-          <li v-for="item in filteredSnacksAndDrinks" :key="item.id">
+          <li
+            v-for="item in filteredSnacksAndDrinks"
+            :key="item.id"
+          >
             <div class="item-info">
               <span class="item-name">{{ item.name }}</span>
               <span class="item-meta">{{ formatTags(item) }}</span>
             </div>
-            <button class="add-btn green" @click="addToCart(item)">Add</button>
+            <button
+              class="add-btn green"
+              @click="addToCart(item)"
+            >
+              Add
+            </button>
           </li>
         </ul>
-        <p v-else>No snacks or drinks match your filters.</p>
+        <p v-else>
+          No snacks or drinks match your filters.
+        </p>
       </div>
     </section>
   </div>

@@ -36,11 +36,6 @@ app.include_router(auth_router)
 app.include_router(customer.router)
 
 
-@app.on_event("startup")
-def startup_event():
-    init_database()
-
-
 @app.get("/")
 def root():
     return {"message": "Hello"}

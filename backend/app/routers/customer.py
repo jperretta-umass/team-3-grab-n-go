@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -22,6 +22,7 @@ from app.schemas_customer import (
     CartItemOut,
     CartItemUpdate,
     CartOut,
+    OrderItemIn,
     OrderItemOut,
     OrderOut,
     PlaceOrderIn,
@@ -70,7 +71,7 @@ def _order_to_out(order: Order) -> OrderOut:
 
 
 def _cart_to_out(cart: Cart) -> CartOut:
-    items_out = []
+    items_out: List[CartItemOut] = []
     total = 0.0
     for ci in cart.items:
         subtotal = ci.menu_item.price * ci.quantity
@@ -165,7 +166,7 @@ def place_order(user_id: int, body: PlaceOrderIn, db: Session = Depends(get_db))
         raise HTTPException(status_code=404, detail="Dining hall not found")
 
     total = 0.0
-    resolved = []
+    resolved: List[tuple[MenuItem, OrderItemIn]] = []
     for item_in in body.items:
         mi = db.query(MenuItem).filter(MenuItem.id == item_in.menu_item_id).first()
         if not mi:
@@ -180,7 +181,7 @@ def place_order(user_id: int, body: PlaceOrderIn, db: Session = Depends(get_db))
         dining_hall_id=body.dining_hall_id,
         total_price=round(total, 2),
         status="unclaimed",
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
     )
     db.add(order)
     db.flush()
