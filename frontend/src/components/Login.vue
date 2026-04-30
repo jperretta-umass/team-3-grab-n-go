@@ -3,9 +3,14 @@
   <main class="login-page">
     <section class="login-card">
       <h2>Welcome Back</h2>
-      <p class="subtitle">Login to continue</p>
+      <p class="subtitle">
+        Login to continue
+      </p>
 
-      <form class="form" @submit.prevent="onSubmit">
+      <form
+        class="form"
+        @submit.prevent="onSubmit"
+      >
         <div class="field">
           <label for="email">Email</label>
           <input
@@ -30,13 +35,26 @@
           >
         </div>
 
-        <p v-if="error" class="error">{{ error }}</p>
+        <p
+          v-if="error"
+          class="error"
+        >
+          {{ error }}
+        </p>
 
-        <button type="submit" class="login-button" :disabled="loading">
+        <button
+          type="submit"
+          class="login-button"
+          :disabled="loading"
+        >
           {{ loading ? 'Signing in...' : 'Login' }}
         </button>
 
-        <button type="button" class="register-button" @click="goToRegister">
+        <button
+          type="button"
+          class="register-button"
+          @click="goToRegister"
+        >
           Need an account? Register
         </button>
       </form>
