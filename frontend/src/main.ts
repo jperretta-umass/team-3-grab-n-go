@@ -10,6 +10,7 @@ import HomeView from "./components/HomeView.vue"
 import ItemPage from "./components/ItemPage.vue"
 import Login from "./components/Login.vue"
 import Register from "./components/Register.vue"
+import UserProfile from "./components/UserProfile.vue"
 
 
 const router = createRouter({
@@ -20,7 +21,8 @@ const router = createRouter({
         {path: "/SingleOrder", component: SingleOrder },
         {path: "/ItemPage", component: ItemPage },
         {path: "/Register", component: Register },
-        {path: "/Login", component: Login }
+        {path: "/Login", component: Login },
+        {path: "/UserProfile", component: UserProfile }
     ]
 });
 
