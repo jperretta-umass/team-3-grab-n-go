@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 
-const user = ref<any>(null);
+const user = ref(null);
 const message = ref("");
 const oldPassword = ref("");
 const newPassword = ref("");
@@ -111,16 +111,22 @@ onMounted(() => {
           required
         >
 
-        <button type="submit">Save New Password</button>
+        <button type="submit">
+          Save New Password
+        </button>
       </form>
-      <button @click="handleLogout">Logout</button>
+      <button @click="handleLogout">
+        Logout
+      </button>
     </div>
 
     <div v-else>
       <p>Not logged in</p>
     </div>
 
-    <p v-if="message">{{ message }}</p>
+    <p v-if="message">
+      {{ message }}
+    </p>
   </div>
 </template>
 

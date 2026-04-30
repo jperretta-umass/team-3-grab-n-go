@@ -3,46 +3,96 @@
   <main class="register-page">
     <section class="register-card">
       <h2>Create Account</h2>
-      <p class="subtitle">Register to start using My Delivery App</p>
+      <p class="subtitle">
+        Register to start using My Delivery App
+      </p>
 
-      <form class="form" @submit.prevent="onSubmit">
+      <form
+        class="form"
+        @submit.prevent="onSubmit"
+      >
         <div class="field">
           <label for="username">Username</label>
-          <input id="username" v-model="username" type="text" placeholder="Enter username" autocomplete="username">
+          <input
+            id="username"
+            v-model="username"
+            type="text"
+            placeholder="Enter username"
+            autocomplete="username"
+          >
         </div>
 
         <div class="field">
           <label for="email">Email</label>
-          <input id="email" v-model="email" type="email" placeholder="Enter email" autocomplete="email">
+          <input
+            id="email"
+            v-model="email"
+            type="email"
+            placeholder="Enter email"
+            autocomplete="email"
+          >
         </div>
 
         <div class="field">
           <label for="phone_num">Phone Number</label>
-          <input id="phone_num" v-model="phone_num" type="text" placeholder="Enter phone number">
+          <input
+            id="phone_num"
+            v-model="phone_num"
+            type="text"
+            placeholder="Enter phone number"
+          >
         </div>
 
         <label class="checkbox-field">
-          <input v-model="isDeliverer" type="checkbox">
+          <input
+            v-model="isDeliverer"
+            type="checkbox"
+          >
           Register as a deliverer
         </label>
 
         <div class="field">
           <label for="password">Password</label>
-          <input id="password" v-model="password" type="password" placeholder="Enter password" autocomplete="new-password">
+          <input
+            id="password"
+            v-model="password"
+            type="password"
+            placeholder="Enter password"
+            autocomplete="new-password"
+          >
         </div>
 
         <div class="field">
           <label for="confirmPassword">Confirm Password</label>
-          <input id="confirmPassword" v-model="confirmPassword" type="password" placeholder="Re-enter password" autocomplete="new-password">
+          <input
+            id="confirmPassword"
+            v-model="confirmPassword"
+            type="password"
+            placeholder="Re-enter password"
+            autocomplete="new-password"
+          >
         </div>
 
-        <p v-if="error" class="error">{{ error }}</p>
+        <p
+          v-if="error"
+          class="error"
+        >
+          {{ error }}
+        </p>
 
-        <button type="submit" class="register-button" :disabled="loading">
+        <button
+          type="submit"
+          class="register-button"
+          :disabled="loading"
+        >
           {{ loading ? 'Creating account...' : 'Register Account' }}
         </button>
 
-        <button type="button" class="login-button" @click="router.push('/login')">
+        <button
+          type="button"
+          class="login-button"
+          @click="router.push('/login')"
+        >
           Already have an account? Login
         </button>
       </form>
