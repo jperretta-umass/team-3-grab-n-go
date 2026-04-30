@@ -4,7 +4,7 @@
       <p class="welcome-banner">
         Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
       </p>
-      <h1 class="page-title">Customer Landing Page</h1>
+      <h1 class="page-title">Deliverer Landing Page</h1>
       <p class="page-subtitle">
         Check your current order, review past orders, or start a new one.
       </p>
@@ -13,28 +13,18 @@
         <div class="panel current-order-panel">
           <div class="panel-header">
             <h2>Current Order Status</h2>
-            <span class="status-pill">{{ activeOrder ? activeOrder.status : 'None' }}</span>
+            <span class="status-pill">On The Way</span>
           </div>
 
           <div class="order-details">
-            <template v-if="activeOrder">
-              <p><strong>Dining Hall:</strong> {{ activeOrder.dining_hall }}</p>
-              <p><strong>Order #:</strong> {{ activeOrder.id }}</p>
-              <p><strong>Items:</strong> {{ activeOrder.items.map((i) => i.name).join(', ') }}</p>
-              <p><strong>Total:</strong> ${{ activeOrder.total_price.toFixed(2) }}</p>
-            </template>
-            <p v-else>
-              No active orders.
-            </p>
+            <p><strong>Dining Hall:</strong> Hampshire</p>
+            <p><strong>Order #:</strong> 1024</p>
+            <p><strong>Pickup Estimate:</strong> 10–15 min</p>
+            <p><strong>Items:</strong> Grilled Chicken Bowl, Fruit Cup</p>
           </div>
 
           <div class="panel-actions">
-            <button
-              class="secondary-btn"
-              :disabled="!activeOrder"
-            >
-              View Current Order
-            </button>
+            <button class="secondary-btn">View Current Order</button>
           </div>
         </div>
 
@@ -42,20 +32,10 @@
           <h2>Quick Actions</h2>
 
           <div class="action-stack">
-            <button class="action-btn neutral-btn">
-              Past Orders ({{ profile ? profile.past_orders_count : 0 }})
-            </button>
-            <button
-              class="action-btn neutral-btn"
-              :disabled="!activeOrder"
-            >
-              Track Current Order
-            </button>
-            <RouterLink
-              to="/ItemPage"
-              class="action-btn primary-btn"
-            >
-              Start New Order
+            <button class="action-btn neutral-btn">Past Orders</button>
+            <button class="action-btn neutral-btn">Track Current Order</button>
+            <RouterLink to="/DelivererPage" class="action-btn primary-btn">
+              Select New Deliverer Order
             </RouterLink>
           </div>
         </div>
@@ -63,32 +43,32 @@
 
       <section class="panel history-panel">
         <div class="panel-header">
-          <h2>Recent Orders</h2>
+          <h2>Recently Delivered Orders</h2>
         </div>
 
         <div class="history-list">
-          <p
-            v-if="pastOrders.length === 0"
-            style="color: #666;"
-          >
-            No past orders yet.
-          </p>
-          <div
-            v-for="order in pastOrders"
-            :key="order.id"
-            class="history-item"
-          >
+          <div class="history-item">
             <div>
-              <p class="history-title">
-                {{ order.dining_hall }} Dining Hall
-              </p>
-              <p class="history-meta">
-                Order #{{ order.id }} • {{ order.status }}
-              </p>
+              <p class="history-title">Berkshire Dining Hall</p>
+              <p class="history-meta">Order #1018 • Completed</p>
             </div>
-            <button class="small-btn">
-              Reorder
-            </button>
+            <button class="small-btn">View</button>
+          </div>
+
+          <div class="history-item">
+            <div>
+              <p class="history-title">Franklin Dining Hall</p>
+              <p class="history-meta">Order #1009 • Completed</p>
+            </div>
+            <button class="small-btn">View</button>
+          </div>
+
+          <div class="history-item">
+            <div>
+              <p class="history-title">Worcester Dining Hall</p>
+              <p class="history-meta">Order #998 • Cancelled</p>
+            </div>
+            <button class="small-btn">View</button>
           </div>
         </div>
       </section>
@@ -97,62 +77,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed } from 'vue'
+import { getAuthUser } from '../utils/auth'
 
-const USER_ID = 1
-const BASE = 'http://localhost:8000'
-
-// const profile = ref<any>(null)
-// const activeOrder = ref<any>(null)
-// const pastOrders = ref<any[]>([])
-
-type OrderItem = {
-  menu_item_id: number
-  name: string
-  price: number
-  quantity: number
-  special_instructions: string | null
-  delivery_instructions: string | null
-}
-
-type Order = {
-  id: number
-  dining_hall: string
-  total_price: number
-  status: string
-  created_at: string
-  items: OrderItem[]
-}
-
-type CustomerProfile = {
-  user_id: number
-  username: string
-  email: string
-  phone_num: string | null
-  has_deliverer_profile: boolean
-  active_orders_count: number
-  past_orders_count: number
-}
-
-const profile = ref<CustomerProfile | null>(null)
-const activeOrder = ref<Order | null>(null)
-const pastOrders = ref<Order[]>([])
-
-onMounted(async () => {
-  try {
-    const [profileData, activeData, pastData] = await Promise.all([
-      fetch(`${BASE}/api/customers/${USER_ID}/profile`).then(r => r.json()),
-      fetch(`${BASE}/api/customers/${USER_ID}/active-orders`).then(r => r.json()),
-      fetch(`${BASE}/api/customers/${USER_ID}/past-orders`).then(r => r.json()),
-    ])
-    profile.value = profileData
-    activeOrder.value = activeData.length > 0 ? activeData[0] : null
-    pastOrders.value = pastData
-  } catch (e) {
-    console.error('Failed to load customer data', e)
-  }
-})
+const authUser = getAuthUser()
+const currentUsername = computed(() => authUser?.username ?? '')
 </script>
 
 <style scoped>

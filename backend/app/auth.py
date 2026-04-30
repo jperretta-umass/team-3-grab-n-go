@@ -11,6 +11,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+def normalize_email(email: str) -> str:
+    return email.strip().lower()
+
+
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
@@ -21,7 +25,8 @@ def verify_password(plain_password: str, password_hash: str) -> bool:
 
 @router.post("/login", response_model=AuthResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == payload.email).first()
+    normalized_email = normalize_email(str(payload.email))
+    user = db.query(User).filter(User.email == normalized_email).first()
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
@@ -39,7 +44,8 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/register", response_model=AuthResponse)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == payload.email).first()
+    normalized_email = normalize_email(str(payload.email))
+    user = db.query(User).filter(User.email == normalized_email).first()
 
     if user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -52,7 +58,7 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 
     user = User(
         username=payload.username,
-        email=payload.email,
+        email=normalized_email,
         phone_num=payload.phone_num,
         has_deliverer_profile=payload.is_deliverer,
         password_hash=get_password_hash(payload.password),

@@ -163,7 +163,7 @@ import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntre
 const router = useRouter()
 
 function goHome() {
-  router.push('/')
+  router.push('/CustomerLanding')
 }
 
 onMounted(fetchMenuItems)
@@ -211,6 +211,9 @@ onMounted(fetchMenuItems)
   padding: 10px 14px;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .back-btn,
