@@ -1,7 +1,17 @@
 from datetime import datetime, timezone
 
 from app.database import Base, SessionLocal, engine
-from app.models import DiningHall, MenuItem, Order, OrderItem, User
+from app.models import (
+    CurrentOrder,
+    CustomerProfile,
+    DiningHall,
+    MenuItem,
+    Order,
+    OrderItem,
+    PastOrder,
+    UnclaimedOrder,
+    User,
+)
 
 
 def init_database():
@@ -113,32 +123,83 @@ def init_database():
         db.add(demo_user)
         db.flush()
 
+        db.add(CustomerProfile(user_id=demo_user.id))
+        db.flush()
+
         breakfast_burrito = (
             db.query(MenuItem).filter(MenuItem.name == "Breakfast Burrito").first()
         )
+        veggie_wrap = db.query(MenuItem).filter(MenuItem.name == "Veggie Wrap").first()
+        fruit_cup = db.query(MenuItem).filter(MenuItem.name == "Fruit Cup").first()
+
         if breakfast_burrito is None:
             raise RuntimeError("Failed to seed Breakfast Burrito menu item")
 
-        quantity = 3
-        line_total = breakfast_burrito.price * quantity
-
-        mock_order = Order(
+        # Seed a past (completed) order
+        past_order = Order(
             user_id=demo_user.id,
             dining_hall_id=breakfast_burrito.dining_hall_id,
-            total_price=line_total,
-            status="pending",
+            total_price=breakfast_burrito.price * 2,
+            status="completed",
+            created_at=datetime(2026, 4, 20, 12, 0, 0),
+        )
+        db.add(past_order)
+        db.flush()
+        db.add(
+            OrderItem(
+                order_id=past_order.id, menu_item_id=breakfast_burrito.id, quantity=2
+            )
+        )
+        db.add(PastOrder(order_id=past_order.id))
+
+        # Seed an active (in-delivery) order
+        active_order = Order(
+            user_id=demo_user.id,
+            dining_hall_id=(
+                veggie_wrap.dining_hall_id
+                if veggie_wrap
+                else breakfast_burrito.dining_hall_id
+            ),
+            total_price=(veggie_wrap.price if veggie_wrap else breakfast_burrito.price)
+            + (fruit_cup.price if fruit_cup else 0),
+            status="active",
             created_at=datetime.now(timezone.utc),
         )
-        db.add(mock_order)
+        db.add(active_order)
         db.flush()
+        if veggie_wrap:
+            db.add(
+                OrderItem(
+                    order_id=active_order.id, menu_item_id=veggie_wrap.id, quantity=1
+                )
+            )
+        if fruit_cup:
+            db.add(
+                OrderItem(
+                    order_id=active_order.id, menu_item_id=fruit_cup.id, quantity=1
+                )
+            )
+        db.add(CurrentOrder(order_id=active_order.id, deliverer_id=None))
 
-        mock_order_item = OrderItem(
-            order_id=mock_order.id,
-            menu_item_id=breakfast_burrito.id,
-            quantity=quantity,
+        # Seed an unclaimed order
+        unclaimed_order = Order(
+            user_id=demo_user.id,
+            dining_hall_id=breakfast_burrito.dining_hall_id,
+            total_price=breakfast_burrito.price * 3,
+            status="unclaimed",
+            created_at=datetime.now(timezone.utc),
         )
-
-        db.add(mock_order_item)
+        db.add(unclaimed_order)
+        db.flush()
+        db.add(
+            OrderItem(
+                order_id=unclaimed_order.id,
+                menu_item_id=breakfast_burrito.id,
+                quantity=3,
+                special_instructions="Extra hot sauce please",
+            )
+        )
+        db.add(UnclaimedOrder(order_id=unclaimed_order.id))
 
         db.commit()
     except Exception as e:
