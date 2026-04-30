@@ -168,7 +168,7 @@ import { selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSn
 const router = useRouter()
 
 function goHome() {
-  router.push('/')
+  router.push('/CustomerLanding')
 }
 
 function startOver() {
