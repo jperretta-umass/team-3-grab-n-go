@@ -53,14 +53,32 @@
           </div>
 
           <div class="start-order-section">
-            <h3 class="start-order-title">Start Order</h3>
+            <h3 class="start-order-title">
+              Start Order
+            </h3>
             <label class="hall-label">Dining Hall</label>
-            <select v-model="hallSelection" class="hall-select">
-              <option value="" disabled>Select a dining hall</option>
-              <option value="Hampshire">Hampshire</option>
-              <option value="Berkshire">Berkshire</option>
-              <option value="Franklin">Franklin</option>
-              <option value="Worcester">Worcester</option>
+            <select
+              v-model="hallSelection"
+              class="hall-select"
+            >
+              <option
+                value=""
+                disabled
+              >
+                Select a dining hall
+              </option>
+              <option value="Hampshire">
+                Hampshire
+              </option>
+              <option value="Berkshire">
+                Berkshire
+              </option>
+              <option value="Franklin">
+                Franklin
+              </option>
+              <option value="Worcester">
+                Worcester
+              </option>
             </select>
             <button
               class="action-btn start-order-btn"
