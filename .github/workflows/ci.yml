@@ -77,6 +77,12 @@ jobs:
           #cache: "npm"
           #cache-dependency-path: end2endTest/package-lock.json
 
+      - name: Create dummy secrets for CI
+        run: |
+          mkdir -p secrets
+          echo "sk_test_dummy_stripe_key" > secrets/stripe_secret_key.txt
+          echo "whsec_test_dummy_webhook_secret" > secrets/stripe_webhook_secret.txt
+          
       - name: Install Playwright
         working-directory: end2endTest
         run: |
