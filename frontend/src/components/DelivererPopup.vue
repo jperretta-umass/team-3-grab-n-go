@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { computed, onMounted } from "vue";
 import {Order} from "./displayScripts/Order"
+import { fetchMenuItems, items, MenuItem } from "./displayScripts/menuItems";
 
-defineProps<{
+const props = defineProps<{
   orderObj: Order
 }>()
 
@@ -25,6 +27,22 @@ function formatCreatedAt(value: string) {
   }).format(date)
 }
 
+function matchItems(item : MenuItem) : boolean {
+  if(item.diningHall === props.orderObj.dining_hall) {
+    for(const currentUserItem of props.orderObj.items){
+      if(currentUserItem.menu_item_id === item.id) return true;
+    }
+  }
+  return false;
+}
+
+const currentOrderItems = computed(() => items.value.filter(matchItems));
+
+function itemQuantity(itemId: number): number {
+  return props.orderObj.items.find((item) => item.menu_item_id === itemId)?.quantity ?? 0
+}
+
+onMounted(fetchMenuItems)
 </script>
 
 <template>
@@ -55,11 +73,19 @@ function formatCreatedAt(value: string) {
     </p>
     <ul class="list-disc pl-5">
       <li
-        v-for="item in orderObj.items"
-        :key="item.menu_item_id"
+        v-for="item in currentOrderItems"
+        :key="item.id"
       >
-        Menu Item {{ item.menu_item_id }} x {{ item.quantity }}
+        {{ item.name }} x {{ itemQuantity(item.id) }}
       </li>
+      <template v-if="currentOrderItems.length === 0">
+        <li
+          v-for="item in orderObj.items"
+          :key="item.menu_item_id"
+        >
+          Menu Item {{ item.menu_item_id }} x {{ item.quantity }}
+        </li>
+      </template>
     </ul>
   </div>
   <nav class="flex gap-3 justify-center pt-3">
