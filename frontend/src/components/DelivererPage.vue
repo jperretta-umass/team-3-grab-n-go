@@ -141,13 +141,9 @@ onMounted(fetchOrders)
             @click="col[i - 1] && handleCellClick(col[i - 1], i - 1, j)"
           >
             <div v-if="col[i - 1]" class="leading-tight">
-              <div>Order #{{ col[i - 1].id }}</div>
               <div>User {{ col[i - 1].user_id }}</div>
               <div>{{ col[i - 1].dining_hall }}</div>
               <div>${{ col[i - 1].total_price.toFixed(2) }}</div>
-              <div>{{ col[i - 1].status }}</div>
-              <div>{{ col[i - 1].created_at }}</div>
-              <div>Items: {{ col[i - 1].items.length }}</div>
             </div>
             <span v-else> </span>
           </td>

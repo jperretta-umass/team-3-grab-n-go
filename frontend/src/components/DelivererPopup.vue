@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import {Order} from "./displayScripts/Order"
+import { items, MealType, MenuItem, DietType, DiningHall } from "./displayScripts/menuItems";
 
-defineProps<{
+const props = defineProps<{
   orderObj: Order
 }>()
 
@@ -10,6 +11,17 @@ defineEmits<{
   accept: []
 }>()
 
+function matchItems(item : MenuItem) : boolean {
+  if(item.diningHall === props.orderObj.dining_hall) {
+    for(const currentUserItem of props.orderObj.items){
+      if(currentUserItem.menu_item_id === item.id) return true;
+    }
+  }
+  return false;
+}
+
+const currentOrderItems = items.value.filter(matchItems);
+
 </script>
 
 <template>
@@ -17,13 +29,13 @@ defineEmits<{
   <p class="pt-1"> User ID: {{ orderObj.user_id }} </p>
   <p class="pt-1"> Dining Hall: {{ orderObj.dining_hall }} </p>
   <p class="pt-1"> Status: {{ orderObj.status }} </p>
-  <p class="pt-1"> Created At: {{ orderObj.created_at }} </p>
+  <p class="pt-1"> Created At: {{ orderObj.created_at.slice(11,16) }} </p> <!--Slice to keep time just in hh:mm format, no other data needed-->
   <p class="pt-1"> Total Price: ${{ orderObj.total_price }} </p>
   <div class="pt-1">
     <p class="font-semibold">Items:</p>
     <ul class="list-disc pl-5">
-      <li v-for="item in orderObj.items" :key="item.menu_item_id">
-        Menu Item {{ item.menu_item_id }} x {{ item.quantity }}
+      <li v-for="curItem in orderObj.items" :key="curItem.menu_item_id">
+        {{ currentOrderItems }} x {{ curItem.quantity }}
       </li>
     </ul>
   </div>
