@@ -7,12 +7,25 @@ services:
     depends_on:
       - backend
       - frontend
+  stripe-tunnel:
+    image: stripe/stripe-cli:latest
+    entrypoint: >
+      /bin/sh -c "stripe listen --forward-to backend:8000/api/payments/webhook --api-key $$(cat /run/secrets/stripe_secret_key | xargs)"
+    depends_on:
+      - backend
+    secrets: 
+      - stripe_secret_key
 
   backend:
     build: ./backend
     env_file: .env
+    secrets : 
+      - stripe_secret_key
+      - stripe_webhook_secret
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL}
+      - STRIPE_SECRET_KEY_FILE=/run/secrets/stripe_secret_key
+      - STRIPE_WEBHOOK_SECRET_FILE=/run/secrets/stripe_webhook_secret
     volumes:
       - ./backend:/app
     command: python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
@@ -24,7 +37,7 @@ services:
   
       db:
         condition: service_healthy
-
+    
   frontend:
     build: 
       context: ./frontend
@@ -49,4 +62,10 @@ services:
 
 volumes:
   pgdata:
+
+secrets:
+  stripe_secret_key:
+    file: ./secrets/stripe_secret_key.txt
+  stripe_webhook_secret:
+    file: ./secrets/stripe_webhook_secret.txt
   
