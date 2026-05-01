@@ -9,9 +9,9 @@ from app.auth import router as auth_router
 from app.database import get_db
 from app.init_db import init_database
 from app.models import MenuItem, Order
+from app.payments import router as payments_router
 from app.routers import customer
 
-from app.payments import router as payments_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -37,6 +37,7 @@ app.include_router(auth_router)
 app.include_router(customer.router)
 
 app.include_router(payments_router)
+
 
 @app.get("/")
 def root():
