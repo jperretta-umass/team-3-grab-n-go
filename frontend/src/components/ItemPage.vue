@@ -1,9 +1,19 @@
 <template>
   <div class="page">
     <header class="top-bar">
-      <button class="back-btn" @click="goHome">&lt; BACK</button>
+      <button
+        class="back-btn"
+        @click="goHome"
+      >
+        &lt; BACK
+      </button>
       <h1>Grab &amp; Go Menu</h1>
-      <button class="start-over-btn" @click="startOver">Start Over</button>
+      <button
+        class="start-over-btn"
+        @click="startOver"
+      >
+        Start Over
+      </button>
     </header>
 
     <section class="filters">
@@ -65,8 +75,15 @@
       <section class="panel fixed-panel">
         <h2>Entrées</h2>
         <div class="panel-scroll">
-          <p v-if="loading">Loading menu...</p>
-          <p v-if="error" class="error">{{ error }}</p>
+          <p v-if="loading">
+            Loading menu...
+          </p>
+          <p
+            v-if="error"
+            class="error"
+          >
+            {{ error }}
+          </p>
           <ul v-if="filteredEntrees.length">
             <li
               v-for="item in filteredEntrees"
@@ -151,7 +168,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
+import { selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 
 const router = useRouter()
 
