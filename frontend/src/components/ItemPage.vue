@@ -3,14 +3,7 @@
     <header class="top-bar">
       <button class="back-btn" @click="goHome">&lt; BACK</button>
       <h1>Grab &amp; Go Menu</h1>
-      <div class="hall">Dining Hall:
-        <select class="red-select" v-model="selectedHall">
-          <option value="Hampshire">Hampshire</option>
-          <option value="Berkshire">Berkshire</option>
-          <option value="Franklin">Franklin</option>
-          <option value="Worcester">Worcester</option>
-        </select>
-      </div>
+      <button class="start-over-btn" @click="startOver">Start Over</button>
     </header>
 
     <section class="filters">
@@ -166,6 +159,10 @@ function goHome() {
   router.push('/')
 }
 
+function startOver() {
+  router.push('/customer')
+}
+
 onMounted(fetchMenuItems)
 </script>
 
@@ -198,14 +195,11 @@ onMounted(fetchMenuItems)
   font-size: 1.7rem;
 }
 
-.hall {
-  font-weight: 600;
-}
-
 .back-btn,
 .cart-tab-btn,
 .add-btn,
-.remove-btn {
+.remove-btn,
+.start-over-btn {
   border: none;
   border-radius: 10px;
   padding: 10px 14px;
@@ -214,7 +208,8 @@ onMounted(fetchMenuItems)
 }
 
 .back-btn,
-.cart-tab-btn {
+.cart-tab-btn,
+.start-over-btn {
   background: #e4e4e4;
 }
 
@@ -270,14 +265,6 @@ onMounted(fetchMenuItems)
 .orange-select {
   background: #f39c12;
   color: white;
-}
-
-.red-select {
-  background: red;
-  color: white;
-  font-weight: 600;
-  font-size: 1.1rem;
-  cursor: pointer;
 }
 
 .content {
