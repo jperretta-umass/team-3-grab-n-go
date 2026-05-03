@@ -1,33 +1,28 @@
-import asyncio
 from contextlib import asynccontextmanager
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 
 from app.auth import router as auth_router
-from app.database import get_db
+from app.database import get_db, SessionLocal
 from app.init_db import init_database
-from app.models import MenuItem, Order
+from app.models import DiningHall, MenuItem, Order
 from app.routers import customer
 from app.routers.dining_menu import router as dining_menu_router
-from app.services import dining_scraper, menu_cache
-from fastapi import Body, Depends, FastAPI
+from app.services.menu_sync import sync_today_menu_to_db
+from fastapi import Body, Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-
-
-async def _warm_menu_cache() -> None:
-    today = date.today().strftime("%m/%d/%Y")
-    for hall in dining_scraper.HALL_IDS:
-        try:
-            meals = await dining_scraper.fetch_menu(hall, today)
-            menu_cache.set(hall, today, meals)
-        except Exception:
-            pass
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_database()
-    asyncio.create_task(_warm_menu_cache())
+    db = SessionLocal()
+    try:
+        await sync_today_menu_to_db(db)
+    except Exception as e:
+        print(f"Menu sync failed on startup: {e}")
+    finally:
+        db.close()
     yield
 
 
@@ -61,9 +56,14 @@ def health():
 
 
 @app.get("/api/menu-items")
-def get_menu_items(db: Session = Depends(get_db)):
-    menu_items = db.query(MenuItem).all()
-    return {"menu_items": [item.to_dict() for item in menu_items]}
+def get_menu_items(
+    hall: str | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    q = db.query(MenuItem)
+    if hall:
+        q = q.join(DiningHall).filter(DiningHall.name.ilike(hall))
+    return {"menu_items": [item.to_dict() for item in q.all()]}
 
 
 @app.get("/api/orders")
