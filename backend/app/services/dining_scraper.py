@@ -17,12 +17,16 @@ _HEADERS = {
 }
 
 
-async def fetch_menu(hall: str, date_str: str) -> dict:
+async def fetch_menu(hall: str, date_str: str | None = None) -> dict:
     """
     Returns parsed menu for a hall on a given date.
-    date_str must be MM/DD/YYYY.
+    date_str must be MM/DD/YYYY. Defaults to today if omitted.
     Raises ValueError for unknown hall, httpx.HTTPError on network failure.
     """
+    if date_str is None:
+        from datetime import date
+        date_str = date.today().strftime("%m/%d/%Y")
+
     tid = HALL_IDS.get(hall.lower())
     if tid is None:
         raise ValueError(f"Unknown hall '{hall}'. Valid options: {list(HALL_IDS)}")

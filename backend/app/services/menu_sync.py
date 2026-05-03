@@ -1,0 +1,107 @@
+import asyncio
+
+from app.models import DiningHall, MenuItem
+from app.services.dining_scraper import HALL_IDS, fetch_menu
+from app.services import menu_cache
+from sqlalchemy.orm import Session
+
+_SNACK_KEYWORDS = ("dessert", "pastry", "fruit", "yogurt", "snack")
+_DRINK_KEYWORDS = ("beverage", "drink", "juice", "coffee", "tea", "milk")
+
+
+def _category_from_station(station: str) -> str:
+    low = station.lower()
+    if any(k in low for k in _DRINK_KEYWORDS):
+        return "drink"
+    if any(k in low for k in _SNACK_KEYWORDS):
+        return "snack"
+    return "entree"
+
+
+def _today_str() -> str:
+    from datetime import date
+    return date.today().strftime("%m/%d/%Y")
+
+
+async def sync_today_menu_to_db(db: Session) -> None:
+    """
+    Scrape today's menu for all halls and replace MenuItem rows in the DB.
+    DiningHall rows must already exist (created by init_database).
+    """
+    hall_rows: dict[str, DiningHall] = {
+        row.name.lower(): row
+        for row in db.query(DiningHall).all()
+    }
+
+    results = await asyncio.gather(
+        *[fetch_menu(hall) for hall in HALL_IDS],
+        return_exceptions=True,
+    )
+
+    menus: dict[str, dict] = {
+        hall: result
+        for hall, result in zip(HALL_IDS, results)
+        if not isinstance(result, Exception)
+    }
+
+    if not menus:
+        return
+
+    hall_ids_to_clear = [
+        hall_rows[hall].id
+        for hall in menus
+        if hall in hall_rows
+    ]
+    if hall_ids_to_clear:
+        from app.models import OrderItem
+        # Clear order items that reference menu items we're about to replace
+        stale_ids = [
+            mi.id for mi in db.query(MenuItem.id).filter(
+                MenuItem.dining_hall_id.in_(hall_ids_to_clear)
+            )
+        ]
+        if stale_ids:
+            db.query(OrderItem).filter(
+                OrderItem.menu_item_id.in_(stale_ids)
+            ).delete(synchronize_session=False)
+        db.query(MenuItem).filter(
+            MenuItem.dining_hall_id.in_(hall_ids_to_clear)
+        ).delete(synchronize_session=False)
+
+    today = _today_str()
+    new_items: list[MenuItem] = []
+
+    for hall, meals in menus.items():
+        dh = hall_rows.get(hall)
+        if not dh:
+            continue
+
+        # name → MenuItem so we can append meal periods for duplicates
+        seen: dict[str, MenuItem] = {}
+
+        for meal_name, stations in meals.items():
+            for station, item_names in stations.items():
+                category = _category_from_station(station)
+                for name in item_names:
+                    key = name.lower()
+                    if key in seen:
+                        mi = seen[key]
+                        if meal_name not in mi.meal_type:
+                            mi.meal_type = mi.meal_type + [meal_name]
+                        continue
+
+                    mi = MenuItem(
+                        name=name,
+                        meal_type=[meal_name],
+                        diets=[],
+                        category=category,
+                        price=0.0,
+                        dining_hall_id=dh.id,
+                    )
+                    seen[key] = mi
+                    new_items.append(mi)
+
+        menu_cache.set(hall, today, meals)
+
+    db.add_all(new_items)
+    db.commit()
