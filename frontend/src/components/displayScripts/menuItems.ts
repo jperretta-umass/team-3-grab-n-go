@@ -148,7 +148,10 @@ export async function fetchMenuItems(): Promise<void> {
     loading.value = true
     error.value = null
     try {
-      const response = await fetch(`${API_BASE}/api/menu-items`)
+      const url = selectedHall.value
+        ? `${API_BASE}/api/menu-items?hall=${encodeURIComponent(selectedHall.value)}`
+        : `${API_BASE}/api/menu-items`
+      const response = await fetch(url)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }

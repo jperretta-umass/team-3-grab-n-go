@@ -50,12 +50,29 @@
             >
               Track Current Order
             </button>
-            <RouterLink
-              to="/ItemPage"
+
+            <div class="hall-select-row">
+              <label for="hallSelect">Dining Hall:</label>
+              <select
+                id="hallSelect"
+                v-model="selectedHall"
+                class="hall-select"
+              >
+                <option value="">Select a hall...</option>
+                <option value="Hampshire">Hampshire</option>
+                <option value="Berkshire">Berkshire</option>
+                <option value="Franklin">Franklin</option>
+                <option value="Worcester">Worcester</option>
+              </select>
+            </div>
+
+            <button
               class="action-btn primary-btn"
+              :disabled="!selectedHall"
+              @click="startNewOrder"
             >
               Start New Order
-            </RouterLink>
+            </button>
           </div>
         </div>
       </section>
@@ -97,7 +114,15 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const selectedHall = ref('')
+
+function startNewOrder() {
+  if (!selectedHall.value) return
+  router.push({ path: '/ItemPage', query: { hall: selectedHall.value } })
+}
 
 const USER_ID = 1
 const BASE = 'http://localhost:8000'
@@ -251,6 +276,28 @@ onMounted(async () => {
   flex-direction: column;
   gap: 14px;
   margin-top: 20px;
+}
+
+.hall-select-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.hall-select {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.action-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .action-btn,

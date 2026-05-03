@@ -39,28 +39,8 @@
       </div>
 
       <div class="filter-group">
-        <label for="dietType">Diet:</label>
-        <select
-          id="dietType"
-          v-model="selectedDiet"
-          class="orange-select"
-        >
-          <option value="">
-            None
-          </option>
-          <option value="no-peanuts">
-            No Peanuts
-          </option>
-          <option value="vegan">
-            Vegan
-          </option>
-          <option value="gluten-free">
-            Gluten Free
-          </option>
-          <option value="vegetarian">
-            Vegetarian
-          </option>
-        </select>
+        <label>Diet:</label>
+        <span class="coming-soon">Coming soon</span>
       </div>
 
       <button class="cart-tab-btn">
@@ -80,7 +60,7 @@
               :key="item.id"
             >
               <div class="item-info">
-                <span class="item-name">{{ item.name }} - ${{ item.price }}</span>
+                <span class="item-name">{{ item.name }} - {{ displayPrice(item.price) }}</span>
                 <span class="item-meta">{{ formatTags(item) }}</span>
               </div>
               <button
@@ -156,17 +136,32 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 
 const router = useRouter()
+const route = useRoute()
 
 function goHome() {
   router.push('/')
 }
 
-onMounted(fetchMenuItems)
+function displayPrice(price: number): string {
+  return price === 0 ? 'Meal Swipe' : `$${price.toFixed(2)}`
+}
+
+onMounted(() => {
+  const hallParam = route.query.hall
+  if (hallParam && typeof hallParam === 'string') {
+    selectedHall.value = hallParam
+  }
+  fetchMenuItems()
+})
+
+watch(selectedHall, () => {
+  fetchMenuItems()
+})
 </script>
 
 <style scoped>
@@ -252,6 +247,12 @@ onMounted(fetchMenuItems)
 
 .filter-group label {
   font-weight: 600;
+}
+
+.coming-soon {
+  font-size: 0.85rem;
+  color: #999;
+  font-style: italic;
 }
 
 .filter-group select {
