@@ -35,6 +35,9 @@
           <option value="dinner">
             Dinner
           </option>
+          <option value="late night">
+            Late Night
+          </option>
         </select>
       </div>
 

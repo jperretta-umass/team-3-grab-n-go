@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 
 
 
-export type MealType = 'breakfast' | 'lunch' | 'dinner'
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'late night'
 export type DietType = 'no-peanuts' | 'vegan' | 'gluten-free' | 'vegetarian'
 export type DiningHall = 'Hampshire' | 'Berkshire' | 'Franklin' | 'Worcester' 
 
