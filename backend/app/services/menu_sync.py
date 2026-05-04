@@ -1,10 +1,9 @@
 import asyncio
 
-from sqlalchemy.orm import Session
-
 from app.models import DiningHall, MenuItem
 from app.services import menu_cache
 from app.services.dining_scraper import HALL_IDS, fetch_menu
+from sqlalchemy.orm import Session
 
 _SNACK_KEYWORDS = ("dessert", "pastry", "fruit", "yogurt", "snack")
 _DRINK_KEYWORDS = ("beverage", "drink", "juice", "coffee", "tea", "milk")

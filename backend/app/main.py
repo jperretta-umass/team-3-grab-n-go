@@ -1,18 +1,17 @@
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
-from fastapi import Body, Depends, FastAPI, Query
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-
 from app.auth import router as auth_router
 from app.database import SessionLocal, get_db
 from app.init_db import init_database
-from app.models import MenuItem, Order, DiningHall
+from app.models import DiningHall, MenuItem, Order
 from app.payments import router as payments_router
 from app.routers import customer
 from app.routers.dining_menu import router as dining_menu_router
 from app.services.menu_sync import sync_today_menu_to_db
+from fastapi import Body, Depends, FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
 
 @asynccontextmanager
