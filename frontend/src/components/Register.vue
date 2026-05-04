@@ -103,7 +103,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getPostAuthRoute, saveAuthUser, type AuthUser } from '../utils/auth'
+import { getPostAuthRoute, saveAuthSession, type AuthSession } from '../utils/auth'
 
 const username = ref('')
 const email = ref('')
@@ -146,9 +146,9 @@ async function onSubmit() {
       return
     }
 
-    const authUser = data as AuthUser
-    saveAuthUser(authUser)
-    router.push(getPostAuthRoute(authUser))
+    const authSession = data as AuthSession
+    saveAuthSession(authSession)
+    router.push(getPostAuthRoute(authSession.user))
   } catch {
     error.value = 'Network error (is the backend running?)'
   } finally {
