@@ -169,7 +169,7 @@ function goHome() {
 }
 
 function startOver() {
-  router.push('/customer')
+  router.push('/CustomerLanding')
 }
 
 onMounted(fetchMenuItems)

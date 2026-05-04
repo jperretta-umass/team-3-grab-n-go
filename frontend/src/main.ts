@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import { createRouter, createWebHistory } from "vue-router";
+import { fetchAuthUser, getPostAuthRoute } from "./utils/auth";
 import './style.css'
 
 
@@ -13,7 +14,6 @@ import Register from "./components/Register.vue"
 import CustomerLandingPage from "./components/CustomerLandingPage.vue";
 import Success from "./components/SuccessPage.vue"
 import DelivererLanding from "./components/DelivererLandingPage.vue"
-import { fetchAuthUser, getPostAuthRoute } from "./utils/auth";
 
 
 const router = createRouter({
