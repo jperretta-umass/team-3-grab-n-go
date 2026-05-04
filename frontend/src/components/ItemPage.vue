@@ -132,7 +132,7 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { selectedHall, selectedMeal, selectedDiet, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
+import { type MealType, selectedHall, selectedMeal, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 
 const router = useRouter()
 const route = useRoute()
@@ -162,7 +162,7 @@ watch(selectedHall, () => {
 })
 
 watch(availableMeals, (meals) => {
-  if (selectedMeal.value && !meals.includes(selectedMeal.value as any)) {
+  if (selectedMeal.value && !meals.includes(selectedMeal.value as MealType)) {
     selectedMeal.value = ''
   }
 })
