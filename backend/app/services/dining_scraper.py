@@ -49,6 +49,7 @@ def _parse(raw: dict[str, Any]) -> dict[str, Any]:
             continue
         parsed_stations: dict[str, list[str]] = {}
         for station, html in stations.items():
+            station = str(station)
             if not isinstance(html, str):
                 continue
             soup = BeautifulSoup(html, "html.parser")
