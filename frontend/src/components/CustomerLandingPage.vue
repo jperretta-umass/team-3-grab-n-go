@@ -127,14 +127,6 @@ function startNewOrder() {
 const USER_ID = 1
 const BASE = 'http://localhost:8000'
 
-const router = useRouter()
-const hallSelection = ref('')
-
-function startOrder() {
-  selectedHall.value = hallSelection.value
-  router.push('/ItemPage')
-}
-
 // const profile = ref<any>(null)
 // const activeOrder = ref<any>(null)
 // const pastOrders = ref<any[]>([])
