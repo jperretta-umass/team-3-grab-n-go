@@ -128,12 +128,7 @@
             Your cart is empty.
           </p>
         </div>
-        <button
-          v-if="cart.length"
-          class="add-btn green"
-        >
-          Checkout
-        </button>
+        <button v-if="cart.length" class="add-btn green" @click="handleCheckout">Checkout</button>
       </section>
     </main>
 
@@ -181,6 +176,40 @@ function startOver() {
 }
 
 onMounted(fetchMenuItems)
+
+async function handleCheckout() {
+  try {
+    // Format local cart to send to the backend
+    const itemsToCheckout = cart.value.map((item) => ({
+      menu_item_id: item.id,
+      quantity: 1 //  cart adds items individually as separate rows
+    }))
+
+    const response = await fetch("http://localhost:8000/api/payments/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 
+        user_id: 1, // Hardcoded
+        items: itemsToCheckout 
+      }),
+    })
+
+    const data = await response.json()
+
+    if (data.url) {
+      // Redirects the browser to the stripepage
+      window.location.href = data.url
+    } else {
+      console.error("Stripe Session Error:", data.error)
+      alert("Checkout failed. Please try again.")
+    }
+  } catch (error) {
+    console.error("Network Error:", error)
+  }
+}
+
 </script>
 
 <style scoped>
