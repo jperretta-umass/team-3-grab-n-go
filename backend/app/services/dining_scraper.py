@@ -1,3 +1,6 @@
+from datetime import date
+from typing import Any
+
 import httpx
 from bs4 import BeautifulSoup
 
@@ -17,15 +20,13 @@ _HEADERS = {
 }
 
 
-async def fetch_menu(hall: str, date_str: str | None = None) -> dict:
+async def fetch_menu(hall: str, date_str: str | None = None) -> dict[str, Any]:
     """
     Returns parsed menu for a hall on a given date.
     date_str must be MM/DD/YYYY. Defaults to today if omitted.
     Raises ValueError for unknown hall, httpx.HTTPError on network failure.
     """
     if date_str is None:
-        from datetime import date
-
         date_str = date.today().strftime("%m/%d/%Y")
 
     tid = HALL_IDS.get(hall.lower())
@@ -35,12 +36,12 @@ async def fetch_menu(hall: str, date_str: str | None = None) -> dict:
     async with httpx.AsyncClient(headers=_HEADERS, timeout=20) as client:
         resp = await client.get(BASE_URL, params={"tid": tid, "date": date_str})
         resp.raise_for_status()
-        raw = resp.json()
+        raw: dict[str, Any] = resp.json()
 
     return _parse(raw)
 
 
-def _parse(raw: dict) -> dict:
+def _parse(raw: dict[str, Any]) -> dict[str, Any]:
     meals: dict[str, dict[str, list[str]]] = {}
 
     for meal, stations in raw.items():

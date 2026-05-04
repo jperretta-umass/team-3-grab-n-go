@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -15,12 +16,11 @@ async def get_dining_menu(
         alias="date",
         description="MM/DD/YYYY — defaults to today",
     ),
-):
+) -> dict[str, Any]:
     if hall.lower() not in dining_scraper.HALL_IDS:
         raise HTTPException(
             status_code=400,
-            detail=f"Unknown hall '{hall}'. Valid options: {
-                list(dining_scraper.HALL_IDS)}",
+            detail=f"Unknown hall '{hall}'. Valid options: {list(dining_scraper.HALL_IDS)}",
         )
 
     date_str = menu_date or date.today().strftime("%m/%d/%Y")

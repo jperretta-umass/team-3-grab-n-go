@@ -18,6 +18,8 @@ from app.services.menu_sync import sync_today_menu_to_db
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_database()
+    if SessionLocal is None:
+        raise RuntimeError("DATABASE_URL is not set")
     db = SessionLocal()
     try:
         await sync_today_menu_to_db(db)
