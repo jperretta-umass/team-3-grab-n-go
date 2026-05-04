@@ -97,3 +97,54 @@ http://localhost:8000/docs while the docker stack is running.
 
     docker images # lists docker images
     docker network ls #networks 
+
+
+##Payment Integration (Stripe)
+1. Initial Stripe Setup
+- Create a Stripe Account: Sign up at Stripe.com and stay in Test Mode.
+- Install Stripe CLI:
+    Mac: brew install stripe/stripe-cli/stripe
+
+    Windows/Linux: Download from the Stripe GitHub.
+
+    Login: Open your terminal and run stripe login. Follow the browser instructions to authenticate.
+
+2. Create Local Secrets
+Docker Compose looks for secrets in a ./secrets folder at the project root. You MUST CREATE this folder and the following two files:
+
+./secrets/stripe_secret_key.txt:
+
+Go to your Stripe Dashboard -> Developers -> API Keys.
+
+Copy the Secret key (starts with sk_test_). ONLY PASTE THE KEY ITSELF INTO THE FILE, NOT THE "STRIPE_SECRET_KEY=" PART.
+SO IT MUST START WITH : sk_test...
+
+Paste it into this file.
+
+./secrets/stripe_webhook_secret.txt:
+
+Open a terminal and run: stripe listen --forward-to localhost/api/payments/webhook
+
+The terminal will output: Ready! Your webhook signing secret is whsec_...
+
+Copy that whsec_ string and paste it into this file. AGAIN DO NOT PREFIX THIS WITH ANYTHING JUST SIMPLY COPY PASTE.
+
+3. Running with Payments
+Once your secrets are in place, the stripe-tunnel service in Docker will automatically handle the connection.
+
+Bash
+# Start the full stack
+docker compose up --build
+How to test the flow:
+
+Go to http://localhost/ItemPage and add items to your cart.
+
+Click Checkout. You will be redirected to a Stripe-hosted page.
+
+USE TEH TEST CARD: 4242 4242 4242 4242 (any future expiry and any CVC).
+
+Upon success, you'll be redirected to http://localhost/success.
+
+Check http://localhost/DelivererPage to verify the order was moved from the Cart to the Orders table.
+
+Note: Every time you stop and restart your Stripe listener, the whsec_ key MIGHT change. If payments stop populating in the DB, check if you need to update your stripe_webhook_secret.txt.

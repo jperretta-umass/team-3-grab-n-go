@@ -127,6 +127,14 @@ function startNewOrder() {
 const USER_ID = 1
 const BASE = 'http://localhost:8000'
 
+const router = useRouter()
+const hallSelection = ref('')
+
+function startOrder() {
+  selectedHall.value = hallSelection.value
+  router.push('/ItemPage')
+}
+
 // const profile = ref<any>(null)
 // const activeOrder = ref<any>(null)
 // const pastOrders = ref<any[]>([])
@@ -373,6 +381,48 @@ onMounted(async () => {
   background: #4caf50;
   color: white;
   min-width: 90px;
+}
+
+.start-order-section {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #ececec;
+  padding-top: 16px;
+}
+
+.start-order-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.hall-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.hall-select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.start-order-btn {
+  background: #4caf50;
+  color: white;
+}
+
+.start-order-btn:disabled {
+  background: #b0b0b0;
+  color: #e0e0e0;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 1;
 }
 
 @media (max-width: 900px) {
