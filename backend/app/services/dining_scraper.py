@@ -4,10 +4,10 @@ import httpx
 BASE_URL = "https://umassdining.com/foodpro-menu-ajax"
 
 HALL_IDS: dict[str, int] = {
-    "worcester": 1,
-    "franklin": 2,
-    "hampshire": 3,
-    "berkshire": 4,
+    "worcester": 10667,
+    "franklin": 10716,
+    "hampshire": 10715,
+    "berkshire": 10666,
 }
 
 _HEADERS = {
