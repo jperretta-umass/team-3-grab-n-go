@@ -13,6 +13,7 @@ import Register from "./components/Register.vue"
 import CustomerLandingPage from "./components/CustomerLandingPage.vue";
 import Success from "./components/SuccessPage.vue"
 import DelivererLanding from "./components/DelivererLandingPage.vue"
+import { getAuthUser, getPostAuthRoute } from "./utils/auth";
 
 
 const router = createRouter({
@@ -22,27 +23,30 @@ const router = createRouter({
         { path: "/Register", component: Register },
         { path: "/Login", component: Login },
 
-        { path: "/CustomerLanding", component: CustomerLandingPage, meta: { requiresAuth: true, role: "customer" } },
-        { path: "/DelivererLanding", component: DelivererLanding, meta: { requiresAuth: true, role: "deliverer" } },
-        { path: "/DelivererPage", component: DelivererPage, meta: { requiresAuth: true, role: "deliverer" } },
-        { path: "/SingleOrder", component: SingleOrder, meta: { requiresAuth: true, role: "customer" } },
-        { path: "/success", component: Success, meta: { requiresAuth: true, role: "customer" } },
-        { path: "/ItemPage", component: ItemPage, meta: { requiresAuth: true, role: "deliverer" } },
+        { path: "/CustomerLanding", component: CustomerLandingPage, meta: { requiresAuth: true } },
+        { path: "/DelivererLanding", component: DelivererLanding, meta: { requiresAuth: true, requiresDeliverer: true } },
+        { path: "/DelivererPage", component: DelivererPage, meta: { requiresAuth: true, requiresDeliverer: true } },
+        { path: "/SingleOrder", component: SingleOrder, meta: { requiresAuth: true } },
+        { path: "/ItemPage", component: ItemPage, meta: { requiresAuth: true } },
+        { path: "/success", component: Success, meta: { requiresAuth: true } },
     ]
 });
 
 router.beforeEach((route) => {
-    const auth = localStorage.getItem("auth");
-    const isLoggedIn = !!auth;
+    const user = getAuthUser();
+    const isLoggedIn = !!user;
   
     if (route.meta.requiresAuth && !isLoggedIn) {
       return "/Login";
     }
-    //re routes to related landing page from /login if already logged in
-    /*if (isLoggedIn && (route.path === "/Login" || route.path === "/Register")) {
-      const user = JSON.parse(auth!);
-      return user.is_deliverer ? "/DelivererLanding" : "/CustomerLanding";
-    }*/
+
+    if (route.meta.requiresDeliverer && !user?.is_deliverer) {
+      return "/CustomerLanding";
+    }
+
+    if (isLoggedIn && (route.path === "/Login" || route.path === "/Register")) {
+      return getPostAuthRoute(user);
+    }
   });
 
 const app = createApp(App);

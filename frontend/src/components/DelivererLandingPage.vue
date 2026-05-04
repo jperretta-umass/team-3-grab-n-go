@@ -5,13 +5,22 @@
         <p class="welcome-banner">
           Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
         </p>
-        <button
-          class="logout-btn"
-          type="button"
-          @click="logout"
-        >
-          Logout
-        </button>
+        <div class="top-actions">
+          <button
+            class="switch-btn"
+            type="button"
+            @click="goToCustomerLanding"
+          >
+            Go to Customer Page
+          </button>
+          <button
+            class="logout-btn"
+            type="button"
+            @click="logout"
+          >
+            Logout
+          </button>
+        </div>
       </div>
       <h1 class="page-title">Deliverer Landing Page</h1>
       <p class="page-subtitle">
@@ -98,6 +107,10 @@ function logout() {
   clearAuthUser()
   router.replace('/Login')
 }
+
+function goToCustomerLanding() {
+  router.push('/CustomerLanding')
+}
 </script>
 
 <style scoped>
@@ -125,6 +138,12 @@ function logout() {
   margin-bottom: 12px;
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .welcome-banner {
   margin: 0;
   text-align: center;
@@ -146,6 +165,18 @@ function logout() {
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
+.switch-btn {
+  border: none;
+  border-radius: 10px;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 16px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.switch-btn:hover,
 .logout-btn:hover {
   transform: translateY(-1px);
   opacity: 0.95;
