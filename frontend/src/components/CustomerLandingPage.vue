@@ -5,13 +5,23 @@
         <p class="welcome-banner">
           Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
         </p>
-        <button
-          class="logout-btn"
-          type="button"
-          @click="logout"
-        >
-          Logout
-        </button>
+        <div class="top-actions">
+          <button
+            v-if="canSwitchLanding"
+            class="switch-btn"
+            type="button"
+            @click="goToDelivererLanding"
+          >
+            Go to Deliverer Page
+          </button>
+          <button
+            class="logout-btn"
+            type="button"
+            @click="logout"
+          >
+            Logout
+          </button>
+        </div>
       </div>
       <h1 class="page-title">Customer Landing Page</h1>
       <p class="page-subtitle">
@@ -115,6 +125,7 @@ const BASE = 'http://localhost:8000'
 const router = useRouter()
 const authUser = getAuthUser()
 const currentUsername = computed(() => authUser?.username ?? '')
+const canSwitchLanding = computed(() => authUser?.is_deliverer === true)
 
 // const profile = ref<any>(null)
 // const activeOrder = ref<any>(null)
@@ -155,6 +166,10 @@ const pastOrders = ref<Order[]>([])
 function logout() {
   clearAuthUser()
   router.replace('/Login')
+}
+
+function goToDelivererLanding() {
+  router.push('/DelivererLanding')
 }
 
 onMounted(async () => {
@@ -198,6 +213,12 @@ onMounted(async () => {
   margin-bottom: 12px;
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .welcome-banner {
   margin: 0;
   text-align: center;
@@ -219,6 +240,18 @@ onMounted(async () => {
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
+.switch-btn {
+  border: none;
+  border-radius: 10px;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 16px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.switch-btn:hover,
 .logout-btn:hover {
   transform: translateY(-1px);
   opacity: 0.95;
