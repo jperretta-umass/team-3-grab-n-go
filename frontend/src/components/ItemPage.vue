@@ -146,7 +146,7 @@ function startOver() {
 }
 
 function displayPrice(price: number): string {
-  return price === 0 ? 'Meal Swipe' : `$${price.toFixed(2)}`
+  return `$${price.toFixed(2)}`
 }
 
 onMounted(() => {
