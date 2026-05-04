@@ -97,14 +97,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { clearAuthUser, getAuthUser } from '../utils/auth'
+import { clearAuthSession, getAuthUser } from '../utils/auth'
 
 const router = useRouter()
 const authUser = getAuthUser()
 const currentUsername = computed(() => authUser?.username ?? '')
 
 function logout() {
-  clearAuthUser()
+  clearAuthSession()
   router.replace('/Login')
 }
 
