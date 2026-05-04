@@ -13,7 +13,7 @@ import Register from "./components/Register.vue"
 import CustomerLandingPage from "./components/CustomerLandingPage.vue";
 import Success from "./components/SuccessPage.vue"
 import DelivererLanding from "./components/DelivererLandingPage.vue"
-import { getAuthUser, getPostAuthRoute } from "./utils/auth";
+import { fetchAuthUser, getPostAuthRoute } from "./utils/auth";
 
 
 const router = createRouter({
@@ -32,8 +32,8 @@ const router = createRouter({
     ]
 });
 
-router.beforeEach((route) => {
-    const user = getAuthUser();
+router.beforeEach(async (route) => {
+    const user = await fetchAuthUser();
     const isLoggedIn = !!user;
   
     if (route.meta.requiresAuth && !isLoggedIn) {
