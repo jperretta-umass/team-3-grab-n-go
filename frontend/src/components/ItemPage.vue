@@ -66,9 +66,6 @@
         </select>
       </div>
 
-      <button class="cart-tab-btn">
-        Open Cart
-      </button>
     </section>
 
     <main class="content">
@@ -242,7 +239,6 @@ async function handleCheckout() {
 }
 
 .back-btn,
-.cart-tab-btn,
 .add-btn,
 .remove-btn,
 .start-over-btn {
