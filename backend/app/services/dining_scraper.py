@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any
+from typing import Any, cast
 
 import httpx
 from bs4 import BeautifulSoup
@@ -48,7 +48,7 @@ def _parse(raw: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(stations, dict):
             continue
         parsed_stations: dict[str, list[str]] = {}
-        for station, html in stations.items():
+        for station, html in cast(dict[str, Any], stations).items():
             station = str(station)
             if not isinstance(html, str):
                 continue

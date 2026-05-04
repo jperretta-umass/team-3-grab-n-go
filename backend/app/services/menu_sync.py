@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any
+from typing import Any, cast
 
 from sqlalchemy.orm import Session
 
@@ -84,7 +84,12 @@ async def sync_today_menu_to_db(db: Session) -> None:
                 meal_name = str(meal_name)
                 station = str(station)
                 item_names_list: list[str] = [
-                    str(n) for n in (item_names if isinstance(item_names, list) else [])
+                    str(n)
+                    for n in (
+                        cast(list[Any], item_names)
+                        if isinstance(item_names, list)
+                        else []
+                    )
                 ]
                 category = _category_from_station(station)
                 # Stations named "Breakfast *" are breakfast items even when
