@@ -1,9 +1,6 @@
 import os
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 # Import the SQLAlchemy Base so tests can create/drop the schema
 # in the dedicated test database.
@@ -22,6 +19,9 @@ from app.main import app
 # - imported model list
 # - any assumptions used by the tests
 from app.models import CustomerProfile, DelivererProfile, User
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 # This points tests to the separate Dockerized test database.
 # If the test database service name, database name, or DB driver changes,
