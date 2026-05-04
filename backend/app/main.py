@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from app.auth import router as auth_router
-from app.database import get_db, SessionLocal
+from app.database import SessionLocal, get_db
 from app.init_db import init_database
 from app.models import DiningHall, MenuItem, Order
 from app.routers import customer

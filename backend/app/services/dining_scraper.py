@@ -1,5 +1,5 @@
-from bs4 import BeautifulSoup
 import httpx
+from bs4 import BeautifulSoup
 
 BASE_URL = "https://umassdining.com/foodpro-menu-ajax"
 
@@ -25,6 +25,7 @@ async def fetch_menu(hall: str, date_str: str | None = None) -> dict:
     """
     if date_str is None:
         from datetime import date
+
         date_str = date.today().strftime("%m/%d/%Y")
 
     tid = HALL_IDS.get(hall.lower())

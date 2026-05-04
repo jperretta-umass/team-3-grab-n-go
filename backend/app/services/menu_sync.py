@@ -1,8 +1,8 @@
 import asyncio
 
 from app.models import DiningHall, MenuItem
-from app.services.dining_scraper import HALL_IDS, fetch_menu
 from app.services import menu_cache
+from app.services.dining_scraper import HALL_IDS, fetch_menu
 from sqlalchemy.orm import Session
 
 _SNACK_KEYWORDS = ("dessert", "pastry", "fruit", "yogurt", "snack")
@@ -20,6 +20,7 @@ def _category_from_station(station: str) -> str:
 
 def _today_str() -> str:
     from datetime import date
+
     return date.today().strftime("%m/%d/%Y")
 
 
@@ -29,8 +30,7 @@ async def sync_today_menu_to_db(db: Session) -> None:
     DiningHall rows must already exist (created by init_database).
     """
     hall_rows: dict[str, DiningHall] = {
-        row.name.lower(): row
-        for row in db.query(DiningHall).all()
+        row.name.lower(): row for row in db.query(DiningHall).all()
     }
 
     results = await asyncio.gather(
@@ -47,23 +47,21 @@ async def sync_today_menu_to_db(db: Session) -> None:
     if not menus:
         return
 
-    hall_ids_to_clear = [
-        hall_rows[hall].id
-        for hall in menus
-        if hall in hall_rows
-    ]
+    hall_ids_to_clear = [hall_rows[hall].id for hall in menus if hall in hall_rows]
     if hall_ids_to_clear:
         from app.models import OrderItem
+
         # Clear order items that reference menu items we're about to replace
         stale_ids = [
-            mi.id for mi in db.query(MenuItem.id).filter(
+            mi.id
+            for mi in db.query(MenuItem.id).filter(
                 MenuItem.dining_hall_id.in_(hall_ids_to_clear)
             )
         ]
         if stale_ids:
-            db.query(OrderItem).filter(
-                OrderItem.menu_item_id.in_(stale_ids)
-            ).delete(synchronize_session=False)
+            db.query(OrderItem).filter(OrderItem.menu_item_id.in_(stale_ids)).delete(
+                synchronize_session=False
+            )
         db.query(MenuItem).filter(
             MenuItem.dining_hall_id.in_(hall_ids_to_clear)
         ).delete(synchronize_session=False)
