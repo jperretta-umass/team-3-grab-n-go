@@ -1,9 +1,8 @@
 from datetime import date
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query
-
 from app.services import dining_scraper, menu_cache
+from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter(prefix="/api/dining-menu", tags=["dining-menu"])
 
