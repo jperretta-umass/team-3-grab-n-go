@@ -63,9 +63,6 @@
         </select>
       </div>
 
-      <button class="cart-tab-btn">
-        Open Cart
-      </button>
     </section>
 
     <main class="content">
@@ -203,7 +200,6 @@ onMounted(fetchMenuItems)
 }
 
 .back-btn,
-.cart-tab-btn,
 .add-btn,
 .remove-btn {
   border: none;
@@ -216,8 +212,7 @@ onMounted(fetchMenuItems)
   text-align: center;
 }
 
-.back-btn,
-.cart-tab-btn {
+.back-btn {
   background: #e4e4e4;
 }
 
