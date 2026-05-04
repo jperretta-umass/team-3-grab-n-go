@@ -21,20 +21,13 @@
           v-model="selectedMeal"
           class="green-select"
         >
-          <option value="">
-            All
-          </option>
-          <option value="breakfast">
-            Breakfast
-          </option>
-          <option value="lunch">
-            Lunch
-          </option>
-          <option value="dinner">
-            Dinner
-          </option>
-          <option value="late night">
-            Late Night
+          <option value="">All</option>
+          <option
+            v-for="meal in availableMeals"
+            :key="meal"
+            :value="meal"
+          >
+            {{ meal.charAt(0).toUpperCase() + meal.slice(1) }}
           </option>
         </select>
       </div>
@@ -139,7 +132,7 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { selectedHall, selectedMeal, selectedDiet, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
+import { selectedHall, selectedMeal, selectedDiet, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 
 const router = useRouter()
 const route = useRoute()
@@ -166,6 +159,12 @@ onMounted(() => {
 
 watch(selectedHall, () => {
   fetchMenuItems()
+})
+
+watch(availableMeals, (meals) => {
+  if (selectedMeal.value && !meals.includes(selectedMeal.value as any)) {
+    selectedMeal.value = ''
+  }
 })
 </script>
 

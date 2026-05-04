@@ -167,6 +167,10 @@ export async function fetchMenuItems(): Promise<void> {
     }
 }
 
+export const availableMeals = computed(() =>
+  [...new Set(items.value.flatMap(i => i.mealType))]
+)
+
 export const entrees = computed(() => items.value.filter((item => item.category === 'entree')))
 export const snacksAndDrinks = computed(() => items.value.filter((item => item.category !== 'entree')))
 export const diningHalls = computed(() => {
