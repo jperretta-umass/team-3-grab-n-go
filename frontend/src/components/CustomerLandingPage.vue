@@ -149,12 +149,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { clearAuthUser, getAuthUser } from '../utils/auth'
+import { clearAuthSession, getAuthUser } from '../utils/auth'
 
-const USER_ID = 1
 const BASE = 'http://localhost:8000'
 const router = useRouter()
 const authUser = getAuthUser()
+const USER_ID = authUser?.id
 const currentUsername = computed(() => authUser?.username ?? '')
 const canSwitchLanding = computed(() => authUser?.is_deliverer === true)
 
@@ -203,7 +203,7 @@ const activeOrder = ref<Order | null>(null)
 const pastOrders = ref<Order[]>([])
 
 function logout() {
-  clearAuthUser()
+  clearAuthSession()
   router.replace('/Login')
 }
 
@@ -212,6 +212,11 @@ function goToDelivererLanding() {
 }
 
 onMounted(async () => {
+  if (!USER_ID) {
+    router.replace('/Login')
+    return
+  }
+
   try {
     const [profileData, activeData, pastData] = await Promise.all([
       fetch(`${BASE}/api/customers/${USER_ID}/profile`).then(r => r.json()),
