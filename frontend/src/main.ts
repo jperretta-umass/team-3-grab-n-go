@@ -10,19 +10,11 @@ import HomeView from "./components/HomeView.vue"
 import ItemPage from "./components/ItemPage.vue"
 import Login from "./components/Login.vue"
 import Register from "./components/Register.vue"
-<<<<<<< HEAD
-<<<<<<< HEAD
 import CustomerLandingPage from "./components/CustomerLandingPage.vue";
-
-=======
 import UserProfile from "./components/UserProfile.vue"
->>>>>>> 1e0facf (transferred files from old branch)
-=======
-import UserProfile from "./components/UserProfile.vue"
->>>>>>> 2876cb1fe22cb8f227e73a50c4cee40af21738f7
+import Success from "./components/SuccessPage.vue"
 
-
-const router = createRouter({
+const router = createRouter({  
     history: createWebHistory(),
     routes: [
         { path: '/', component: HomeView },
@@ -32,9 +24,7 @@ const router = createRouter({
         {path: "/ItemPage", component: ItemPage },
         {path: "/Register", component: Register },
         {path: "/Login", component: Login },
-        {path: "/UserProfile", component: UserProfile }
-        {path: "/Login", component: Login },
-        {path: "/UserProfile", component: UserProfile }
+        { path: "/success", component: Success }
     ]
 });
 
