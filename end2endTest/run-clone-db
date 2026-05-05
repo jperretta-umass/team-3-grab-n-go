@@ -6,6 +6,14 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 cd "${PROJECT_ROOT}"
 
+mkdir -p secrets
+if [ ! -f secrets/stripe_secret_key.txt ]; then
+  echo "sk_test_dummy_stripe_key" > secrets/stripe_secret_key.txt
+fi
+if [ ! -f secrets/stripe_webhook_secret.txt ]; then
+  echo "whsec_test_dummy_webhook_secret" > secrets/stripe_webhook_secret.txt
+fi
+
 if [ -f .env ]; then
   set -a
   # shellcheck disable=SC1091
