@@ -11,11 +11,15 @@ import ItemPage from "./components/ItemPage.vue"
 import Login from "./components/Login.vue"
 import Register from "./components/Register.vue"
 <<<<<<< HEAD
+<<<<<<< HEAD
 import CustomerLandingPage from "./components/CustomerLandingPage.vue";
 
 =======
 import UserProfile from "./components/UserProfile.vue"
 >>>>>>> 1e0facf (transferred files from old branch)
+=======
+import UserProfile from "./components/UserProfile.vue"
+>>>>>>> 2876cb1fe22cb8f227e73a50c4cee40af21738f7
 
 
 const router = createRouter({
