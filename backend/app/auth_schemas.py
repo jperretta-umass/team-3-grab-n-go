@@ -20,9 +20,3 @@ class AuthResponse(BaseModel):
     email: EmailStr
     phone_num: str | None = None
     is_deliverer: bool
-
-
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-    user: AuthResponse

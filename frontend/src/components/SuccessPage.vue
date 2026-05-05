@@ -1,14 +1,19 @@
 <template>
-    <div class="page">
-      <div class="panel">
-        <h1 class="success-text">Payment Successful!</h1>
-        <p>Your order has been placed and sent to the dining hall.</p>
-        <button class="add-btn green" @click="$router.push('/')">
-          Return Home
-        </button>
-      </div>
+  <div class="page">
+    <div class="panel">
+      <h1 class="success-text">
+        Payment Successful!
+      </h1>
+      <p>Your order has been placed and sent to the dining hall.</p>
+      <button
+        class="add-btn green"
+        @click="$router.push('/')"
+      >
+        Return Home
+      </button>
     </div>
-  </template>
+  </div>
+</template>
   
   <style scoped>
   .page {
