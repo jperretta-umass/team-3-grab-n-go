@@ -128,7 +128,13 @@
             Your cart is empty.
           </p>
         </div>
-        <button v-if="cart.length" class="add-btn green" @click="handleCheckout">Checkout</button>
+        <button
+          v-if="cart.length"
+          class="add-btn green"
+          @click="handleCheckout"
+        >
+          Checkout
+        </button>
       </section>
     </main>
 

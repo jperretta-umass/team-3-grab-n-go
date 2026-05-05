@@ -85,11 +85,21 @@ onMounted(fetchOrders)
 
 <template>
   <header class="bg-white shadow-lg">
-    <nav aria-label="Global" class="flex mx-auto items-center justify-between p-5 lg:px-7">
+    <nav
+      aria-label="Global"
+      class="flex mx-auto items-center justify-between p-5 lg:px-7"
+    >
       <div class="flex lg:flex-1">
-        <a href="/" class="-m-1.5 p-1.5">
+        <a
+          href="/"
+          class="-m-1.5 p-1.5"
+        >
           <span class="sr-only">MinuteMeals</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1280px-UMass_Amherst_athletics_logo.svg.png" alt="" class="h-8 w-auto" />
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1280px-UMass_Amherst_athletics_logo.svg.png"
+            alt=""
+            class="h-8 w-auto"
+          >
         </a>
       </div><div class="flex lg:flex-15">
         <a class="text-4xl/6 font-sans font-semibold text-gray-900">Available Orders</a>
@@ -99,16 +109,33 @@ onMounted(fetchOrders)
       </div>
     </nav>
   </header>
-  <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-md" role="alert" v-if="claimNotifVis">
+  <div
+    v-if="claimNotifVis"
+    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-md"
+    role="alert"
+  >
     <strong class="font-bold">Order Claimed!</strong>
     <span class="block sm:inline"> You have claimed this order. </span>
   </div>
-  <div class="px-4 py-2 text-sm text-slate-700" v-if="ordersLoading">Loading orders...</div>
-  <div class="px-4 py-2 text-sm text-red-700" v-if="ordersError">{{ ordersError }}</div>
-  <div class="modal flex justify-between p-5 lg:px-7" v-if="popupOpen && popOrderName">
+  <div
+    v-if="ordersLoading"
+    class="px-4 py-2 text-sm text-slate-700"
+  >
+    Loading orders...
+  </div>
+  <div
+    v-if="ordersError"
+    class="px-4 py-2 text-sm text-red-700"
+  >
+    {{ ordersError }}
+  </div>
+  <div
+    v-if="popupOpen && popOrderName"
+    class="modal flex justify-between p-5 lg:px-7"
+  >
     <div>
       <DelivererPopup
-        :orderObj="popOrderName"
+        :order-obj="popOrderName"
         @close="popupOpen=false"
         @accept="handleAccept"
       />
@@ -128,19 +155,25 @@ onMounted(fetchOrders)
         </tr>
       </thead>
       <tbody>
-        <tr v-for="i in longest" :key="i">
+        <tr
+          v-for="i in longest"
+          :key="i"
+        >
           <td
             v-for="(col, j) in orderRows"
             :key="`${i}-${j}`"
             class="rounded-xl overflow-hidden p-3 text-center font-semibold shadow-md"
             :style="col[i - 1]
               ? {
-                  backgroundColor: diningHallColors[col[i - 1].dining_hall] ?? 'lightgrey'
-                }
+                backgroundColor: diningHallColors[col[i - 1].dining_hall] ?? 'lightgrey'
+              }
               : { backgroundColor: 'lightgrey' }"
             @click="col[i - 1] && handleCellClick(col[i - 1], i - 1, j)"
           >
-            <div v-if="col[i - 1]" class="leading-tight">
+            <div
+              v-if="col[i - 1]"
+              class="leading-tight"
+            >
               <div>Order #{{ col[i - 1].id }}</div>
               <div>User {{ col[i - 1].user_id }}</div>
               <div>{{ col[i - 1].dining_hall }}</div>
@@ -149,7 +182,7 @@ onMounted(fetchOrders)
               <div>{{ col[i - 1].created_at }}</div>
               <div>Items: {{ col[i - 1].items.length }}</div>
             </div>
-            <span v-else> </span>
+            <span v-else />
           </td>
         </tr>
       </tbody>

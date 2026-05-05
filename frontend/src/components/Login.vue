@@ -78,10 +78,6 @@ function goToRegister() {
   router.push('/register')
 }
 
-function goToRegister() {
-  router.push('/register')
-}
-
 async function onSubmit() {
   error.value = null
   loading.value = true
