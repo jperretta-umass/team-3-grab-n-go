@@ -8,7 +8,13 @@ from fastapi import APIRouter, Depends, Header, HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from app.auth_schemas import AuthResponse, LoginRequest, RegisterRequest, TokenResponse
+from app.auth_schemas import (
+    AuthResponse,
+    ChangePasswordRequest,
+    LoginRequest,
+    RegisterRequest,
+    TokenResponse,
+)
 from app.database import get_db
 from app.models import User
 
@@ -140,4 +146,24 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=AuthResponse)
 def get_me(current_user: User = Depends(get_current_user)):
+    return user_to_auth_response(current_user)
+
+
+@router.post("/change-password", response_model=AuthResponse)
+def change_password(
+    payload: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not verify_password(payload.old_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    if len(payload.new_password.encode("utf-8")) > 72:
+        raise HTTPException(status_code=400, detail="Password too long (max 72 bytes)")
+
+    current_user.password_hash = get_password_hash(payload.new_password)
+    db.add(current_user)
+    db.commit()
+    db.refresh(current_user)
+
     return user_to_auth_response(current_user)

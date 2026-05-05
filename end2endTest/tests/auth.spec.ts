@@ -54,9 +54,9 @@ test('User Registration', async ({ page, request }) => {
 
   await page.goto('/Register');
 
-  await page.getByLabel('Username:').fill(user.username);
-  await page.getByLabel('Email:').fill(user.email);
-  await page.getByLabel('Phone Number:').fill(user.phone_num);
+  await page.getByLabel('Username').fill(user.username);
+  await page.getByLabel('Email').fill(user.email);
+  await page.getByLabel('Phone Number').fill(user.phone_num);
   await page.locator('#password').fill(user.password);
   await page.locator('#confirmPassword').fill(user.password);
 
@@ -85,7 +85,7 @@ test('User Login', async ({ page, request }) => {
 
   await page.goto('/Login');
 
-  await page.getByLabel('Email:').fill(user.email);
+  await page.getByLabel('Email').fill(user.email);
   await page.locator('#password').fill(user.password);
 
   await page.getByRole('button', { name: 'Login' }).click();
