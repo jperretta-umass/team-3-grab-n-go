@@ -6,6 +6,14 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 cd "${PROJECT_ROOT}"
 
+mkdir -p secrets
+if [ ! -f secrets/stripe_secret_key.txt ]; then
+  echo "sk_test_dummy_stripe_key" > secrets/stripe_secret_key.txt
+fi
+if [ ! -f secrets/stripe_webhook_secret.txt ]; then
+  echo "whsec_test_dummy_webhook_secret" > secrets/stripe_webhook_secret.txt
+fi
+
 if [ -f .env ]; then
   set -a
   # shellcheck disable=SC1091
@@ -28,7 +36,6 @@ ORIGINAL_DATABASE_URL="${DATABASE_URL:-}"
 
 backend_was_running=0
 frontend_was_running=0
-nginx_was_running=0
 
 if [ "$(docker compose ps -q backend 2>/dev/null | wc -l | tr -d ' ')" != "0" ]; then
   backend_was_running=1
@@ -38,14 +45,10 @@ if [ "$(docker compose ps -q frontend 2>/dev/null | wc -l | tr -d ' ')" != "0" ]
   frontend_was_running=1
 fi
 
-if [ "$(docker compose ps -q nginx 2>/dev/null | wc -l | tr -d ' ')" != "0" ]; then
-  nginx_was_running=1
-fi
-
 cleanup() {
   echo "Cleaning up e2e services and temp DB..."
 
-  docker compose stop nginx backend frontend >/dev/null 2>&1 || true
+  docker compose stop backend frontend >/dev/null 2>&1 || true
 
   docker compose exec -T db bash -lc "
     export PGPASSWORD='${DB_SUPERPASS}';
@@ -59,12 +62,12 @@ cleanup() {
     dropdb -U '${DB_SUPERUSER}' --if-exists '${TEMP_DB}' || true
   " || true
 
-  if [ "${backend_was_running}" -eq 1 ] || [ "${frontend_was_running}" -eq 1 ] || [ "${nginx_was_running}" -eq 1 ]; then
+  if [ "${backend_was_running}" -eq 1 ] || [ "${frontend_was_running}" -eq 1 ]; then
     echo "Restoring services that were running before e2e..."
     if [ -n "${ORIGINAL_DATABASE_URL}" ]; then
-      DATABASE_URL="${ORIGINAL_DATABASE_URL}" docker compose up -d backend frontend nginx >/dev/null 2>&1 || true
+      DATABASE_URL="${ORIGINAL_DATABASE_URL}" docker compose up -d backend frontend >/dev/null 2>&1 || true
     else
-      docker compose up -d backend frontend nginx >/dev/null 2>&1 || true
+      docker compose up -d backend frontend >/dev/null 2>&1 || true
     fi
   fi
 }
@@ -98,9 +101,9 @@ docker compose exec -T db bash -lc "
   pg_dump -U '${DB_SUPERUSER}' --no-owner --no-privileges '${SOURCE_DB}' | psql -U '${DB_SUPERUSER}' '${TEMP_DB}'
 "
 
-echo "Starting backend, frontend, and nginx against cloned DB..."
+echo "Starting backend and frontend against cloned DB..."
 DATABASE_URL="postgresql+psycopg2://${DB_SUPERUSER}:${DB_SUPERPASS}@db:5432/${TEMP_DB}" \
-docker compose up -d --force-recreate backend frontend nginx
+docker compose up -d --force-recreate backend frontend
 
 echo "Waiting for backend..."
 unset READY

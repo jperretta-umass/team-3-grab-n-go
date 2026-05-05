@@ -1,29 +1,9 @@
 <template>
   <div class="page">
     <div class="page-shell">
-      <div class="top-bar">
-        <p class="welcome-banner">
-          Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
-        </p>
-        <div class="top-actions">
-          <button
-            v-if="canSwitchLanding"
-            class="switch-btn"
-            type="button"
-            @click="goToDelivererLanding"
-          >
-            Go to Deliverer Page
-          </button>
-          <button
-            class="logout-btn"
-            type="button"
-            @click="logout"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-      <h1 class="page-title">Customer Landing Page</h1>
+      <h1 class="page-title">
+        Customer Landing Page
+      </h1>
       <p class="page-subtitle">
         Check your current order, review past orders, or start a new one.
       </p>
@@ -147,17 +127,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { clearAuthSession, getAuthUser } from '../utils/auth'
 import { selectedHall } from './displayScripts/menuItems'
 
+const USER_ID = 1
 const BASE = 'http://localhost:8000'
+
 const router = useRouter()
-const authUser = getAuthUser()
-const USER_ID = authUser?.id
-const currentUsername = computed(() => authUser?.username ?? '')
-const canSwitchLanding = computed(() => authUser?.is_deliverer === true)
 const hallSelection = ref('')
 
 function startOrder() {
@@ -201,21 +178,7 @@ const profile = ref<CustomerProfile | null>(null)
 const activeOrder = ref<Order | null>(null)
 const pastOrders = ref<Order[]>([])
 
-function logout() {
-  clearAuthSession()
-  router.replace('/Login')
-}
-
-function goToDelivererLanding() {
-  router.push('/DelivererLanding')
-}
-
 onMounted(async () => {
-  if (!USER_ID) {
-    router.replace('/Login')
-    return
-  }
-
   try {
     const [profileData, activeData, pastData] = await Promise.all([
       fetch(`${BASE}/api/customers/${USER_ID}/profile`).then(r => r.json()),
@@ -246,58 +209,6 @@ onMounted(async () => {
 .page-shell {
   max-width: 1400px;
   margin: 0 auto;
-}
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
-}
-
-.top-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.welcome-banner {
-  margin: 0;
-  text-align: center;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #4caf50;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.logout-btn {
-  border: none;
-  border-radius: 10px;
-  background: #111;
-  color: white;
-  cursor: pointer;
-  font-weight: 700;
-  padding: 10px 16px;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-.switch-btn {
-  border: none;
-  border-radius: 10px;
-  background: #4caf50;
-  color: white;
-  cursor: pointer;
-  font-weight: 700;
-  padding: 10px 16px;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-.switch-btn:hover,
-.logout-btn:hover {
-  transform: translateY(-1px);
-  opacity: 0.95;
 }
 
 .page-title {
@@ -500,11 +411,6 @@ onMounted(async () => {
 }
 
 @media (max-width: 900px) {
-  .top-bar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
   .page-title {
     font-size: 2.3rem;
   }
