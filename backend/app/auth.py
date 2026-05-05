@@ -1,5 +1,7 @@
 import os
 import time
+from collections.abc import Callable
+from typing import cast
 
 import jwt
 from fastapi import APIRouter, Depends, Header, HTTPException
@@ -14,8 +16,21 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 TOKEN_TTL_SECONDS = 60 * 60 * 24
-AUTH_SECRET_KEY = os.getenv("AUTH_SECRET_KEY", "dev-auth-secret-change-me")
-AUTH_ALGORITHM = "HS256"
+AUTH_SECRET_KEY: str = os.getenv("AUTH_SECRET_KEY", "dev-auth-secret-change-me")
+AUTH_ALGORITHM: str = "HS256"
+
+
+JwtEncode = Callable[[dict[str, object], str, str], str]
+JwtDecode = Callable[[str, str, list[str]], dict[str, object]]
+
+jwt_encode: JwtEncode = cast(
+    JwtEncode,
+    jwt.encode,  # type: ignore[reportUnknownMemberType]
+)
+jwt_decode: JwtDecode = cast(
+    JwtDecode,
+    jwt.decode,  # type: ignore[reportUnknownMemberType]
+)
 
 
 def normalize_email(email: str) -> str:
@@ -35,7 +50,7 @@ def create_access_token(user_id: int) -> str:
         "sub": str(user_id),
         "exp": int(time.time()) + TOKEN_TTL_SECONDS,
     }
-    return jwt.encode(payload, AUTH_SECRET_KEY, algorithm=AUTH_ALGORITHM)
+    return jwt_encode(payload, AUTH_SECRET_KEY, AUTH_ALGORITHM)
 
 
 def get_current_user(
@@ -50,12 +65,12 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Invalid authorization header")
 
     try:
-        payload = jwt.decode(
+        payload = jwt_decode(
             token,
             AUTH_SECRET_KEY,
-            algorithms=[AUTH_ALGORITHM],
+            [AUTH_ALGORITHM],
         )
-        user_id = int(payload["sub"])
+        user_id = int(cast(str, payload["sub"]))
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, KeyError, ValueError):
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
