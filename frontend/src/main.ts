@@ -11,8 +11,9 @@ import ItemPage from "./components/ItemPage.vue"
 import Login from "./components/Login.vue"
 import Register from "./components/Register.vue"
 import CustomerLandingPage from "./components/CustomerLandingPage.vue";
-import UserProfile from "./components/UserProfile.vue"
 import Success from "./components/SuccessPage.vue"
+import UserProfile from "./components/UserProfile.vue"
+
 
 const router = createRouter({  
     history: createWebHistory(),
@@ -24,6 +25,7 @@ const router = createRouter({
         {path: "/ItemPage", component: ItemPage },
         {path: "/Register", component: Register },
         {path: "/Login", component: Login },
+        {path: "/UserProfile", component: UserProfile},
         { path: "/success", component: Success }
     ]
 });
