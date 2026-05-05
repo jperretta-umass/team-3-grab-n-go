@@ -1,19 +1,9 @@
 from datetime import datetime, timezone
 
-from app.database import Base, SessionLocal, engine
 from app.auth import get_password_hash
-from app.models import (
-    CurrentOrder,
-    CustomerProfile,
-    DiningHall,
-    MenuItem,
-    Order,
-    OrderItem,
-    PastOrder,
-    UnclaimedOrder,
-    User,
-)
-
+from app.database import Base, SessionLocal, engine
+from app.models import (CurrentOrder, CustomerProfile, DiningHall, MenuItem,
+                        Order, OrderItem, PastOrder, UnclaimedOrder, User)
 
 
 def init_database():
