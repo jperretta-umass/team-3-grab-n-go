@@ -66,6 +66,9 @@
         </select>
       </div>
 
+      <button class="cart-tab-btn">
+        Open Cart
+      </button>
     </section>
 
     <main class="content">
@@ -125,7 +128,13 @@
             Your cart is empty.
           </p>
         </div>
-        <button v-if="cart.length" class="add-btn green" @click="handleCheckout">Checkout</button>
+        <button
+          v-if="cart.length"
+          class="add-btn green"
+          @click="handleCheckout"
+        >
+          Checkout
+        </button>
       </section>
     </main>
 
@@ -239,6 +248,7 @@ async function handleCheckout() {
 }
 
 .back-btn,
+.cart-tab-btn,
 .add-btn,
 .remove-btn,
 .start-over-btn {
@@ -247,9 +257,6 @@ async function handleCheckout() {
   padding: 10px 14px;
   font-weight: 600;
   cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  text-align: center;
 }
 
 .back-btn,

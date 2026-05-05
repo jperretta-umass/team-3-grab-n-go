@@ -4,15 +4,14 @@ import { createRouter, createWebHistory } from "vue-router";
 import { fetchAuthUser, getPostAuthRoute } from "./utils/auth";
 import './style.css'
 
-
 import DelivererPage from "./components/DelivererPage.vue"; 
 import ItemPage from "./components/ItemPage.vue"
 import Login from "./components/Login.vue"
 import Register from "./components/Register.vue"
 import CustomerLandingPage from "./components/CustomerLandingPage.vue";
-import Success from "./components/SuccessPage.vue"
+import Success from "./components/SuccessPage.vue";
 import DelivererLanding from "./components/DelivererLandingPage.vue"
-
+import UserProfile from "./components/UserProfile.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -26,6 +25,7 @@ const router = createRouter({
         { path: "/DelivererPage", component: DelivererPage, meta: { requiresAuth: true, requiresDeliverer: true } },
         { path: "/ItemPage", component: ItemPage, meta: { requiresAuth: true } },
         { path: "/success", component: Success, meta: { requiresAuth: true } },
+        { path: "/UserProfile", component: UserProfile, meta: { requiresAuth: true } },
     ]
 });
 
@@ -47,5 +47,5 @@ router.beforeEach(async (route) => {
   });
 
 const app = createApp(App);
-app.use(router)
-app.mount('#app')
+app.use(router);
+app.mount('#app');
