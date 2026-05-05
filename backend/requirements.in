@@ -6,4 +6,3 @@ passlib[bcrypt]
 bcrypt==4.0.1
 email-validator
 stripe
-PyJWT
