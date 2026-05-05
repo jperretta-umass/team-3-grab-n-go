@@ -87,7 +87,7 @@ jobs:
         working-directory: end2endTest
         run: |
           npm ci
-          npx playwright install --with-deps
+          npx playwright install --with-deps chromium
 
       - name: Run Playwright
         working-directory: end2endTest
