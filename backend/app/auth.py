@@ -1,6 +1,6 @@
 import os
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from typing import cast
 
 import jwt
@@ -20,7 +20,7 @@ AUTH_SECRET_KEY: str = os.getenv("AUTH_SECRET_KEY", "dev-auth-secret-change-me")
 AUTH_ALGORITHM: str = "HS256"
 
 
-JwtEncode = Callable[[dict[str, object], str, str], str]
+JwtEncode = Callable[[Mapping[str, object], str, str], str]
 JwtDecode = Callable[[str, str, list[str]], dict[str, object]]
 
 jwt_encode: JwtEncode = cast(
