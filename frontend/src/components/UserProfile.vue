@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 
-const user = ref(null);
+type ProfileUser = {
+  username: string
+  email: string
+}
+
+const user = ref<ProfileUser | null>(null);
 const message = ref("");
 const oldPassword = ref("");
 const newPassword = ref("");
