@@ -1,7 +1,7 @@
 import os
 import time
-import jwt
 
+import jwt
 from fastapi import APIRouter, Depends, Header, HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
