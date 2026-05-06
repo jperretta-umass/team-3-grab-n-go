@@ -1,35 +1,35 @@
 <template>
-  <div class="page">
-    <div class="page-shell">
-      <h1 class="page-title">
+  <div class="min-h-screen bg-[#f3f3f3] p-6 font-sans">
+    <div class="max-w-[1400px] mx-auto">
+      <h1 class="m-0 mb-2 text-center text-[3.4rem] font-extrabold text-[#111]">
         Customer Landing Page
       </h1>
-      <p class="page-subtitle">
+      <p class="m-0 mb-6 text-center text-[1.05rem] text-[#555]">
         Check your current order, review past orders, or start a new one.
       </p>
 
-      <section class="top-row">
-        <div class="panel current-order-panel">
-          <div class="panel-header">
-            <h2>Current Order Status</h2>
-            <span class="status-pill">{{ activeOrder ? activeOrder.status : 'None' }}</span>
+      <section class="grid grid-cols-[2fr_1fr] gap-[18px] mb-[18px] max-[900px]:grid-cols-1">
+        <div class="bg-white rounded-[14px] p-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] min-h-[280px] flex flex-col justify-between">
+          <div class="flex justify-between items-center gap-3 mb-[18px] max-[900px]:flex-col max-[900px]:items-start">
+            <h2 class="m-0 text-[2rem] text-[#111]">Current Order Status</h2>
+            <span class="bg-[#f39c12] text-white font-bold px-[14px] py-2 rounded-full text-[0.9rem]">{{ activeOrder ? activeOrder.status : 'None' }}</span>
           </div>
 
-          <div class="order-details">
+          <div>
             <template v-if="activeOrder">
-              <p><strong>Dining Hall:</strong> {{ activeOrder.dining_hall }}</p>
-              <p><strong>Order #:</strong> {{ activeOrder.id }}</p>
-              <p><strong>Items:</strong> {{ activeOrder.items.map((i) => i.name).join(', ') }}</p>
-              <p><strong>Total:</strong> ${{ activeOrder.total_price.toFixed(2) }}</p>
+              <p class="m-0 mb-3 text-base text-[#222]"><strong>Dining Hall:</strong> {{ activeOrder.dining_hall }}</p>
+              <p class="m-0 mb-3 text-base text-[#222]"><strong>Order #:</strong> {{ activeOrder.id }}</p>
+              <p class="m-0 mb-3 text-base text-[#222]"><strong>Items:</strong> {{ activeOrder.items.map((i) => i.name).join(', ') }}</p>
+              <p class="m-0 mb-3 text-base text-[#222]"><strong>Total:</strong> ${{ activeOrder.total_price.toFixed(2) }}</p>
             </template>
             <p v-else>
               No active orders.
             </p>
           </div>
 
-          <div class="panel-actions">
+          <div class="mt-5">
             <button
-              class="secondary-btn"
+              class="border-none rounded-[10px] px-4 py-3 font-bold cursor-pointer inline-block text-center transition-transform duration-150 hover:-translate-y-px hover:opacity-95 bg-[#e4e4e4] text-[#111] disabled:opacity-50 disabled:cursor-not-allowed"
               :disabled="!activeOrder"
             >
               View Current Order
@@ -37,15 +37,15 @@
           </div>
         </div>
 
-        <div class="panel quick-actions-panel">
-          <h2>Quick Actions</h2>
+        <div class="bg-white rounded-[14px] p-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] min-h-[280px]">
+          <h2 class="m-0 text-[2rem] text-[#111]">Quick Actions</h2>
 
-          <div class="action-stack">
-            <button class="action-btn neutral-btn">
+          <div class="flex flex-col gap-[14px] mt-5">
+            <button class="border-none rounded-[10px] px-4 py-3 font-bold cursor-pointer text-center transition-transform duration-150 hover:-translate-y-px hover:opacity-95 bg-[#e4e4e4] text-[#111]">
               Past Orders ({{ profile ? profile.past_orders_count : 0 }})
             </button>
             <button
-              class="action-btn neutral-btn"
+              class="border-none rounded-[10px] px-4 py-3 font-bold cursor-pointer text-center transition-transform duration-150 hover:-translate-y-px hover:opacity-95 bg-[#e4e4e4] text-[#111] disabled:opacity-50 disabled:cursor-not-allowed"
               :disabled="!activeOrder"
             >
               Track Current Order

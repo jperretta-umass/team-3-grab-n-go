@@ -4,10 +4,9 @@
     <h2>Register</h2>
 
     <form
-      class="form"
       @submit.prevent="onSubmit"
     >
-      <div class="field">
+      <div class="flex flex-col gap-2 mb-4 max-w-[300px]">
         <label for="username">Username:</label>
         <input
           id="username"
@@ -19,7 +18,7 @@
         >
       </div>
 
-      <div class="field">
+      <div class="flex flex-col gap-2 mb-4 max-w-[300px]">
         <label for="email">Email:</label>
         <input
           id="email"
@@ -31,7 +30,7 @@
         >
       </div>
 
-      <div class="field">
+      <div class="flex flex-col gap-2 mb-4 max-w-[300px]">
         <label for="phone_num">Phone Number:</label>
         <input
           id="phone_num"
@@ -42,7 +41,7 @@
           autocomplete="phone_num"
         >
       </div>
-      <div class="field">
+      <div class="flex flex-col gap-2 mb-4 max-w-[300px]">
         <label
           for="isDeliverer"
           class="flex items-center gap-2"
@@ -56,7 +55,7 @@
         </label>
       </div>
 
-      <div class="field">
+      <div class="flex flex-col gap-2 mb-4 max-w-[300px]">
         <label for="password">Password:</label>
         <input
           id="password"
@@ -68,7 +67,7 @@
         >
       </div>
 
-      <div class="field">
+      <div class="flex flex-col gap-2 mb-4 max-w-[300px]">
         <label for="confirmPassword">Confirm Password:</label>
         <input
           id="confirmPassword"
@@ -82,7 +81,7 @@
 
       <p
         v-if="error"
-        class="error"
+        class="text-[#b91c1c] my-2 mb-4"
       >
         {{ error }}
       </p>
@@ -90,7 +89,7 @@
       <div>
         <button
           type="submit"
-          class="login-button"
+          class="bg-[rgb(85,90,99)] text-white px-6 py-3 border-none rounded-[10px] text-base font-semibold cursor-pointer block transition-colors duration-200 ease-in-out hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
           :disabled="loading"
         >
           {{ loading ? 'Creating account...' : 'Register Account' }}
@@ -156,31 +155,3 @@ async function onSubmit() {
 
 
 </script>
-
-<style scoped>
-.login-button {
-  background-color:rgb(85, 90, 99);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: block;
-  transition: background-color 0.2s ease, transform 0.15s ease;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;          /* spacing between label and input */
-  margin-bottom: 16px; /* spacing between fields */
-  max-width: 300px;
-}
-
-.error {
-  color: #b91c1c;
-  margin: 8px 0 16px;
-}
-</style>
