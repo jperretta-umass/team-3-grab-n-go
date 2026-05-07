@@ -47,15 +47,6 @@
               No active orders.
             </p>
           </div>
-
-          <div class="panel-actions">
-            <button
-              class="secondary-btn"
-              :disabled="!activeOrder"
-            >
-              View Current Order
-            </button>
-          </div>
         </div>
 
         <div class="panel start-order-panel">
