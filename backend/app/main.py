@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
 
-from fastapi import Body, Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
