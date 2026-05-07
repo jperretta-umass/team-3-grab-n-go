@@ -87,7 +87,7 @@ onMounted(fetchMenuItems)
         </li>
       </template>
     </ul>
-  </div>
+  </div>      
   <nav class="flex gap-3 justify-center pt-3">
     <button
       class="rounded-lg p-2 text-center text-slate-900 font-semibold bg-red-400"
