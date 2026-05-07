@@ -169,6 +169,7 @@ class Order(Base):
     )
     total_price: Mapped[float] = mapped_column(Float, nullable=False)
     status: Mapped[str] = mapped_column(String(50), nullable=False)
+    delivery_address: Mapped[str] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     user: Mapped[User] = relationship("User")
     dining_hall: Mapped[DiningHall] = relationship("DiningHall")

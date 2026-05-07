@@ -37,6 +37,7 @@ class OrderItemIn(BaseModel):
 
 class PlaceOrderIn(BaseModel):
     dining_hall_id: int
+    delivery_address: str
     items: List[OrderItemIn]
 
 
@@ -54,5 +55,6 @@ class OrderOut(BaseModel):
     dining_hall: str
     total_price: float
     status: str
+    delivery_address: Optional[str] = None
     created_at: datetime
     items: List[OrderItemOut]
