@@ -10,6 +10,7 @@ export class Order {
   user_id: number
   dining_hall_id: number
   dining_hall: string
+  delivery_address: string
   total_price: number
   status: string
   created_at: string
@@ -20,6 +21,7 @@ export class Order {
     user_id: number,
     dining_hall_id: number,
     dining_hall: string,
+    delivery_address: string,
     total_price: number,
     status: string,
     created_at: string,
@@ -29,6 +31,7 @@ export class Order {
     this.user_id = user_id
     this.dining_hall_id = dining_hall_id
     this.dining_hall = dining_hall
+    this.delivery_address = delivery_address
     this.total_price = total_price
     this.status = status
     this.created_at = created_at
@@ -56,6 +59,7 @@ type RawOrder = {
   user_id: number
   dining_hall_id: number
   dining_hall: string
+  delivery_address: string
   total_price: number
   status: string
   created_at: string
@@ -68,6 +72,7 @@ export function convertOrder(data: RawOrder): Order {
     data.user_id,
     data.dining_hall_id,
     data.dining_hall,
+    data.delivery_address,
     data.total_price,
     data.status,
     data.created_at,

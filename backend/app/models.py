@@ -181,6 +181,7 @@ class Order(Base):
             "user_id": self.user_id,
             "dining_hall_id": self.dining_hall_id,
             "dining_hall": self.dining_hall.name if self.dining_hall else None,
+            "delivery_address": self.delivery_address,
             "total_price": self.total_price,
             "status": self.status,
             "created_at": self.created_at.isoformat() if self.created_at else None,
