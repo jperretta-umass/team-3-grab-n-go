@@ -54,6 +54,21 @@ const orderRows = computed(() => {
 
 const longest = computed(() => orderRows.value.reduce((num, arr) => Math.max(num, arr.length), 0));
 
+function formatCreatedAt(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(date)
+}
+
 const claimNotifVis = ref(false);
 // code for alert found here! https://v1.tailwindcss.com/components/alerts
 
@@ -179,7 +194,7 @@ onMounted(fetchOrders)
               <div>{{ col[i - 1].dining_hall }}</div>
               <div>${{ col[i - 1].total_price.toFixed(2) }}</div>
               <div>{{ col[i - 1].status }}</div>
-              <div>{{ col[i - 1].created_at }}</div>
+              <div>{{ formatCreatedAt(col[i - 1].created_at) }}</div>
               <div>Items: {{ col[i - 1].items.length }}</div>
             </div>
             <span v-else />
