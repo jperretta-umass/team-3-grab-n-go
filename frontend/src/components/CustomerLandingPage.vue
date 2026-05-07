@@ -38,6 +38,7 @@
           <div class="order-details">
             <template v-if="activeOrder">
               <p><strong>Dining Hall:</strong> {{ activeOrder.dining_hall }}</p>
+              <p><strong>Delivery Address:</strong> {{ activeOrder.delivery_address || 'Not provided' }}</p>
               <p><strong>Order #:</strong> {{ activeOrder.id }}</p>
               <p><strong>Items:</strong> {{ activeOrder.items.map((i) => i.name).join(', ') }}</p>
               <p><strong>Total:</strong> ${{ activeOrder.total_price.toFixed(2) }}</p>
@@ -86,9 +87,22 @@
                 Worcester
               </option>
             </select>
+            <label
+              class="hall-label"
+              for="deliveryAddress"
+            >
+              Delivery Address
+            </label>
+            <input
+              id="deliveryAddress"
+              v-model="deliveryAddress"
+              class="address-input"
+              placeholder="Dorm, library, or campus address"
+              type="text"
+            >
             <button
               class="action-btn start-order-btn"
-              :disabled="!hallSelection"
+              :disabled="!canStartOrder"
               @click="startOrder"
             >
               Start Order
@@ -136,7 +150,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { clearAuthSession, getAuthUser } from '../utils/auth'
-import { selectedHall } from './displayScripts/menuItems'
+import { selectedDeliveryAddress, selectedHall } from './displayScripts/menuItems'
 
 const BASE = 'http://localhost:8000'
 const router = useRouter()
@@ -144,10 +158,13 @@ const authUser = getAuthUser()
 const USER_ID = authUser?.id
 const currentUsername = computed(() => authUser?.username ?? '')
 const canSwitchLanding = computed(() => authUser?.is_deliverer === true)
-const hallSelection = ref('')
+const hallSelection = ref(selectedHall.value)
+const deliveryAddress = ref(selectedDeliveryAddress.value)
+const canStartOrder = computed(() => Boolean(hallSelection.value && deliveryAddress.value.trim()))
 
 function startOrder() {
   selectedHall.value = hallSelection.value
+  selectedDeliveryAddress.value = deliveryAddress.value.trim()
   router.push('/ItemPage')
 }
 
@@ -169,6 +186,7 @@ type Order = {
   dining_hall: string
   total_price: number
   status: string
+  delivery_address: string | null
   created_at: string
   items: OrderItem[]
 }
@@ -459,6 +477,13 @@ onMounted(async () => {
   border: 1px solid #ccc;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.address-input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
 }
 
 .start-order-btn {
