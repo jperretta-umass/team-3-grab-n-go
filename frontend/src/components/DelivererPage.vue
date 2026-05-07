@@ -20,12 +20,24 @@ const diningHallColors: Record<string, string> = {
   Franklin: "yellow",
 };
 
-const diningHallColumnMap: Record<string, number> = {
-  Berkshire: 0,
-  Hampshire: 1,
-  Franklin: 2,
-  Worcester: 3,
-};
+const deliveryAddressColumnMap: Record<string, number> = headers.reduce(
+  (map, header, index) => ({
+    ...map,
+    [header.toLowerCase()]: index,
+  }),
+  {} as Record<string, number>
+);
+
+function getDeliveryAddressColumn(deliveryAddress: string) {
+  const normalizedAddress = deliveryAddress.toLowerCase()
+  const matchedHeader = headers.find((header) =>
+    normalizedAddress.includes(header.toLowerCase())
+  )
+
+  return matchedHeader
+    ? deliveryAddressColumnMap[matchedHeader.toLowerCase()]
+    : headers.length - 1
+}
 
 const popupOpen = ref(false);
 const popOrderName = ref<Order | null>(null);
@@ -44,7 +56,7 @@ const orderRows = computed(() => {
   const overflowColumn = headers.length - 1
 
   for (const order of orders.value) {
-    const mappedColumn = diningHallColumnMap[order.dining_hall] ?? overflowColumn
+    const mappedColumn = getDeliveryAddressColumn(order.delivery_address) ?? overflowColumn
     const safeColumn = mappedColumn < headers.length ? mappedColumn : overflowColumn
     columns[safeColumn].push(order)
   }
@@ -194,10 +206,9 @@ onMounted(fetchOrders)
             >
               <div>Order #{{ col[i - 1].id }}</div>
               <div>User {{ col[i - 1].user_id }}</div>
-              <div>{{ col[i - 1].dining_hall }}</div>
-              <div>{{ col[i - 1].delivery_address }}</div>
+              <div>From: {{ col[i - 1].dining_hall }}</div>
+              <div>To: {{ col[i - 1].delivery_address }}</div>
               <div>${{ col[i - 1].total_price.toFixed(2) }}</div>
-              <div>{{ col[i - 1].status }}</div>
               <div>{{ formatCreatedAt(col[i - 1].created_at) }}</div>
               <div>Items: {{ col[i - 1].items.length }}</div>
             </div>

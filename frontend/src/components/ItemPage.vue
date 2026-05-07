@@ -204,6 +204,7 @@ async function handleCheckout() {
       },
       body: JSON.stringify({ 
         user_id: 1, // Hardcoded
+        delivery_address: selectedDeliveryAddress.value,
         items: itemsToCheckout 
       }),
     })
