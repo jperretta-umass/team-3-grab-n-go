@@ -25,8 +25,8 @@ def init_database():
 
     db = SessionLocal()
     try:
-        #change i made here to avoid duplicates when running init_db
-        #originally dropped all tables but this guard should protect the app
+        # change i made here to avoid duplicates when running init_db
+        # originally dropped all tables but this guard should protect the app
         def get_or_create_dining_hall(name: str) -> DiningHall:
             dining_hall = db.query(DiningHall).filter(DiningHall.name == name).first()
             if dining_hall is None:
@@ -34,12 +34,11 @@ def init_database():
                 db.add(dining_hall)
                 db.flush()
             return dining_hall
-        
+
         hampshire = get_or_create_dining_hall("Hampshire")
         berkshire = get_or_create_dining_hall("Berkshire")
         franklin = get_or_create_dining_hall("Franklin")
         worcester = get_or_create_dining_hall("Worcester")
-
 
         mock_items = [
             {
@@ -110,7 +109,7 @@ def init_database():
 
         for item in mock_items:
             exists = (
-                #second guard i added to avoid duplicate menu items
+                # second guard i added to avoid duplicate menu items
                 db.query(MenuItem)
                 .filter(
                     MenuItem.name == item["name"],
@@ -142,12 +141,18 @@ def init_database():
             db.add(demo_customer)
             db.flush()
 
-        customer_profile = db.query(CustomerProfile).filter(CustomerProfile.user_id == demo_customer.id).first()
+        customer_profile = (
+            db.query(CustomerProfile)
+            .filter(CustomerProfile.user_id == demo_customer.id)
+            .first()
+        )
         if customer_profile is None:
             db.add(CustomerProfile(user_id=demo_customer.id))
             db.flush()
 
-        demo_deliverer = db.query(User).filter(User.username == "demo_deliverer").first()
+        demo_deliverer = (
+            db.query(User).filter(User.username == "demo_deliverer").first()
+        )
         if demo_deliverer is None:
             demo_deliverer = User(
                 username="demo_deliverer",
@@ -159,19 +164,27 @@ def init_database():
             db.add(demo_deliverer)
             db.flush()
 
-        two_role_profile = db.query(CustomerProfile).filter(CustomerProfile.user_id == demo_deliverer.id).first()
+        two_role_profile = (
+            db.query(CustomerProfile)
+            .filter(CustomerProfile.user_id == demo_deliverer.id)
+            .first()
+        )
         if two_role_profile is None:
             db.add(CustomerProfile(user_id=demo_deliverer.id))
             db.flush()
 
-        #final guard i added, adds demo orders only if no orders in existence
-        existing_orders = db.query(Order).filter(Order.user_id == demo_customer.id).first()
+        # final guard i added, adds demo orders only if no orders in existence
+        existing_orders = (
+            db.query(Order).filter(Order.user_id == demo_customer.id).first()
+        )
         if existing_orders is None:
 
             breakfast_burrito = (
                 db.query(MenuItem).filter(MenuItem.name == "Breakfast Burrito").first()
             )
-            veggie_wrap = db.query(MenuItem).filter(MenuItem.name == "Veggie Wrap").first()
+            veggie_wrap = (
+                db.query(MenuItem).filter(MenuItem.name == "Veggie Wrap").first()
+            )
             fruit_cup = db.query(MenuItem).filter(MenuItem.name == "Fruit Cup").first()
 
             if breakfast_burrito is None:
@@ -189,7 +202,9 @@ def init_database():
             db.flush()
             db.add(
                 OrderItem(
-                    order_id=past_order.id, menu_item_id=breakfast_burrito.id, quantity=2
+                    order_id=past_order.id,
+                    menu_item_id=breakfast_burrito.id,
+                    quantity=2,
                 )
             )
             db.add(PastOrder(order_id=past_order.id))
@@ -202,7 +217,9 @@ def init_database():
                     if veggie_wrap
                     else breakfast_burrito.dining_hall_id
                 ),
-                total_price=(veggie_wrap.price if veggie_wrap else breakfast_burrito.price)
+                total_price=(
+                    veggie_wrap.price if veggie_wrap else breakfast_burrito.price
+                )
                 + (fruit_cup.price if fruit_cup else 0),
                 status="active",
                 created_at=datetime.now(timezone.utc),
@@ -212,7 +229,9 @@ def init_database():
             if veggie_wrap:
                 db.add(
                     OrderItem(
-                        order_id=active_order.id, menu_item_id=veggie_wrap.id, quantity=1
+                        order_id=active_order.id,
+                        menu_item_id=veggie_wrap.id,
+                        quantity=1,
                     )
                 )
             if fruit_cup:
