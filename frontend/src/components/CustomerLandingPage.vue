@@ -93,13 +93,36 @@
             >
               Delivery Address
             </label>
-            <input
+            <select
               id="deliveryAddress"
               v-model="deliveryAddress"
               class="address-input"
-              placeholder="Dorm, library, or campus address"
-              type="text"
             >
+              <option
+                value=""
+                disabled
+              >
+                Select a delivery location
+              </option>
+              <option value="Southwest">
+                Southwest
+              </option>
+              <option value="Honors">
+                Honors
+              </option>
+              <option value="Central">
+                Central
+              </option>
+              <option value="Northeast">
+                Northeast
+              </option>
+              <option value="Orchard Hill">
+                Orchard Hill
+              </option>
+              <option value="Sylvan">
+                Sylvan
+              </option>
+            </select>
             <button
               class="action-btn start-order-btn"
               :disabled="!canStartOrder"
