@@ -4,10 +4,6 @@ from collections.abc import Callable, Mapping
 from typing import cast
 
 import jwt
-from fastapi import APIRouter, Depends, Header, HTTPException
-from passlib.context import CryptContext
-from sqlalchemy.orm import Session
-
 from app.auth_schemas import (
     AuthResponse,
     ChangePasswordRequest,
@@ -17,6 +13,9 @@ from app.auth_schemas import (
 )
 from app.database import get_db
 from app.models import User
+from fastapi import APIRouter, Depends, Header, HTTPException
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

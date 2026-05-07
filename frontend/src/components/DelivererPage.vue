@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue"
 import DelivererPopup from './DelivererPopup.vue'
-import { Order, fetchOrders, orders, ordersError, ordersLoading } from "./displayScripts/Order"
+import { Order, fetchOrders, orders, ordersError, ordersLoading, claimOrder } from "./displayScripts/Order"
 
 
 const headers = [
@@ -72,14 +72,17 @@ function formatCreatedAt(value: string) {
 const claimNotifVis = ref(false);
 // code for alert found here! https://v1.tailwindcss.com/components/alerts
 
-function handleAccept() {
+async function handleAccept() {
   if (!popOrderName.value) {
     return;
   }
+
+  await claimOrder(popOrderName.value.id);
+
   claimNotifVis.value = true;
   setTimeout(() => {
-      claimNotifVis.value = false;
-    }, 3000);
+    claimNotifVis.value = false;
+  }, 3000);
   popOrderName.value.status = "claimed";
   const updatedOrders = [...orders.value]
   const targetColumn = orderRows.value[curInd.value] ?? []

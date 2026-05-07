@@ -141,13 +141,13 @@ def init_database():
         db.add(CustomerProfile(user_id=demo_deliverer.id))
         db.flush()
 
-        # Creates deliverer profile 
+        # Creates deliverer profile
         deliverer_prof = DelivererProfile(
             past_order_id=None,
             current_order_id=None,
         )
 
-        # Adds DelivererProfile to demo deliverer 
+        # Adds DelivererProfile to demo deliverer
         demo_deliverer.deliverer_profile = deliverer_prof
         db.add_all([demo_deliverer, deliverer_prof])
         db.flush()
