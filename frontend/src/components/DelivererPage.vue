@@ -195,6 +195,7 @@ onMounted(fetchOrders)
               <div>Order #{{ col[i - 1].id }}</div>
               <div>User {{ col[i - 1].user_id }}</div>
               <div>{{ col[i - 1].dining_hall }}</div>
+              <div>{{ col[i - 1].delivery_address }}</div>
               <div>${{ col[i - 1].total_price.toFixed(2) }}</div>
               <div>{{ col[i - 1].status }}</div>
               <div>{{ formatCreatedAt(col[i - 1].created_at) }}</div>
