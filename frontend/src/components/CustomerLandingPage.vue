@@ -57,21 +57,7 @@
           </div>
         </div>
 
-        <div class="panel quick-actions-panel">
-          <h2>Quick Actions</h2>
-
-          <div class="action-stack">
-            <button class="action-btn neutral-btn">
-              Past Orders ({{ profile ? profile.past_orders_count : 0 }})
-            </button>
-            <button
-              class="action-btn neutral-btn"
-              :disabled="!activeOrder"
-            >
-              Track Current Order
-            </button>
-          </div>
-
+        <div class="panel start-order-panel">
           <div class="start-order-section">
             <h3 class="start-order-title">
               Start Order
@@ -338,7 +324,6 @@ onMounted(async () => {
 }
 
 .panel-header h2,
-.quick-actions-panel h2,
 .history-panel h2 {
   margin: 0;
   font-size: 2rem;
@@ -352,7 +337,7 @@ onMounted(async () => {
   justify-content: space-between;
 }
 
-.quick-actions-panel {
+.start-order-panel {
   min-height: 280px;
 }
 
@@ -372,13 +357,6 @@ onMounted(async () => {
 }
 
 .panel-actions {
-  margin-top: 20px;
-}
-
-.action-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
   margin-top: 20px;
 }
 
@@ -458,12 +436,9 @@ onMounted(async () => {
 }
 
 .start-order-section {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  border-top: 1px solid #ececec;
-  padding-top: 16px;
 }
 
 .start-order-title {

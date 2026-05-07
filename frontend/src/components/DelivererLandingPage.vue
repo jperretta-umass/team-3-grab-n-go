@@ -46,14 +46,13 @@
           </div>
         </div>
 
-        <div class="panel quick-actions-panel">
-          <h2>Quick Actions</h2>
-
-          <div class="action-stack">
-            <button class="action-btn neutral-btn">Past Orders</button>
-            <button class="action-btn neutral-btn">Track Current Order</button>
+        <div class="panel claim-order-panel">
+          <div class="claim-order-section">
+            <h3 class="claim-order-title">
+              Claim New Order
+            </h3>
             <RouterLink to="/DelivererPage" class="action-btn primary-btn">
-              Select New Deliverer Order
+              View Available Orders
             </RouterLink>
           </div>
         </div>
@@ -220,7 +219,6 @@ function goToCustomerLanding() {
 }
 
 .panel-header h2,
-.quick-actions-panel h2,
 .history-panel h2 {
   margin: 0;
   font-size: 2rem;
@@ -234,7 +232,7 @@ function goToCustomerLanding() {
   justify-content: space-between;
 }
 
-.quick-actions-panel {
+.claim-order-panel {
   min-height: 280px;
 }
 
@@ -257,11 +255,17 @@ function goToCustomerLanding() {
   margin-top: 20px;
 }
 
-.action-stack {
+.claim-order-section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 20px;
+  gap: 10px;
+}
+
+.claim-order-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111;
 }
 
 .action-btn,
