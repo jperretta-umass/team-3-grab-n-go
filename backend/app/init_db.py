@@ -167,6 +167,7 @@ def init_database():
             dining_hall_id=breakfast_burrito.dining_hall_id,
             total_price=breakfast_burrito.price * 2,
             status="completed",
+            delivery_address="Orchard Hill",
             created_at=datetime(2026, 4, 20, 12, 0, 0),
         )
         db.add(past_order)
@@ -189,6 +190,7 @@ def init_database():
             total_price=(veggie_wrap.price if veggie_wrap else breakfast_burrito.price)
             + (fruit_cup.price if fruit_cup else 0),
             status="active",
+            delivery_address="Northeast",
             created_at=datetime.now(timezone.utc),
         )
         db.add(active_order)
@@ -213,6 +215,7 @@ def init_database():
             dining_hall_id=breakfast_burrito.dining_hall_id,
             total_price=breakfast_burrito.price * 3,
             status="unclaimed",
+            delivery_address="Sylvan",
             created_at=datetime.now(timezone.utc),
         )
         db.add(unclaimed_order)
