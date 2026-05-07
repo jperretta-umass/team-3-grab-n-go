@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { computed, } from "vue";
 import {Order} from "./displayScripts/Order"
-import { items, MealType, MenuItem, DietType, DiningHall } from "./displayScripts/menuItems";
+import { items, MenuItem } from "./displayScripts/menuItems";
 
 const props = defineProps<{
   orderObj: Order
@@ -11,17 +12,19 @@ defineEmits<{
   accept: []
 }>()
 
+
+
 function matchItems(item : MenuItem) : boolean {
   if(item.diningHall === props.orderObj.dining_hall) {
-    for(const currentUserItem of props.orderObj.items){
+    for(const currentUserItem of props.orderObj.items) {
       if(currentUserItem.menu_item_id === item.id) return true;
     }
   }
   return false;
 }
 
-const currentOrderItems = items.value.filter(matchItems);
-
+const currentOrderItems = computed(() => items.value.filter(matchItems));
+//const itemNames = computed(() => currentOrderItems.value.map(i => i.name).join(', ')) //for test
 </script>
 
 <template>
@@ -31,11 +34,15 @@ const currentOrderItems = items.value.filter(matchItems);
   <p class="pt-1"> Status: {{ orderObj.status }} </p>
   <p class="pt-1"> Created At: {{ orderObj.created_at.slice(11,16) }} </p> <!--Slice to keep time just in hh:mm format, no other data needed-->
   <p class="pt-1"> Total Price: ${{ orderObj.total_price }} </p>
+  <!-- <p class="pt-1"> Debug all items: ${{ itemNames }} </p> -->
+
+
+
   <div class="pt-1">
     <p class="font-semibold">Items:</p>
     <ul class="list-disc pl-5">
       <li v-for="curItem in orderObj.items" :key="curItem.menu_item_id">
-        {{ currentOrderItems }} x {{ curItem.quantity }}
+        {{ currentOrderItems.find(i => i.id === curItem.menu_item_id)?.name ?? "Error Loading Menu Item" }} x {{ curItem.quantity }}
       </li>
     </ul>
   </div>
