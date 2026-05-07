@@ -40,10 +40,6 @@
             <p><strong>Pickup Estimate:</strong> 10–15 min</p>
             <p><strong>Items:</strong> Grilled Chicken Bowl, Fruit Cup</p>
           </div>
-
-          <div class="panel-actions">
-            <button class="secondary-btn">View Current Order</button>
-          </div>
         </div>
 
         <div class="panel claim-order-panel">
@@ -54,6 +50,15 @@
             <RouterLink to="/DelivererPage" class="action-btn primary-btn">
               View Available Orders
             </RouterLink>
+            <h3 class="claim-order-title">
+              Update Current Order Status
+            </h3>
+            <button
+              class="action-btn secondary-btn"
+              type="button"
+            >
+              Update Order Status
+            </button>
           </div>
         </div>
       </section>
