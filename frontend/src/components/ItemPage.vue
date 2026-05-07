@@ -175,6 +175,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { getAuthUser } from '../utils/auth'
 import { selectedMeal, selectedDiet, selectedHall, selectedDeliveryAddress, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 
 const router = useRouter()
@@ -191,6 +192,13 @@ onMounted(fetchMenuItems)
 
 async function handleCheckout() {
   try {
+    const authUser = getAuthUser()
+    if (!authUser) {
+      alert("Please log in before checking out.")
+      router.push('/Login')
+      return
+    }
+
     // Format local cart to send to the backend
     const itemsToCheckout = cart.value.map((item) => ({
       menu_item_id: item.id,
@@ -203,7 +211,7 @@ async function handleCheckout() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ 
-        user_id: 1, // Hardcoded
+        user_id: authUser.id,
         delivery_address: selectedDeliveryAddress.value,
         items: itemsToCheckout 
       }),
