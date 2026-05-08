@@ -26,7 +26,9 @@
           v-model="selectedMeal"
           class="green-select"
         >
-          <option value="">All</option>
+          <option value="">
+            All
+          </option>
           <option
             v-for="meal in availableMeals"
             :key="meal"
@@ -44,14 +46,30 @@
           v-model="selectedDiet"
           class="green-select"
         >
-          <option value="">All</option>
-          <option value="Vegetarian">Vegetarian</option>
-          <option value="Local">Local</option>
-          <option value="Sustainable">Sustainable</option>
-          <option value="Whole Grain">Whole Grain</option>
-          <option value="Halal">Halal</option>
-          <option value="Antibiotic Free">Antibiotic Free</option>
-          <option value="Plant Based">Plant Based</option>
+          <option value="">
+            All
+          </option>
+          <option value="Vegetarian">
+            Vegetarian
+          </option>
+          <option value="Local">
+            Local
+          </option>
+          <option value="Sustainable">
+            Sustainable
+          </option>
+          <option value="Whole Grain">
+            Whole Grain
+          </option>
+          <option value="Halal">
+            Halal
+          </option>
+          <option value="Antibiotic Free">
+            Antibiotic Free
+          </option>
+          <option value="Plant Based">
+            Plant Based
+          </option>
         </select>
       </div>
 
@@ -63,7 +81,6 @@
           <span class="context-label">Delivery Address: <span class="context-value">{{ selectedDeliveryAddress || 'Not selected' }}</span></span>
         </div>
       </div>
-
     </section>
 
     <main class="content">

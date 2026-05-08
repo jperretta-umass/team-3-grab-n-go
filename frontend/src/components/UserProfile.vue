@@ -14,6 +14,8 @@ const oldPassword = ref("");
 const newPassword = ref("");
 const showChangePassword = ref(false);
 const router = useRouter();
+const isDeliverer = ref(false);
+const updatingDeliverer = ref(false);
 
 async function fetchUser() {
   const token = localStorage.getItem("token");
@@ -36,6 +38,7 @@ async function fetchUser() {
     }
 
     user.value = await response.json();
+    isDeliverer.value = user.value.is_deliverer;
   } catch (error) {
     console.error(error);
     message.value = "Failed to load user";
@@ -86,6 +89,50 @@ async function changePass() {
   }
 }
 
+async function updateDelivererStatus() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    message.value = "You must be logged in";
+    return;
+  }
+
+  updatingDeliverer.value = true;
+
+  try {
+    const response = await fetch(
+      "http://localhost:8000/users/update-deliverer",
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          is_deliverer: isDeliverer.value,
+        }),
+      },
+    );
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      message.value = data?.detail || "Failed to update deliverer status";
+      return;
+    }
+
+    message.value = isDeliverer.value
+      ? "You are now registered as a deliverer"
+      : "Deliverer status removed";
+
+    fetchUser();
+  } catch {
+    message.value = "Network error";
+  } finally {
+    updatingDeliverer.value = false;
+  }
+}
+
 onMounted(() => {
   fetchUser();
 });
@@ -96,6 +143,23 @@ onMounted(() => {
     <div v-if="user">
       <h2>Welcome, {{ user.username }}</h2>
       <p>{{ user.email }}</p>
+
+      <div class="deliverer-section">
+        <label class="deliverer-checkbox">
+          <input
+            v-model="isDeliverer"
+            type="checkbox"
+          >
+          Become a deliverer
+        </label>
+
+        <button
+          :disabled="updatingDeliverer"
+          @click="updateDelivererStatus"
+        >
+          {{ updatingDeliverer ? 'Saving...' : 'Save Deliverer Status' }}
+        </button>
+      </div>
 
       <button @click="showChangePassword = !showChangePassword">
         Change Password
@@ -160,6 +224,20 @@ onMounted(() => {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
+}
+
+.deliverer-section {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deliverer-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 button {

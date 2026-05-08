@@ -22,7 +22,9 @@
           </button>
         </div>
       </div>
-      <h1 class="page-title">Deliverer Landing Page</h1>
+      <h1 class="page-title">
+        Deliverer Landing Page
+      </h1>
       <p class="page-subtitle">
         Check your current order, review past orders, or start a new one.
       </p>
@@ -35,7 +37,10 @@
           </div>
 
           <div class="order-details">
-            <p v-if="delivererCurrentOrderLoading" class="order-details-placeholder">
+            <p
+              v-if="delivererCurrentOrderLoading"
+              class="order-details-placeholder"
+            >
               Loading active order...
             </p>
             <template v-if="delivererCurrentOrder">
@@ -44,10 +49,16 @@
               <p><strong>To:</strong> {{ delivererCurrentOrder.delivery_address }}</p>
               <p><strong>Items:</strong> {{ delivererCurrentOrder.items.length }} line(s)</p>
             </template>
-            <p v-else-if="!delivererCurrentOrderLoading" class="order-details-placeholder">
+            <p
+              v-else-if="!delivererCurrentOrderLoading"
+              class="order-details-placeholder"
+            >
               Claim an order on Available Orders to see it here.
             </p>
-            <p v-if="delivererCurrentOrderError" class="status-error">
+            <p
+              v-if="delivererCurrentOrderError"
+              class="status-error"
+            >
               {{ delivererCurrentOrderError }}
             </p>
           </div>
@@ -58,7 +69,10 @@
             <h3 class="claim-order-title">
               Claim New Order
             </h3>
-            <RouterLink to="/DelivererPage" class="action-btn primary-btn">
+            <RouterLink
+              to="/DelivererPage"
+              class="action-btn primary-btn"
+            >
               View Available Orders
             </RouterLink>
             <h3 class="claim-order-title">
@@ -72,7 +86,12 @@
             >
               {{ statusUpdating ? 'Updating...' : nextStatusLabel }}
             </button>
-            <p v-if="statusError" class="status-error">{{ statusError }}</p>
+            <p
+              v-if="statusError"
+              class="status-error"
+            >
+              {{ statusError }}
+            </p>
           </div>
         </div>
       </section>
@@ -83,15 +102,28 @@
         </div>
 
         <div class="history-list">
-          <div v-if="pastOrdersLoading" class="history-item">
+          <div
+            v-if="pastOrdersLoading"
+            class="history-item"
+          >
             <p>Loading order history...</p>
           </div>
-          <div v-else-if="pastOrders.length == 0" class="history-item">
+          <div
+            v-else-if="pastOrders.length == 0"
+            class="history-item"
+          >
             <p>No past orders found.</p>
           </div>
-          <div v-else v-for="order in pastOrders" :key="order.id" class="history-item">
+          <div
+            v-for="order in pastOrders"
+            v-else
+            :key="order.id"
+            class="history-item"
+          >
             <div>
-              <p class="history-title">Order to {{ order.dining_hall }}</p>
+              <p class="history-title">
+                Order to {{ order.dining_hall }}
+              </p>
               <p class="history-meta">
                 Order #{{ order.id }} - {{ order.status }}
               </p>
