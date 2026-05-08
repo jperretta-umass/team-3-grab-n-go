@@ -154,8 +154,8 @@ onMounted(() => {
         </label>
 
         <button
-          @click="updateDelivererStatus"
           :disabled="updatingDeliverer"
+          @click="updateDelivererStatus"
         >
           {{ updatingDeliverer ? 'Saving...' : 'Save Deliverer Status' }}
         </button>
