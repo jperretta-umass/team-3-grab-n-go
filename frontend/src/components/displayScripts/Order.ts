@@ -49,8 +49,11 @@ export const ordersError = ref<string | null>(null)
 
 /** Set when a deliverer claims an order; used on the landing page for status updates. */
 export const delivererCurrentOrder = ref<Order | null>(null)
+export const delivererCurrentOrderLoading = ref(false)
+export const delivererCurrentOrderError = ref<string | null>(null)
 
 const API_BASE = 'http://localhost:8000'
+const DELIVERER_CURRENT_ORDER_KEY = 'delivererCurrentOrder'
 
 type RawOrderItem = {
   menu_item_id: number
@@ -67,6 +70,10 @@ type RawOrder = {
   status: string
   created_at: string
   items?: RawOrderItem[]
+}
+
+type OrderResponse = {
+  order?: RawOrder
 }
 
 export function convertOrder(data: RawOrder): Order {
@@ -90,6 +97,34 @@ export function onlyUnclaimed (order: Order): boolean {
   return (order.status === "unclaimed")
 }
 
+export function isActiveDelivererOrder(order: Order): boolean {
+  return order.status === 'claimed' || order.status === 'on the way'
+}
+
+function readStoredCurrentOrder(): Order | null {
+  const storedOrder = window.localStorage.getItem(DELIVERER_CURRENT_ORDER_KEY)
+  if (!storedOrder) {
+    return null
+  }
+
+  try {
+    return convertOrder(JSON.parse(storedOrder) as RawOrder)
+  } catch {
+    window.localStorage.removeItem(DELIVERER_CURRENT_ORDER_KEY)
+    return null
+  }
+}
+
+export function setDelivererCurrentOrder(order: Order | null): void {
+  delivererCurrentOrder.value = order
+
+  if (order) {
+    window.localStorage.setItem(DELIVERER_CURRENT_ORDER_KEY, JSON.stringify(order))
+  } else {
+    window.localStorage.removeItem(DELIVERER_CURRENT_ORDER_KEY)
+  }
+}
+
 export async function fetchOrders(): Promise<void> {
   ordersLoading.value = true
   ordersError.value = null
@@ -109,7 +144,37 @@ export async function fetchOrders(): Promise<void> {
   }
 }
 
-export async function claimOrder(orderId: number): Promise<void> {
+export async function fetchDelivererCurrentOrder(): Promise<void> {
+  delivererCurrentOrderLoading.value = true
+  delivererCurrentOrderError.value = null
+
+  try {
+    const response = await fetch(`${API_BASE}/api/orders`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = (await response.json()) as { orders?: RawOrder[] }
+    const activeOrder = (data.orders ?? [])
+      .map((order) => convertOrder(order))
+      .find(isActiveDelivererOrder) ?? null
+
+    setDelivererCurrentOrder(activeOrder)
+  } catch (error) {
+    const storedOrder = readStoredCurrentOrder()
+    if (storedOrder && isActiveDelivererOrder(storedOrder)) {
+      delivererCurrentOrder.value = storedOrder
+    } else {
+      setDelivererCurrentOrder(null)
+    }
+    delivererCurrentOrderError.value =
+      error instanceof Error ? error.message : 'Failed to fetch active order.'
+  } finally {
+    delivererCurrentOrderLoading.value = false
+  }
+}
+
+export async function claimOrder(orderId: number): Promise<Order> {
   const response = await fetch(`${API_BASE}/api/orders/claim/${orderId}`, {
     method: 'POST',
   })
@@ -118,9 +183,18 @@ export async function claimOrder(orderId: number): Promise<void> {
     const data = await response.json().catch(() => null)
     throw new Error(data?.detail ?? `Failed to claim order: ${response.status}`)
   }
+
+  const data = (await response.json()) as OrderResponse
+  if (!data.order) {
+    throw new Error('Claim response did not include an order.')
+  }
+
+  const claimedOrder = convertOrder(data.order)
+  setDelivererCurrentOrder(claimedOrder)
+  return claimedOrder
 }
 
-export async function updateOrderStatus(orderId: number, status: string): Promise<void> {
+export async function updateOrderStatus(orderId: number, status: string): Promise<Order> {
   const response = await fetch(`${API_BASE}/api/orders/${orderId}/status`, {
     method: 'PATCH',
     headers: {
@@ -133,4 +207,13 @@ export async function updateOrderStatus(orderId: number, status: string): Promis
     const data = await response.json().catch(() => null)
     throw new Error(data?.detail ?? `Failed to update order status: ${response.status}`)
   }
+
+  const data = (await response.json()) as OrderResponse
+  if (!data.order) {
+    throw new Error('Status response did not include an order.')
+  }
+
+  const updatedOrder = convertOrder(data.order)
+  setDelivererCurrentOrder(isActiveDelivererOrder(updatedOrder) ? updatedOrder : null)
+  return updatedOrder
 }
