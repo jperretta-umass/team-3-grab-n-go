@@ -113,7 +113,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
         user_id = int(session["metadata"]["user_id"])
-        delivery_address = session["metadata"]["delivery_address"]
+        #delivery_address = session["metadata"]["delivery_address"]
         # 1. Find the cart  saved earlier
         cart = db.query(Cart).filter(Cart.user_id == user_id).first()
 
