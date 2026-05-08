@@ -1,9 +1,29 @@
 <template>
   <div class="page">
     <div class="page-shell">
-      <h1 class="page-title">
-        Customer Landing Page
-      </h1>
+      <div class="top-bar">
+        <p class="welcome-banner">
+          Welcome{{ currentUsername ? `, ${currentUsername}` : '' }}
+        </p>
+        <div class="top-actions">
+          <button
+            v-if="canSwitchLanding"
+            class="switch-btn"
+            type="button"
+            @click="goToDelivererLanding"
+          >
+            Go to Deliverer Page
+          </button>
+          <button
+            class="logout-btn"
+            type="button"
+            @click="logout"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+      <h1 class="page-title">Customer Landing Page</h1>
       <p class="page-subtitle">
         Check your current order, review past orders, or start a new one.
       </p>
@@ -18,6 +38,7 @@
           <div class="order-details">
             <template v-if="activeOrder">
               <p><strong>Dining Hall:</strong> {{ activeOrder.dining_hall }}</p>
+              <p><strong>Delivery Address:</strong> {{ activeOrder.delivery_address || 'Not provided' }}</p>
               <p><strong>Order #:</strong> {{ activeOrder.id }}</p>
               <p><strong>Items:</strong> {{ activeOrder.items.map((i) => i.name).join(', ') }}</p>
               <p><strong>Total:</strong> ${{ activeOrder.total_price.toFixed(2) }}</p>
@@ -26,50 +47,77 @@
               No active orders.
             </p>
           </div>
-
-          <div class="panel-actions">
-            <button
-              class="secondary-btn"
-              :disabled="!activeOrder"
-            >
-              View Current Order
-            </button>
-          </div>
         </div>
 
-        <div class="panel quick-actions-panel">
-          <h2>Quick Actions</h2>
-
-          <div class="action-stack">
-            <button class="action-btn neutral-btn">
-              Past Orders ({{ profile ? profile.past_orders_count : 0 }})
-            </button>
-            <button
-              class="action-btn neutral-btn"
-              :disabled="!activeOrder"
+        <div class="panel start-order-panel">
+          <div class="start-order-section">
+            <h3 class="start-order-title">
+              Start Order
+            </h3>
+            <label class="hall-label">Dining Hall</label>
+            <select
+              v-model="hallSelection"
+              class="hall-select"
             >
-              Track Current Order
-            </button>
-
-            <div class="hall-select-row">
-              <label for="hallSelect">Dining Hall:</label>
-              <select
-                id="hallSelect"
-                v-model="selectedHall"
-                class="hall-select"
+              <option
+                value=""
+                disabled
               >
-                <option value="">Select a hall...</option>
-                <option value="Hampshire">Hampshire</option>
-                <option value="Berkshire">Berkshire</option>
-                <option value="Franklin">Franklin</option>
-                <option value="Worcester">Worcester</option>
-              </select>
-            </div>
-
+                Select a dining hall
+              </option>
+              <option value="Hampshire">
+                Hampshire
+              </option>
+              <option value="Berkshire">
+                Berkshire
+              </option>
+              <option value="Franklin">
+                Franklin
+              </option>
+              <option value="Worcester">
+                Worcester
+              </option>
+            </select>
+            <label
+              class="hall-label"
+              for="deliveryAddress"
+            >
+              Delivery Address
+            </label>
+            <select
+              id="deliveryAddress"
+              v-model="deliveryAddress"
+              class="address-input"
+            >
+              <option
+                value=""
+                disabled
+              >
+                Select a delivery location
+              </option>
+              <option value="Southwest">
+                Southwest
+              </option>
+              <option value="Honors">
+                Honors
+              </option>
+              <option value="Central">
+                Central
+              </option>
+              <option value="Northeast">
+                Northeast
+              </option>
+              <option value="Orchard Hill">
+                Orchard Hill
+              </option>
+              <option value="Sylvan">
+                Sylvan
+              </option>
+            </select>
             <button
-              class="action-btn primary-btn"
-              :disabled="!selectedHall"
-              @click="startNewOrder"
+              class="action-btn start-order-btn"
+              :disabled="!canStartOrder"
+              @click="startOrder"
             >
               Start New Order
             </button>
@@ -113,15 +161,25 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { clearAuthSession, getAuthUser } from '../utils/auth'
+import { selectedDeliveryAddress, selectedHall } from './displayScripts/menuItems'
 
+const BASE = 'http://localhost:8000'
 const router = useRouter()
-const selectedHall = ref('')
+const authUser = getAuthUser()
+const USER_ID = authUser?.id
+const currentUsername = computed(() => authUser?.username ?? '')
+const canSwitchLanding = computed(() => authUser?.is_deliverer === true)
+const hallSelection = ref(selectedHall.value)
+const deliveryAddress = ref(selectedDeliveryAddress.value)
+const canStartOrder = computed(() => Boolean(hallSelection.value && deliveryAddress.value.trim()))
 
-function startNewOrder() {
-  if (!selectedHall.value) return
-  router.push({ path: '/ItemPage', query: { hall: selectedHall.value } })
+function startOrder() {
+  selectedHall.value = hallSelection.value
+  selectedDeliveryAddress.value = deliveryAddress.value.trim()
+  router.push('/ItemPage')
 }
 
 const USER_ID = 1
@@ -145,6 +203,7 @@ type Order = {
   dining_hall: string
   total_price: number
   status: string
+  delivery_address: string | null
   created_at: string
   items: OrderItem[]
 }
@@ -163,7 +222,21 @@ const profile = ref<CustomerProfile | null>(null)
 const activeOrder = ref<Order | null>(null)
 const pastOrders = ref<Order[]>([])
 
+function logout() {
+  clearAuthSession()
+  router.replace('/Login')
+}
+
+function goToDelivererLanding() {
+  router.push('/DelivererLanding')
+}
+
 onMounted(async () => {
+  if (!USER_ID) {
+    router.replace('/Login')
+    return
+  }
+
   try {
     const [profileData, activeData, pastData] = await Promise.all([
       fetch(`${BASE}/api/customers/${USER_ID}/profile`).then(r => r.json()),
@@ -194,6 +267,58 @@ onMounted(async () => {
 .page-shell {
   max-width: 1400px;
   margin: 0 auto;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.welcome-banner {
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #4caf50;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.logout-btn {
+  border: none;
+  border-radius: 10px;
+  background: #111;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 16px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.switch-btn {
+  border: none;
+  border-radius: 10px;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 16px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.switch-btn:hover,
+.logout-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
 }
 
 .page-title {
@@ -234,7 +359,6 @@ onMounted(async () => {
 }
 
 .panel-header h2,
-.quick-actions-panel h2,
 .history-panel h2 {
   margin: 0;
   font-size: 2rem;
@@ -248,7 +372,7 @@ onMounted(async () => {
   justify-content: space-between;
 }
 
-.quick-actions-panel {
+.start-order-panel {
   min-height: 280px;
 }
 
@@ -269,35 +393,6 @@ onMounted(async () => {
 
 .panel-actions {
   margin-top: 20px;
-}
-
-.action-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 20px;
-}
-
-.hall-select-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-}
-
-.hall-select {
-  flex: 1;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 2px solid #ddd;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
-
-.action-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
 }
 
 .action-btn,
@@ -376,12 +471,9 @@ onMounted(async () => {
 }
 
 .start-order-section {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  border-top: 1px solid #ececec;
-  padding-top: 16px;
 }
 
 .start-order-title {
@@ -404,6 +496,13 @@ onMounted(async () => {
   cursor: pointer;
 }
 
+.address-input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
 .start-order-btn {
   background: #4caf50;
   color: white;
@@ -418,6 +517,11 @@ onMounted(async () => {
 }
 
 @media (max-width: 900px) {
+  .top-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .page-title {
     font-size: 2.3rem;
   }

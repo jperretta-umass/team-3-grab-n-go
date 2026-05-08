@@ -1,4 +1,11 @@
-import { expect, test } from '@playwright/test';
+import { expect, type APIRequestContext, type Page, test } from '@playwright/test';
+
+type TestUser = {
+  username: string;
+  email: string;
+  phone_num: string;
+  password: string;
+};
 
 function uniqueUser() {
   const suffix = Date.now();
@@ -16,34 +23,49 @@ test.beforeEach(async ({ page }) => {
   await page.evaluate(() => window.localStorage.clear());
 });
 
-test('User Registration', async ({ page }) => {
-  const user = uniqueUser();
+async function expectCurrentUser(
+  page: Page,
+  request: APIRequestContext,
+  user: TestUser,
+) {
+  const token = await page.evaluate(() => window.localStorage.getItem('token'));
+  expect(token).toBeTruthy();
+  expect(await page.evaluate(() => window.localStorage.getItem('auth'))).toBeNull();
 
-  await page.goto('/Register');
-
-  await page.getByLabel('Username:').fill(user.username);
-  await page.getByLabel('Email:').fill(user.email);
-  await page.getByLabel('Phone Number:').fill(user.phone_num);
-  await page.locator('#password').fill(user.password);
-  await page.locator('#confirmPassword').fill(user.password);
-
-  await page.getByRole('button', { name: 'Register Account' }).click();
-
-  await expect(page).toHaveURL('/');
-  await expect(page.getByText('Welcome to the Home Page!')).toBeVisible();
-
-  const auth = await page.evaluate(() => {
-    const raw = window.localStorage.getItem('auth');
-    return raw ? JSON.parse(raw) : null;
+  const meResponse = await request.get('http://127.0.0.1:8000/auth/me', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
+  expect(meResponse.ok()).toBeTruthy();
 
+  const auth = await meResponse.json();
   expect(auth).toMatchObject({
     username: user.username,
     email: user.email,
     phone_num: user.phone_num,
     is_deliverer: false,
   });
-  expect(auth?.id).toBeTruthy();
+  expect(auth.id).toBeTruthy();
+}
+
+test('User Registration', async ({ page, request }) => {
+  const user = uniqueUser();
+
+  await page.goto('/Register');
+
+  await page.getByLabel('Username').fill(user.username);
+  await page.getByLabel('Email').fill(user.email);
+  await page.getByLabel('Phone Number').fill(user.phone_num);
+  await page.locator('#password').fill(user.password);
+  await page.locator('#confirmPassword').fill(user.password);
+
+  await page.getByRole('button', { name: 'Register Account' }).click();
+
+  await expect(page).toHaveURL('/CustomerLanding');
+  await expect(page.getByRole('heading', { name: 'Customer Landing Page' })).toBeVisible();
+
+  await expectCurrentUser(page, request, user);
 });
 
 test('User Login', async ({ page, request }) => {
@@ -63,24 +85,13 @@ test('User Login', async ({ page, request }) => {
 
   await page.goto('/Login');
 
-  await page.getByLabel('Email:').fill(user.email);
+  await page.getByLabel('Email').fill(user.email);
   await page.locator('#password').fill(user.password);
 
   await page.getByRole('button', { name: 'Login' }).click();
 
-  await expect(page).toHaveURL('/');
-  await expect(page.getByText('Welcome to the Home Page!')).toBeVisible();
+  await expect(page).toHaveURL('/CustomerLanding');
+  await expect(page.getByRole('heading', { name: 'Customer Landing Page' })).toBeVisible();
 
-  const auth = await page.evaluate(() => {
-    const raw = window.localStorage.getItem('auth');
-    return raw ? JSON.parse(raw) : null;
-  });
-
-  expect(auth).toMatchObject({
-    username: user.username,
-    email: user.email,
-    phone_num: user.phone_num,
-    is_deliverer: false,
-  });
-  expect(auth?.id).toBeTruthy();
+  await expectCurrentUser(page, request, user);
 });

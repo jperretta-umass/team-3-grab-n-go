@@ -1,5 +1,3 @@
-
-
 import { computed, ref } from 'vue'
 
 
@@ -32,6 +30,7 @@ export const error = ref<string | null>(null)
 export const selectedMeal = ref('')
 export const selectedDiet = ref('')
 export const selectedHall = ref('Hampshire')
+export const selectedDeliveryAddress = ref('')
 
 const API_BASE = 'http://localhost:8000' // Change this to your backend URL if different
 

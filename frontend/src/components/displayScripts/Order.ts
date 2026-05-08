@@ -78,6 +78,10 @@ export function convertOrder(data: RawOrder): Order {
   )
 }
 
+export function onlyUnclaimed (order: Order): boolean {
+  return (order.status === "unclaimed")
+}
+
 export async function fetchOrders(): Promise<void> {
   ordersLoading.value = true
   ordersError.value = null
@@ -88,11 +92,22 @@ export async function fetchOrders(): Promise<void> {
     }
 
     const data = (await response.json()) as { orders?: RawOrder[] }
-    orders.value = (data.orders ?? []).map((order) => convertOrder(order))
+    orders.value = (data.orders ?? []).map((order) => convertOrder(order)).filter(onlyUnclaimed)
   } catch (error) {
     ordersError.value = error instanceof Error ? error.message : 'Failed to fetch orders.'
     orders.value = []
   } finally {
     ordersLoading.value = false
+  }
+}
+
+export async function claimOrder(orderId: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/orders/claim/${orderId}`, {
+    method: 'POST',
+  })
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null)
+    throw new Error(data?.detail ?? `Failed to claim order: ${response.status}`)
   }
 }

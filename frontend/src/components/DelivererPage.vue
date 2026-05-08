@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue"
 import DelivererPopup from './DelivererPopup.vue'
-import { Order, fetchOrders, orders, ordersError, ordersLoading } from "./displayScripts/Order"
+import { Order, fetchOrders, orders, ordersError, ordersLoading, claimOrder } from "./displayScripts/Order"
 
 
 const headers = [
@@ -54,28 +54,57 @@ const orderRows = computed(() => {
 
 const longest = computed(() => orderRows.value.reduce((num, arr) => Math.max(num, arr.length), 0));
 
+function formatCreatedAt(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(date)
+}
+
 const claimNotifVis = ref(false);
 // code for alert found here! https://v1.tailwindcss.com/components/alerts
 
-function handleAccept() {
+const alertMessage = ref("")
+const claimSuccessful = ref(true)
+
+async function handleAccept() {
   if (!popOrderName.value) {
     return;
   }
+
+  try {
+    await claimOrder(popOrderName.value.id);
+
+    claimSuccessful.value = true
+    alertMessage.value = "Order successfully claimed!"
+
+    const updatedOrders = [...orders.value]
+    const targetColumn = orderRows.value[curInd.value] ?? []
+    const targetOrder = targetColumn[curCol.value]
+    if (targetOrder) {
+      const index = updatedOrders.findIndex((order) => order.id === targetOrder.id)
+      if (index >= 0) {
+        updatedOrders.splice(index, 1)
+        orders.value = updatedOrders
+      }
+    }
+  } catch (error) {
+    alertMessage.value = error instanceof Error ? "Cannot claim order: " + error.message : 'Unable to claim order.'
+    claimSuccessful.value = false
+  }
+
   claimNotifVis.value = true;
   setTimeout(() => {
-      claimNotifVis.value = false;
-    }, 3000);
-  popOrderName.value.status = "claimed";
-  const updatedOrders = [...orders.value]
-  const targetColumn = orderRows.value[curInd.value] ?? []
-  const targetOrder = targetColumn[curCol.value]
-  if (targetOrder) {
-    const index = updatedOrders.findIndex((order) => order.id === targetOrder.id)
-    if (index >= 0) {
-      updatedOrders.splice(index, 1)
-      orders.value = updatedOrders
-    }
-  }
+    claimNotifVis.value = false;
+  }, 3000);
   popupOpen.value = false;
 }
 
@@ -85,30 +114,54 @@ onMounted(fetchOrders)
 
 <template>
   <header class="bg-white shadow-lg">
-    <nav aria-label="Global" class="flex mx-auto items-center justify-between p-5 lg:px-7">
+    <nav
+      aria-label="Global"
+      class="flex mx-auto items-center justify-between p-5 lg:px-7"
+    >
       <div class="flex lg:flex-1">
-        <a href="/" class="-m-1.5 p-1.5">
+        <a
+          href="/"
+          class="-m-1.5 p-1.5"
+        >
           <span class="sr-only">MinuteMeals</span>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1280px-UMass_Amherst_athletics_logo.svg.png" alt="" class="h-8 w-auto" />
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1280px-UMass_Amherst_athletics_logo.svg.png"
+            alt=""
+            class="h-8 w-auto"
+          >
         </a>
       </div><div class="flex lg:flex-15">
         <a class="text-4xl/6 font-sans font-semibold text-gray-900">Available Orders</a>
       </div>
-      <div>
-        <a class="text-lg/6 font-sans font-semibold text-gray-900">My Account</a>
-      </div>
     </nav>
   </header>
-  <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-md" role="alert" v-if="claimNotifVis">
-    <strong class="font-bold">Order Claimed!</strong>
-    <span class="block sm:inline"> You have claimed this order. </span>
+  <div
+    v-if="claimNotifVis"
+    :class="{ 'bg-green-100 border border-green-400 text-green-700' : claimSuccessful, 'bg-red-100 border border-red-400 text-red-700' : !claimSuccessful }"
+    class=" px-4 py-3 rounded relative shadow-md"
+    role="alert"
+  >
+    <span class="block sm:inline"> {{ alertMessage }} </span>
   </div>
-  <div class="px-4 py-2 text-sm text-slate-700" v-if="ordersLoading">Loading orders...</div>
-  <div class="px-4 py-2 text-sm text-red-700" v-if="ordersError">{{ ordersError }}</div>
-  <div class="modal flex justify-between p-5 lg:px-7" v-if="popupOpen && popOrderName">
+  <div
+    v-if="ordersLoading"
+    class="px-4 py-2 text-sm text-slate-700"
+  >
+    Loading orders...
+  </div>
+  <div
+    v-if="ordersError"
+    class="px-4 py-2 text-sm text-red-700"
+  >
+    {{ ordersError }}
+  </div>
+  <div
+    v-if="popupOpen && popOrderName"
+    class="modal flex justify-between p-5 lg:px-7"
+  >
     <div>
       <DelivererPopup
-        :orderObj="popOrderName"
+        :order-obj="popOrderName"
         @close="popupOpen=false"
         @accept="handleAccept"
       />
@@ -128,28 +181,34 @@ onMounted(fetchOrders)
         </tr>
       </thead>
       <tbody>
-        <tr v-for="i in longest" :key="i">
+        <tr
+          v-for="i in longest"
+          :key="i"
+        >
           <td
             v-for="(col, j) in orderRows"
             :key="`${i}-${j}`"
             class="rounded-xl overflow-hidden p-3 text-center font-semibold shadow-md"
             :style="col[i - 1]
               ? {
-                  backgroundColor: diningHallColors[col[i - 1].dining_hall] ?? 'lightgrey'
-                }
+                backgroundColor: diningHallColors[col[i - 1].dining_hall] ?? 'lightgrey'
+              }
               : { backgroundColor: 'lightgrey' }"
             @click="col[i - 1] && handleCellClick(col[i - 1], i - 1, j)"
           >
-            <div v-if="col[i - 1]" class="leading-tight">
+            <div
+              v-if="col[i - 1]"
+              class="leading-tight"
+            >
               <div>Order #{{ col[i - 1].id }}</div>
               <div>User {{ col[i - 1].user_id }}</div>
               <div>{{ col[i - 1].dining_hall }}</div>
               <div>${{ col[i - 1].total_price.toFixed(2) }}</div>
               <div>{{ col[i - 1].status }}</div>
-              <div>{{ col[i - 1].created_at }}</div>
+              <div>{{ formatCreatedAt(col[i - 1].created_at) }}</div>
               <div>Items: {{ col[i - 1].items.length }}</div>
             </div>
-            <span v-else> </span>
+            <span v-else />
           </td>
         </tr>
       </tbody>
