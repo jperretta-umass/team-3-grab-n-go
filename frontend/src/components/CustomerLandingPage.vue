@@ -23,7 +23,7 @@
           </button>
         </div>
       </div>
-      <h1 class="page-title">Customer Landing Page</h1>
+      <h1 class="page-title">Order. Track. Enjoy.</h1>
       <p class="page-subtitle">
         Check your current order, review past orders, or start a new one.
       </p>
