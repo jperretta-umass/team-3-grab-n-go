@@ -1,20 +1,31 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Body, Depends, FastAPI, HTTPException
+from fastapi import Body, Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.auth import router as auth_router
-from app.database import get_db
+from app.database import SessionLocal, get_db
 from app.init_db import init_database
-from app.models import CurrentOrder, MenuItem, Order, PastOrder, UnclaimedOrder, User
+from app.models import CurrentOrder, DiningHall, MenuItem, Order, PastOrder, UnclaimedOrder, User
 from app.payments import router as payments_router
 from app.routers import customer
+from app.routers.dining_menu import router as dining_menu_router
+from app.services.menu_sync import sync_today_menu_to_db
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_database()
+    if SessionLocal is None:
+        raise RuntimeError("DATABASE_URL is not set")
+    db = SessionLocal()
+    try:
+        await sync_today_menu_to_db(db)
+    except Exception as e:
+        print(f"Menu sync failed on startup: {e}")
+    finally:
+        db.close()
     yield
 
 
@@ -34,6 +45,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(customer.router)
+app.include_router(dining_menu_router)
 
 app.include_router(payments_router)
 
@@ -49,9 +61,14 @@ def health():
 
 
 @app.get("/api/menu-items")
-def get_menu_items(db: Session = Depends(get_db)):
-    menu_items = db.query(MenuItem).all()
-    return {"menu_items": [item.to_dict() for item in menu_items]}
+def get_menu_items(
+    hall: str | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    q = db.query(MenuItem)
+    if hall:
+        q = q.join(DiningHall).filter(DiningHall.name.ilike(hall))
+    return {"menu_items": [item.to_dict() for item in q.all()]}
 
 
 @app.get("/api/orders")
