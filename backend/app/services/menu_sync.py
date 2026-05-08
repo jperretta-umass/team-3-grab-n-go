@@ -80,24 +80,20 @@ async def sync_today_menu_to_db(db: Session) -> None:
         seen: dict[str, MenuItem] = {}
 
         for meal_name, stations in meals.items():
-            for station, item_names in stations.items():
+            for station, station_items in stations.items():
                 meal_name = str(meal_name)
                 station = str(station)
-                item_names_list: list[str] = [
-                    str(n)
-                    for n in (
-                        cast(list[Any], item_names)
-                        if isinstance(item_names, list)
-                        else []
-                    )
-                ]
                 category = _category_from_station(station)
                 # Stations named "Breakfast *" are breakfast items even when
                 # the API nests them under the "lunch" meal key.
                 effective_meal = (
                     "breakfast" if "breakfast" in station.lower() else meal_name
                 )
-                for name in item_names_list:
+                for item in cast(list[dict[str, Any]], station_items):
+                    name = item.get("name", "")
+                    if not name:
+                        continue
+                    diets: list[str] = item.get("diets", [])
                     key = name.lower()
                     if key in seen:
                         mi = seen[key]
@@ -108,7 +104,7 @@ async def sync_today_menu_to_db(db: Session) -> None:
                     mi = MenuItem(
                         name=name,
                         meal_type=[effective_meal],
-                        diets=[],
+                        diets=diets,
                         category=category,
                         price=0.0,
                         dining_hall_id=dh.id,

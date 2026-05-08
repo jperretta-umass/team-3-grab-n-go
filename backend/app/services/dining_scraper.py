@@ -42,22 +42,28 @@ async def fetch_menu(hall: str, date_str: str | None = None) -> dict[str, Any]:
 
 
 def _parse(raw: dict[str, Any]) -> dict[str, Any]:
-    meals: dict[str, dict[str, list[str]]] = {}
+    meals: dict[str, dict[str, list[dict[str, Any]]]] = {}
 
     for meal, stations in raw.items():
         if not isinstance(stations, dict):
             continue
-        parsed_stations: dict[str, list[str]] = {}
+        parsed_stations: dict[str, list[dict[str, Any]]] = {}
         for station, html in cast(dict[str, Any], stations).items():
             station = str(station)
             if not isinstance(html, str):
                 continue
             soup = BeautifulSoup(html, "html.parser")
-            items = [
-                li.get_text(" ", strip=True)
-                for li in soup.find_all("li")
-                if li.get_text(" ", strip=True)
-            ]
+            items = []
+            for li in soup.find_all("li"):
+                a = li.find("a")
+                if not a:
+                    continue
+                name = a.get("data-dish-name", "").strip()
+                if not name:
+                    continue
+                diet_str = a.get("data-clean-diet-str", "")
+                diets = [d.strip() for d in diet_str.split(",")] if diet_str else []
+                items.append({"name": name, "diets": diets})
             if items:
                 parsed_stations[station] = items
         if parsed_stations:
