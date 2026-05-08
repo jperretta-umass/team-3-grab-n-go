@@ -7,14 +7,32 @@ from app.models import DiningHall, MenuItem
 from app.services import menu_cache
 from app.services.dining_scraper import HALL_IDS, fetch_menu
 
-_SNACK_KEYWORDS = ("dessert", "pastry", "fruit", "yogurt", "snack")
-_DRINK_KEYWORDS = ("beverage", "drink", "juice", "coffee", "tea", "milk")
+_DRINK_KEYWORDS = ("milk", "juice", "water", "coffee", "tea", "lemonade", "smoothie")
+_SNACK_PHRASES = ("tossed salad", "fruit salad")
+_SNACK_KEYWORDS = (
+    "brownie",
+    "cookie",
+    "muffin top",
+    "danish",
+    "parfait",
+    "oatmeal",
+    "cereal",
+    "broccoli",
+    "carrots",
+    "celery",
+    "squash",
+    "beans",
+    "garlic bread",
+    "yogurt",
+)
 
 
-def _category_from_station(station: str) -> str:
-    low = station.lower()
+def _category_from_item(name: str) -> str:
+    low = name.lower()
     if any(k in low for k in _DRINK_KEYWORDS):
         return "drink"
+    if any(phrase in low for phrase in _SNACK_PHRASES):
+        return "snack"
     if any(k in low for k in _SNACK_KEYWORDS):
         return "snack"
     return "entree"
@@ -83,7 +101,6 @@ async def sync_today_menu_to_db(db: Session) -> None:
             for station, station_items in stations.items():
                 meal_name = str(meal_name)
                 station = str(station)
-                category = _category_from_station(station)
                 # Stations named "Breakfast *" are breakfast items even when
                 # the API nests them under the "lunch" meal key.
                 effective_meal = (
@@ -105,8 +122,8 @@ async def sync_today_menu_to_db(db: Session) -> None:
                         name=name,
                         meal_type=[effective_meal],
                         diets=diets,
-                        category=category,
-                        price=0.0,
+                        category=_category_from_item(name),
+                        price=13.50,
                         dining_hall_id=dh.id,
                     )
                     seen[key] = mi
