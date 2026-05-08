@@ -7,7 +7,15 @@ from sqlalchemy.orm import Session
 from app.auth import router as auth_router
 from app.database import SessionLocal, get_db
 from app.init_db import init_database
-from app.models import CurrentOrder, DiningHall, MenuItem, Order, PastOrder, UnclaimedOrder, User
+from app.models import (
+    CurrentOrder,
+    DiningHall,
+    MenuItem,
+    Order,
+    PastOrder,
+    UnclaimedOrder,
+    User,
+)
 from app.payments import router as payments_router
 from app.routers import customer
 from app.routers.dining_menu import router as dining_menu_router
@@ -148,7 +156,9 @@ def update_order_status(
     if status == "delivered":
         db.query(CurrentOrder).filter(CurrentOrder.order_id == order.id).delete()
         db.query(UnclaimedOrder).filter(UnclaimedOrder.order_id == order.id).delete()
-        existing_past = db.query(PastOrder).filter(PastOrder.order_id == order.id).first()
+        existing_past = (
+            db.query(PastOrder).filter(PastOrder.order_id == order.id).first()
+        )
         if not existing_past:
             db.add(PastOrder(order_id=order.id))
 
