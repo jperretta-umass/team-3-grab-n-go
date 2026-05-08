@@ -6,6 +6,7 @@ from app.database import Base, SessionLocal, engine
 from app.models import (
     CurrentOrder,
     CustomerProfile,
+    DelivererProfile,
     DiningHall,
     MenuItem,
     Order,
@@ -174,6 +175,13 @@ def init_database():
             db.add(demo_deliverer)
             db.flush()
 
+            deliverer_profile = DelivererProfile()
+            db.add(deliverer_profile)
+            db.flush()
+            demo_deliverer.deliverer_id = deliverer_profile.id
+            demo_deliverer.has_deliverer_profile = True
+            db.flush()
+
         two_role_profile = (
             db.query(CustomerProfile)
             .filter(CustomerProfile.user_id == demo_deliverer.id)
@@ -207,6 +215,7 @@ def init_database():
                 total_price=breakfast_burrito.price * 2,
                 status="completed",
                 created_at=datetime(2026, 4, 20, 12, 0, 0),
+                delivery_address="Southwest",
             )
             db.add(past_order)
             db.flush()
@@ -233,6 +242,7 @@ def init_database():
                 + (fruit_cup.price if fruit_cup else 0),
                 status="active",
                 created_at=datetime.now(timezone.utc),
+                delivery_address="Southwest",
             )
             db.add(active_order)
             db.flush()
@@ -259,6 +269,7 @@ def init_database():
                 total_price=breakfast_burrito.price * 3,
                 status="unclaimed",
                 created_at=datetime.now(timezone.utc),
+                delivery_address="Southwest",
             )
             db.add(unclaimed_order)
             db.flush()

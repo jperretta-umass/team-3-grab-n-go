@@ -209,7 +209,7 @@ async function handleCheckout() {
     // Format local cart to send to the backend
     const itemsToCheckout = cart.value.map((item) => ({
       menu_item_id: item.id,
-      quantity: 1 //  cart adds items individually as separate rows
+      quantity: 1, //  cart adds items individually as separate rows
     }))
 
     const response = await fetch("http://localhost:8000/api/payments/create-checkout-session", {
@@ -219,6 +219,7 @@ async function handleCheckout() {
       },
       body: JSON.stringify({ 
         user_id: 1, // Hardcoded
+        delivery_address: selectedDeliveryAddress.value || "No address provided",
         items: itemsToCheckout 
       }),
     })
