@@ -32,16 +32,30 @@
         <div class="panel current-order-panel">
           <div class="panel-header">
             <h2>Current Order Status</h2>
-            <span class="status-pill">{{ activeOrder ? activeOrder.status : 'None' }}</span>
+            <span class="status-pill">{{ activeOrderSummary }}</span>
           </div>
 
-          <div class="order-details">
-            <template v-if="activeOrder">
-              <p><strong>Dining Hall:</strong> {{ activeOrder.dining_hall }}</p>
-              <p><strong>Delivery Address:</strong> {{ activeOrder.delivery_address || 'Not provided' }}</p>
-              <p><strong>Order #:</strong> {{ activeOrder.id }}</p>
-              <p><strong>Items:</strong> {{ activeOrder.items.map((i) => i.name).join(', ') }}</p>
-              <p><strong>Total:</strong> ${{ activeOrder.total_price.toFixed(2) }}</p>
+          <div
+            class="order-details"
+            :class="{ 'order-details-scroll': activeOrders.length > 1 }"
+          >
+            <template v-if="activeOrders.length > 0">
+              <article
+                v-for="order in activeOrders"
+                :key="order.id"
+                class="active-order-item"
+              >
+                <div class="active-order-heading">
+                  <p class="active-order-title">
+                    Order #{{ order.id }}
+                  </p>
+                  <span class="active-order-status">{{ order.status }}</span>
+                </div>
+                <p><strong>Dining Hall:</strong> {{ order.dining_hall }}</p>
+                <p><strong>Delivery Address:</strong> {{ order.delivery_address || 'Not provided' }}</p>
+                <p><strong>Items:</strong> {{ order.items.map((i) => `${i.quantity}x ${i.name}`).join(', ') }}</p>
+                <p><strong>Total:</strong> ${{ order.total_price.toFixed(2) }}</p>
+              </article>
             </template>
             <p v-else>
               No active orders.
@@ -216,8 +230,15 @@ type CustomerProfile = {
 }
 
 const profile = ref<CustomerProfile | null>(null)
-const activeOrder = ref<Order | null>(null)
+const activeOrders = ref<Order[]>([])
 const pastOrders = ref<Order[]>([])
+const activeOrderSummary = computed(() => {
+  if (activeOrders.value.length === 0) {
+    return 'None'
+  }
+
+  return `${activeOrders.value.length} active`
+})
 
 function logout() {
   clearAuthSession()
@@ -241,7 +262,7 @@ onMounted(async () => {
       fetch(`${BASE}/api/customers/${USER_ID}/past-orders`).then(r => r.json()),
     ])
     profile.value = profileData
-    activeOrder.value = activeData.length > 0 ? activeData[0] : null
+    activeOrders.value = activeData
     pastOrders.value = pastData
   } catch (e) {
     console.error('Failed to load customer data', e)
@@ -366,7 +387,6 @@ onMounted(async () => {
   min-height: 280px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .start-order-panel {
@@ -377,6 +397,47 @@ onMounted(async () => {
   margin: 0 0 12px 0;
   font-size: 1rem;
   color: #222;
+}
+
+.order-details-scroll {
+  max-height: 210px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.active-order-item {
+  padding: 0 0 16px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #ececec;
+}
+
+.active-order-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.active-order-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.active-order-title {
+  margin: 0;
+  font-weight: 800;
+  color: #111;
+}
+
+.active-order-status {
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #f4f4f4;
+  color: #333;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 10px;
 }
 
 .status-pill {
