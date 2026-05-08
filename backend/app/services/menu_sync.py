@@ -110,7 +110,6 @@ async def sync_today_menu_to_db(db: Session) -> None:
             for station, station_items in stations.items():
                 meal_name = str(meal_name)
                 station = str(station)
-                category = _category_from_station(station)
                 # Stations named "Breakfast *" are breakfast items even when
                 # the API nests them under the "lunch" meal key.
                 effective_meal = (
