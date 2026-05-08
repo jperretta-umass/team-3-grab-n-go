@@ -232,6 +232,10 @@ export function removeFromCart(cartId: number): void {
   cart.value = cart.value.filter((item: { cartId: number; }) => item.cartId !== cartId)
 }
 
+export function clearCart(): void {
+  cart.value = []
+}
+
 export function formatTags(item: MenuItem): string {
   const meals = item.mealType.join(', ')
   const diets = item.diets.length ? item.diets.join(', ') : 'none'
