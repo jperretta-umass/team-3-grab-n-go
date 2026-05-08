@@ -80,7 +80,10 @@ def create_checkout_session(request: CheckoutRequest, db: Session = Depends(get_
             payment_method_types=["card"],
             line_items=line_items,  # type: ignore
             mode="payment",
-            metadata={"user_id": str(request.user_id), "delivery_address": request.delivery_address},
+            metadata={
+                "user_id": str(request.user_id),
+                "delivery_address": request.delivery_address,
+            },
             success_url="http://localhost/success",
             cancel_url="http://localhost/ItemPage",
         )
