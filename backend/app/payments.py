@@ -122,7 +122,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                 user_id=user_id,
                 dining_hall_id=hall_id,
                 total_price=session["amount_total"] / 100,
-                status="paid",
+                status="unclaimed",
                 created_at=datetime.now(timezone.utc),
             )
             db.add(new_order)
