@@ -47,6 +47,9 @@ export const orders = ref<Order[]>([])
 export const ordersLoading = ref(true)
 export const ordersError = ref<string | null>(null)
 
+/** Set when a deliverer claims an order; used on the landing page for status updates. */
+export const delivererCurrentOrder = ref<Order | null>(null)
+
 const API_BASE = 'http://localhost:8000'
 
 type RawOrderItem = {
@@ -114,5 +117,20 @@ export async function claimOrder(orderId: number): Promise<void> {
   if (!response.ok) {
     const data = await response.json().catch(() => null)
     throw new Error(data?.detail ?? `Failed to claim order: ${response.status}`)
+  }
+}
+
+export async function updateOrderStatus(orderId: number, status: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/orders/${orderId}/status`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(status),
+  })
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null)
+    throw new Error(data?.detail ?? `Failed to update order status: ${response.status}`)
   }
 }

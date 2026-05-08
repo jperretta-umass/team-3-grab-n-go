@@ -104,8 +104,8 @@ def claim_order(order_id: int, db: Session = Depends(get_db)):
 
     db.add(claimed_order)
     db.commit()
-    db.refresh(new_order)
-    return {"message": "Order claimed", "order": new_order.to_dict()}
+    db.refresh(order)
+    return {"message": "Order claimed", "order": order.to_dict()}
 
 
 @app.patch("/api/orders/{order_id}/status")
