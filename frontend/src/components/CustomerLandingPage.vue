@@ -119,7 +119,7 @@
               :disabled="!canStartOrder"
               @click="startOrder"
             >
-              Start Order
+              Start New Order
             </button>
           </div>
         </div>
