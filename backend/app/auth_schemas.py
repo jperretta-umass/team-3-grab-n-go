@@ -4,10 +4,25 @@ from pydantic import BaseModel, EmailStr, Field
 class RegisterRequest(BaseModel):
     username: str = Field(min_length=1)
     email: EmailStr
-    password: str = Field(min_length=6, max_length=72)
+    password: str
     phone_num: str | None = None
     is_deliverer: bool = False
 
+    @field_validator("password")
+    @classmethod
+    
+    def validate_password(cls, value):
+        if len(value) < 6:
+            raise ValueError(
+                "Password must be at least 6 characters long"
+            )
+
+        if len(value) > 72:
+            raise ValueError(
+                "Password must be less than 72 characters"
+            )
+
+        return value
 
 class LoginRequest(BaseModel):
     email: EmailStr
