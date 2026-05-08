@@ -27,15 +27,6 @@ _SNACK_KEYWORDS = (
 )
 
 
-def _category_from_station(station: str) -> str:
-    low = station.lower()
-    if any(k in low for k in _DRINK_KEYWORDS):
-        return "drink"
-    if any(k in low for k in _SNACK_KEYWORDS):
-        return "snack"
-    return "entree"
-
-
 def _category_from_item(name: str) -> str:
     low = name.lower()
     if any(k in low for k in _DRINK_KEYWORDS):
