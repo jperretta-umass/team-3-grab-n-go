@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import TypedDict
 
 from app.auth import get_password_hash
 from app.database import Base, SessionLocal, engine
@@ -14,6 +15,15 @@ from app.models import (
     UnclaimedOrder,
     User,
 )
+
+
+class MockMenuItem(TypedDict):
+    name: str
+    mealType: list[str]
+    diets: list[str]
+    category: str
+    dining_hall: DiningHall
+    price: float
 
 
 def init_database():
@@ -41,7 +51,7 @@ def init_database():
         franklin = get_or_create_dining_hall("Franklin")
         worcester = get_or_create_dining_hall("Worcester")
 
-        mock_items = [
+        mock_items: list[MockMenuItem] = [
             {
                 "name": "Grilled Chicken Bowl",
                 "mealType": ["dinner"],
