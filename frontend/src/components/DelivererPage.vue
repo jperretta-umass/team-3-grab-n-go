@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue"
 import DelivererPopup from './DelivererPopup.vue'
-import { Order, fetchOrders, orders, ordersError, ordersLoading } from "./displayScripts/Order"
+import { Order, fetchOrders, orders, ordersError, ordersLoading, claimOrder } from "./displayScripts/Order"
 
 
 const headers = [
@@ -54,28 +54,57 @@ const orderRows = computed(() => {
 
 const longest = computed(() => orderRows.value.reduce((num, arr) => Math.max(num, arr.length), 0));
 
+function formatCreatedAt(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(date)
+}
+
 const claimNotifVis = ref(false);
 // code for alert found here! https://v1.tailwindcss.com/components/alerts
 
-function handleAccept() {
+const alertMessage = ref("")
+const claimSuccessful = ref(true)
+
+async function handleAccept() {
   if (!popOrderName.value) {
     return;
   }
+
+  try {
+    await claimOrder(popOrderName.value.id);
+
+    claimSuccessful.value = true
+    alertMessage.value = "Order successfully claimed!"
+
+    const updatedOrders = [...orders.value]
+    const targetColumn = orderRows.value[curInd.value] ?? []
+    const targetOrder = targetColumn[curCol.value]
+    if (targetOrder) {
+      const index = updatedOrders.findIndex((order) => order.id === targetOrder.id)
+      if (index >= 0) {
+        updatedOrders.splice(index, 1)
+        orders.value = updatedOrders
+      }
+    }
+  } catch (error) {
+    alertMessage.value = error instanceof Error ? "Cannot claim order: " + error.message : 'Unable to claim order.'
+    claimSuccessful.value = false
+  }
+
   claimNotifVis.value = true;
   setTimeout(() => {
-      claimNotifVis.value = false;
-    }, 3000);
-  popOrderName.value.status = "claimed";
-  const updatedOrders = [...orders.value]
-  const targetColumn = orderRows.value[curInd.value] ?? []
-  const targetOrder = targetColumn[curCol.value]
-  if (targetOrder) {
-    const index = updatedOrders.findIndex((order) => order.id === targetOrder.id)
-    if (index >= 0) {
-      updatedOrders.splice(index, 1)
-      orders.value = updatedOrders
-    }
-  }
+    claimNotifVis.value = false;
+  }, 3000);
   popupOpen.value = false;
 }
 
@@ -104,18 +133,15 @@ onMounted(fetchOrders)
       </div><div class="flex lg:flex-15">
         <a class="text-4xl/6 font-sans font-semibold text-gray-900">Available Orders</a>
       </div>
-      <div>
-        <a class="text-lg/6 font-sans font-semibold text-gray-900">My Account</a>
-      </div>
     </nav>
   </header>
   <div
     v-if="claimNotifVis"
-    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-md"
+    :class="{ 'bg-green-100 border border-green-400 text-green-700' : claimSuccessful, 'bg-red-100 border border-red-400 text-red-700' : !claimSuccessful }"
+    class=" px-4 py-3 rounded relative shadow-md"
     role="alert"
   >
-    <strong class="font-bold">Order Claimed!</strong>
-    <span class="block sm:inline"> You have claimed this order. </span>
+    <span class="block sm:inline"> {{ alertMessage }} </span>
   </div>
   <div
     v-if="ordersLoading"
@@ -179,7 +205,7 @@ onMounted(fetchOrders)
               <div>{{ col[i - 1].dining_hall }}</div>
               <div>${{ col[i - 1].total_price.toFixed(2) }}</div>
               <div>{{ col[i - 1].status }}</div>
-              <div>{{ col[i - 1].created_at }}</div>
+              <div>{{ formatCreatedAt(col[i - 1].created_at) }}</div>
               <div>Items: {{ col[i - 1].items.length }}</div>
             </div>
             <span v-else />

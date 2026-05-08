@@ -5,6 +5,7 @@ from app.database import Base, SessionLocal, engine
 from app.models import (
     CurrentOrder,
     CustomerProfile,
+    DelivererProfile,
     DiningHall,
     MenuItem,
     Order,

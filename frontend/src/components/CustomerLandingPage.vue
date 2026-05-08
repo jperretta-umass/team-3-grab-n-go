@@ -38,6 +38,7 @@
           <div class="order-details">
             <template v-if="activeOrder">
               <p><strong>Dining Hall:</strong> {{ activeOrder.dining_hall }}</p>
+              <p><strong>Delivery Address:</strong> {{ activeOrder.delivery_address || 'Not provided' }}</p>
               <p><strong>Order #:</strong> {{ activeOrder.id }}</p>
               <p><strong>Items:</strong> {{ activeOrder.items.map((i) => i.name).join(', ') }}</p>
               <p><strong>Total:</strong> ${{ activeOrder.total_price.toFixed(2) }}</p>
@@ -46,32 +47,9 @@
               No active orders.
             </p>
           </div>
-
-          <div class="panel-actions">
-            <button
-              class="secondary-btn"
-              :disabled="!activeOrder"
-            >
-              View Current Order
-            </button>
-          </div>
         </div>
 
-        <div class="panel quick-actions-panel">
-          <h2>Quick Actions</h2>
-
-          <div class="action-stack">
-            <button class="action-btn neutral-btn">
-              Past Orders ({{ profile ? profile.past_orders_count : 0 }})
-            </button>
-            <button
-              class="action-btn neutral-btn"
-              :disabled="!activeOrder"
-            >
-              Track Current Order
-            </button>
-          </div>
-
+        <div class="panel start-order-panel">
           <div class="start-order-section">
             <h3 class="start-order-title">
               Start Order
@@ -100,9 +78,45 @@
                 Worcester
               </option>
             </select>
+            <label
+              class="hall-label"
+              for="deliveryAddress"
+            >
+              Delivery Address
+            </label>
+            <select
+              id="deliveryAddress"
+              v-model="deliveryAddress"
+              class="address-input"
+            >
+              <option
+                value=""
+                disabled
+              >
+                Select a delivery location
+              </option>
+              <option value="Southwest">
+                Southwest
+              </option>
+              <option value="Honors">
+                Honors
+              </option>
+              <option value="Central">
+                Central
+              </option>
+              <option value="Northeast">
+                Northeast
+              </option>
+              <option value="Orchard Hill">
+                Orchard Hill
+              </option>
+              <option value="Sylvan">
+                Sylvan
+              </option>
+            </select>
             <button
               class="action-btn start-order-btn"
-              :disabled="!hallSelection"
+              :disabled="!canStartOrder"
               @click="startOrder"
             >
               Start Order
@@ -150,7 +164,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { clearAuthSession, getAuthUser } from '../utils/auth'
-import { selectedHall } from './displayScripts/menuItems'
+import { selectedDeliveryAddress, selectedHall } from './displayScripts/menuItems'
 
 const BASE = 'http://localhost:8000'
 const router = useRouter()
@@ -158,10 +172,13 @@ const authUser = getAuthUser()
 const USER_ID = authUser?.id
 const currentUsername = computed(() => authUser?.username ?? '')
 const canSwitchLanding = computed(() => authUser?.is_deliverer === true)
-const hallSelection = ref('')
+const hallSelection = ref(selectedHall.value)
+const deliveryAddress = ref(selectedDeliveryAddress.value)
+const canStartOrder = computed(() => Boolean(hallSelection.value && deliveryAddress.value.trim()))
 
 function startOrder() {
   selectedHall.value = hallSelection.value
+  selectedDeliveryAddress.value = deliveryAddress.value.trim()
   router.push('/ItemPage')
 }
 
@@ -183,6 +200,7 @@ type Order = {
   dining_hall: string
   total_price: number
   status: string
+  delivery_address: string | null
   created_at: string
   items: OrderItem[]
 }
@@ -338,7 +356,6 @@ onMounted(async () => {
 }
 
 .panel-header h2,
-.quick-actions-panel h2,
 .history-panel h2 {
   margin: 0;
   font-size: 2rem;
@@ -352,7 +369,7 @@ onMounted(async () => {
   justify-content: space-between;
 }
 
-.quick-actions-panel {
+.start-order-panel {
   min-height: 280px;
 }
 
@@ -372,13 +389,6 @@ onMounted(async () => {
 }
 
 .panel-actions {
-  margin-top: 20px;
-}
-
-.action-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
   margin-top: 20px;
 }
 
@@ -458,12 +468,9 @@ onMounted(async () => {
 }
 
 .start-order-section {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  border-top: 1px solid #ececec;
-  padding-top: 16px;
 }
 
 .start-order-title {
@@ -484,6 +491,13 @@ onMounted(async () => {
   border: 1px solid #ccc;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.address-input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
 }
 
 .start-order-btn {

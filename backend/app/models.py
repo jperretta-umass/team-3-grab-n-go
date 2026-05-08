@@ -40,7 +40,7 @@ class User(Base):
     has_deliverer_profile: Mapped[bool] = mapped_column(
         Boolean, nullable=False, default=False
     )
-    deliverer_id: Mapped[int] = mapped_column(
+    deliverer_id: Mapped[int | None] = mapped_column(
         Integer,
         ForeignKey("deliverer_profiles.id"),
         nullable=True,
@@ -232,7 +232,7 @@ class CurrentOrder(Base):
     order_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("orders.id"), nullable=False, unique=True
     )
-    deliverer_id: Mapped[int] = mapped_column(
+    deliverer_id: Mapped[int | None] = mapped_column(
         Integer, ForeignKey("deliverer_profiles.id"), nullable=True
     )
     order: Mapped[Order] = relationship("Order")
