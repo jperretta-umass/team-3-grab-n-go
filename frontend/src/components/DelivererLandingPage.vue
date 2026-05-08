@@ -83,28 +83,19 @@
         </div>
 
         <div class="history-list">
-          <div class="history-item">
-            <div>
-              <p class="history-title">Berkshire Dining Hall</p>
-              <p class="history-meta">Order #1018 • Completed</p>
-            </div>
-            <button class="small-btn">View</button>
+          <div v-if="pastOrdersLoading" class="history-item">
+            <p>Loading order history...</p>
           </div>
-
-          <div class="history-item">
-            <div>
-              <p class="history-title">Franklin Dining Hall</p>
-              <p class="history-meta">Order #1009 • Completed</p>
-            </div>
-            <button class="small-btn">View</button>
+          <div v-else-if="pastOrders.length == 0" class="history-item">
+            <p>No past orders found.</p>
           </div>
-
-          <div class="history-item">
+          <div v-else v-for="order in pastOrders" :key="order.id" class="history-item">
             <div>
-              <p class="history-title">Worcester Dining Hall</p>
-              <p class="history-meta">Order #998 • Cancelled</p>
+              <p class="history-title">Order to {{ order.dining_hall }}</p>
+              <p class="history-meta">
+                Order #{{ order.id }} - {{ order.status }}
+              </p>
             </div>
-            <button class="small-btn">View</button>
           </div>
         </div>
       </section>
@@ -122,6 +113,9 @@ import {
   delivererCurrentOrderLoading,
   fetchDelivererCurrentOrder,
   updateOrderStatus,
+  pastOrders, 
+  pastOrdersLoading,
+  fetchPastOrders
 } from './displayScripts/Order'
 
 const router = useRouter()
@@ -150,6 +144,11 @@ const nextStatusLabel = computed(() => {
   }
 
   return 'No active order'
+})
+
+onMounted(() => {
+  fetchPastOrders()
+  fetchDelivererCurrentOrder()
 })
 
 function logout() {
@@ -185,7 +184,6 @@ function goToCustomerLanding() {
   router.push('/CustomerLanding')
 }
 
-onMounted(fetchDelivererCurrentOrder)
 </script>
 
 <style scoped>

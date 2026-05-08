@@ -217,3 +217,24 @@ export async function updateOrderStatus(orderId: number, status: string): Promis
   setDelivererCurrentOrder(isActiveDelivererOrder(updatedOrder) ? updatedOrder : null)
   return updatedOrder
 }
+
+
+export const pastOrders = ref<Order[]>([])
+export const pastOrdersLoading = ref(false)
+export async function fetchPastOrders(): Promise<void> {
+  pastOrdersLoading.value = true
+  try {
+    const response = await fetch(`${API_BASE}/api/orders`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const data = (await response.json()) as { orders?: RawOrder[] }
+    pastOrders.value = (data.orders ?? []).map((order) => convertOrder(order))
+    .filter((order) => order.status === 'delivered')
+  } catch (error) {
+    pastOrders.value = []
+  }finally {
+    pastOrdersLoading.value = false
+  }
+}
