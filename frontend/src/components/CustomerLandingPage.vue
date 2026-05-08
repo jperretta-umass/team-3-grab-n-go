@@ -182,9 +182,6 @@ function startOrder() {
   router.push('/ItemPage')
 }
 
-const USER_ID = 1
-const BASE = 'http://localhost:8000'
-
 // const profile = ref<any>(null)
 // const activeOrder = ref<any>(null)
 // const pastOrders = ref<any[]>([])
