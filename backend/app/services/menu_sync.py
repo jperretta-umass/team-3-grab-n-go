@@ -106,7 +106,7 @@ async def sync_today_menu_to_db(db: Session) -> None:
                         meal_type=[effective_meal],
                         diets=diets,
                         category=category,
-                        price=0.0,
+                        price=13.50,
                         dining_hall_id=dh.id,
                     )
                     seen[key] = mi
