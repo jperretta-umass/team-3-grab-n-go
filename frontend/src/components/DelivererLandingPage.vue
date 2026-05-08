@@ -31,14 +31,19 @@
         <div class="panel current-order-panel">
           <div class="panel-header">
             <h2>Current Order Status</h2>
-            <span class="status-pill">On The Way</span>
+            <span class="status-pill">{{ delivererCurrentOrder?.status ?? 'No active order' }}</span>
           </div>
 
           <div class="order-details">
-            <p><strong>Dining Hall:</strong> Hampshire</p>
-            <p><strong>Order #:</strong> 1024</p>
-            <p><strong>Pickup Estimate:</strong> 10–15 min</p>
-            <p><strong>Items:</strong> Grilled Chicken Bowl, Fruit Cup</p>
+            <template v-if="delivererCurrentOrder">
+              <p><strong>Dining Hall:</strong> {{ delivererCurrentOrder.dining_hall }}</p>
+              <p><strong>Order #:</strong> {{ delivererCurrentOrder.id }}</p>
+              <p><strong>To:</strong> {{ delivererCurrentOrder.delivery_address }}</p>
+              <p><strong>Items:</strong> {{ delivererCurrentOrder.items.length }} line(s)</p>
+            </template>
+            <p v-else class="order-details-placeholder">
+              Claim an order on Available Orders to see it here.
+            </p>
           </div>
         </div>
 
@@ -56,9 +61,12 @@
             <button
               class="action-btn secondary-btn"
               type="button"
+              :disabled="statusUpdating"
+              @click="handleUpdateOrderStatus"
             >
-              Update Order Status
+              {{ statusUpdating ? 'Updating…' : 'Mark on the way' }}
             </button>
+            <p v-if="statusError" class="status-error">{{ statusError }}</p>
           </div>
         </div>
       </section>
@@ -99,17 +107,43 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { clearAuthSession, getAuthUser } from '../utils/auth'
+import {
+  delivererCurrentOrder,
+  updateOrderStatus,
+} from './displayScripts/Order'
 
 const router = useRouter()
 const authUser = getAuthUser()
 const currentUsername = computed(() => authUser?.username ?? '')
+const statusUpdating = ref(false)
+const statusError = ref<string | null>(null)
 
 function logout() {
   clearAuthSession()
   router.replace('/Login')
+}
+
+async function handleUpdateOrderStatus() {
+  const order = delivererCurrentOrder.value
+  if (!order) {
+    statusError.value = 'No active order. Claim one from Available Orders first.'
+    return
+  }
+
+  statusError.value = null
+  statusUpdating.value = true
+  try {
+    await updateOrderStatus(order.id, 'on the way')
+    order.status = 'on the way'
+  } catch (e) {
+    statusError.value =
+      e instanceof Error ? e.message : 'Failed to update order status.'
+  } finally {
+    statusUpdating.value = false
+  }
 }
 
 function goToCustomerLanding() {
@@ -245,6 +279,17 @@ function goToCustomerLanding() {
   margin: 0 0 12px 0;
   font-size: 1rem;
   color: #222;
+}
+
+.order-details-placeholder,
+.status-error {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.status-error {
+  color: #c0392b;
 }
 
 .status-pill {
