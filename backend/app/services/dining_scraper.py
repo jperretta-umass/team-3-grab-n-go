@@ -53,15 +53,15 @@ def _parse(raw: dict[str, Any]) -> dict[str, Any]:
             if not isinstance(html, str):
                 continue
             soup = BeautifulSoup(html, "html.parser")
-            items = []
+            items: list[dict[str, Any]] = []
             for li in soup.find_all("li"):
                 a = li.find("a")
                 if not a:
                     continue
-                name = a.get("data-dish-name", "").strip()
+                name = str(a.get("data-dish-name", "")).strip()
                 if not name:
                     continue
-                diet_str = a.get("data-clean-diet-str", "")
+                diet_str = str(a.get("data-clean-diet-str", ""))
                 diets = [d.strip() for d in diet_str.split(",")] if diet_str else []
                 items.append({"name": name, "diets": diets})
             if items:

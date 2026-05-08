@@ -1,14 +1,13 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Body, Depends, FastAPI, Query
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.auth import router as auth_router
 from app.database import SessionLocal, get_db
 from app.init_db import init_database
-from app.models import DiningHall, CurrentOrder, MenuItem, Order, UnclaimedOrder, User
+from app.models import CurrentOrder, DiningHall, MenuItem, Order, UnclaimedOrder, User
 from app.payments import router as payments_router
 from app.routers import customer
 from app.routers.dining_menu import router as dining_menu_router
