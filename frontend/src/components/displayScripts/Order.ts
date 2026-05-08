@@ -232,7 +232,7 @@ export async function fetchPastOrders(): Promise<void> {
     const data = (await response.json()) as { orders?: RawOrder[] }
     pastOrders.value = (data.orders ?? []).map((order) => convertOrder(order))
     .filter((order) => order.status === 'delivered')
-  } catch (error) {
+  } catch {
     pastOrders.value = []
   }finally {
     pastOrdersLoading.value = false

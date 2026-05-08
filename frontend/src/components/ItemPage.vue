@@ -26,17 +26,13 @@
           v-model="selectedMeal"
           class="green-select"
         >
-          <option value="">
-            All
-          </option>
-          <option value="breakfast">
-            Breakfast
-          </option>
-          <option value="lunch">
-            Lunch
-          </option>
-          <option value="dinner">
-            Dinner
+          <option value="">All</option>
+          <option
+            v-for="meal in availableMeals"
+            :key="meal"
+            :value="meal"
+          >
+            {{ meal.charAt(0).toUpperCase() + meal.slice(1) }}
           </option>
         </select>
       </div>
@@ -46,23 +42,16 @@
         <select
           id="dietType"
           v-model="selectedDiet"
-          class="orange-select"
+          class="green-select"
         >
-          <option value="">
-            None
-          </option>
-          <option value="no-peanuts">
-            No Peanuts
-          </option>
-          <option value="vegan">
-            Vegan
-          </option>
-          <option value="gluten-free">
-            Gluten Free
-          </option>
-          <option value="vegetarian">
-            Vegetarian
-          </option>
+          <option value="">All</option>
+          <option value="Vegetarian">Vegetarian</option>
+          <option value="Local">Local</option>
+          <option value="Sustainable">Sustainable</option>
+          <option value="Whole Grain">Whole Grain</option>
+          <option value="Halal">Halal</option>
+          <option value="Antibiotic Free">Antibiotic Free</option>
+          <option value="Plant Based">Plant Based</option>
         </select>
       </div>
 
@@ -96,7 +85,7 @@
               :key="item.id"
             >
               <div class="item-info">
-                <span class="item-name">{{ item.name }} - ${{ item.price }}</span>
+                <span class="item-name">{{ item.name }} - {{ displayPrice(item.price) }}</span>
                 <span class="item-meta">{{ formatTags(item) }}</span>
               </div>
               <button
@@ -173,12 +162,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { getAuthUser } from '../utils/auth'
-import { selectedMeal, selectedDiet, selectedHall, selectedDeliveryAddress, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
-
+import { onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { type MealType, selectedHall, selectedMeal, selectedDiet, selectedDeliveryAddress, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 const router = useRouter()
+const route = useRoute()
 
 function goHome() {
   router.push('/CustomerLanding')
@@ -188,17 +176,30 @@ function startOver() {
   router.push('/CustomerLanding')
 }
 
-onMounted(fetchMenuItems)
+function displayPrice(price: number): string {
+  return `$${price.toFixed(2)}`
+}
+
+onMounted(() => {
+  const hallParam = route.query.hall
+  if (hallParam && typeof hallParam === 'string') {
+    selectedHall.value = hallParam
+  }
+  fetchMenuItems()
+})
+
+watch(selectedHall, () => {
+  fetchMenuItems()
+})
+
+watch(availableMeals, (meals) => {
+  if (selectedMeal.value && !meals.includes(selectedMeal.value as MealType)) {
+    selectedMeal.value = ''
+  }
+})
 
 async function handleCheckout() {
   try {
-    const authUser = getAuthUser()
-    if (!authUser) {
-      alert("Please log in before checking out.")
-      router.push('/Login')
-      return
-    }
-
     // Format local cart to send to the backend
     const itemsToCheckout = cart.value.map((item) => ({
       menu_item_id: item.id,
@@ -211,8 +212,7 @@ async function handleCheckout() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ 
-        user_id: authUser.id,
-        delivery_address: selectedDeliveryAddress.value,
+        user_id: 1, // Hardcoded
         items: itemsToCheckout 
       }),
     })
@@ -340,6 +340,12 @@ async function handleCheckout() {
 
 .filter-group label {
   font-weight: 600;
+}
+
+.coming-soon {
+  font-size: 0.85rem;
+  color: #999;
+  font-style: italic;
 }
 
 .filter-group select {
