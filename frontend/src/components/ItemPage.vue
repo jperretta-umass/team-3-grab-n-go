@@ -175,7 +175,6 @@ import { getAuthUser } from '../utils/auth'
 
 const router = useRouter()
 const route = useRoute()
-const authUser = getAuthUser()
 
 function goHome() {
   router.push('/CustomerLanding')
