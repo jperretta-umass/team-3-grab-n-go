@@ -90,6 +90,18 @@ async function handleAccept() {
   }
 
   await claimOrder(popOrderName.value.id);
+  const response = await fetch(`http://localhost:8000/api/orders/${popOrderName.value.id}/status`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify('claimed'),
+  })
+
+  if (!response.ok) {
+    alert('Failed to claim order. Please try again.')
+    return
+  }
 
   claimNotifVis.value = true;
   setTimeout(() => {
