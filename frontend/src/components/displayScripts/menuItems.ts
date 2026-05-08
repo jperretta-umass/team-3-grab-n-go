@@ -21,6 +21,7 @@ export type CartItem = {
   id: number
   name: string
   price: number
+  category: 'entree' | 'snack' | 'drink'
 }
 
 export const items = ref<MenuItem[]>([])
@@ -198,16 +199,32 @@ export const filteredSnacksAndDrinks = computed(() => {
   return snacksAndDrinks.value.filter(matchesFilters)
 })
 
-export const cartTotal = computed(() => {
-  return cart.value.reduce((total: number, item: { price: number }) => total + item.price, 0).toFixed(2)
-})
+export const cartEntreeCount = computed(() =>
+  cart.value.filter(i => i.category === 'entree').length
+)
+
+export const cartSideCount = computed(() =>
+  cart.value.filter(i => i.category !== 'entree').length
+)
+
+export const maxSides = computed(() => cartEntreeCount.value * 4)
+
+export const canAddSide = computed(() =>
+  cartEntreeCount.value > 0 && cartSideCount.value < maxSides.value
+)
+
+export const cartTotal = computed(() =>
+  (cartEntreeCount.value * 13.50).toFixed(2)
+)
 
 export function addToCart(item: MenuItem): void {
+  if (item.category !== 'entree' && !canAddSide.value) return
   cart.value.push({
     cartId: nextCartId++,
     id: item.id,
     name: item.name,
-    price: item.price
+    price: item.category === 'entree' ? 13.50 : 0,
+    category: item.category,
   })
 }
 
