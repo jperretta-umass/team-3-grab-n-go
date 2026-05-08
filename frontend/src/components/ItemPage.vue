@@ -134,7 +134,12 @@
     </main>
 
     <section class="panel fixed-panel bottom-panel">
-      <h2>Snacks and Drinks</h2>
+      <div class="panel-heading">
+        <h2>Snacks and Drinks</h2>
+        <span class="side-counter">
+          {{ cartEntreeCount > 0 ? `${cartSideCount} / ${maxSides} sides used` : 'Add an entrée first' }}
+        </span>
+      </div>
       <div class="panel-scroll">
         <ul v-if="filteredSnacksAndDrinks.length">
           <li
@@ -147,6 +152,7 @@
             </div>
             <button
               class="add-btn green"
+              :disabled="!canAddSide"
               @click="addToCart(item)"
             >
               Add
@@ -164,7 +170,7 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { type MealType, selectedHall, selectedMeal, selectedDiet, selectedDeliveryAddress, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
+import { type MealType, selectedHall, selectedMeal, selectedDiet, selectedDeliveryAddress, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, cartEntreeCount, cartSideCount, maxSides, canAddSide, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 const router = useRouter()
 const route = useRoute()
 
@@ -388,6 +394,19 @@ async function handleCheckout() {
 
 .bottom-panel {
   height: 400px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.side-counter {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888;
 }
 
 .panel h2 {
