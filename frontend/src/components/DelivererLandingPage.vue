@@ -35,14 +35,20 @@
           </div>
 
           <div class="order-details">
+            <p v-if="delivererCurrentOrderLoading" class="order-details-placeholder">
+              Loading active order...
+            </p>
             <template v-if="delivererCurrentOrder">
               <p><strong>Dining Hall:</strong> {{ delivererCurrentOrder.dining_hall }}</p>
               <p><strong>Order #:</strong> {{ delivererCurrentOrder.id }}</p>
               <p><strong>To:</strong> {{ delivererCurrentOrder.delivery_address }}</p>
               <p><strong>Items:</strong> {{ delivererCurrentOrder.items.length }} line(s)</p>
             </template>
-            <p v-else class="order-details-placeholder">
+            <p v-else-if="!delivererCurrentOrderLoading" class="order-details-placeholder">
               Claim an order on Available Orders to see it here.
+            </p>
+            <p v-if="delivererCurrentOrderError" class="status-error">
+              {{ delivererCurrentOrderError }}
             </p>
           </div>
         </div>
@@ -61,10 +67,10 @@
             <button
               class="action-btn secondary-btn"
               type="button"
-              :disabled="statusUpdating"
+              :disabled="statusUpdating || !delivererCurrentOrder"
               @click="handleUpdateOrderStatus"
             >
-              {{ statusUpdating ? 'Updating…' : 'Mark on the way' }}
+              {{ statusUpdating ? 'Updating...' : nextStatusLabel }}
             </button>
             <p v-if="statusError" class="status-error">{{ statusError }}</p>
           </div>
@@ -107,11 +113,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { clearAuthSession, getAuthUser } from '../utils/auth'
 import {
   delivererCurrentOrder,
+  delivererCurrentOrderError,
+  delivererCurrentOrderLoading,
+  fetchDelivererCurrentOrder,
   updateOrderStatus,
 } from './displayScripts/Order'
 
@@ -120,6 +129,28 @@ const authUser = getAuthUser()
 const currentUsername = computed(() => authUser?.username ?? '')
 const statusUpdating = ref(false)
 const statusError = ref<string | null>(null)
+const nextStatus = computed(() => {
+  if (delivererCurrentOrder.value?.status === 'claimed') {
+    return 'on the way'
+  }
+
+  if (delivererCurrentOrder.value?.status === 'on the way') {
+    return 'delivered'
+  }
+
+  return null
+})
+const nextStatusLabel = computed(() => {
+  if (nextStatus.value === 'on the way') {
+    return 'Mark on the way'
+  }
+
+  if (nextStatus.value === 'delivered') {
+    return 'Mark delivered'
+  }
+
+  return 'No active order'
+})
 
 function logout() {
   clearAuthSession()
@@ -133,11 +164,15 @@ async function handleUpdateOrderStatus() {
     return
   }
 
+  if (!nextStatus.value) {
+    statusError.value = 'This order cannot be updated from its current status.'
+    return
+  }
+
   statusError.value = null
   statusUpdating.value = true
   try {
-    await updateOrderStatus(order.id, 'on the way')
-    order.status = 'on the way'
+    await updateOrderStatus(order.id, nextStatus.value)
   } catch (e) {
     statusError.value =
       e instanceof Error ? e.message : 'Failed to update order status.'
@@ -149,6 +184,8 @@ async function handleUpdateOrderStatus() {
 function goToCustomerLanding() {
   router.push('/CustomerLanding')
 }
+
+onMounted(fetchDelivererCurrentOrder)
 </script>
 
 <style scoped>

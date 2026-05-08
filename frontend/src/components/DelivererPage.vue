@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue"
 import DelivererPopup from './DelivererPopup.vue'
-import { Order, fetchOrders, orders, ordersError, ordersLoading, claimOrder, delivererCurrentOrder } from "./displayScripts/Order"
+import { Order, fetchOrders, orders, ordersError, ordersLoading, claimOrder } from "./displayScripts/Order"
 
 
 const headers = [
@@ -90,31 +90,17 @@ async function handleAccept() {
   }
 
   try {
-    await claimOrder(popOrderName.value.id)
+    const claimedOrder = await claimOrder(popOrderName.value.id)
+    popOrderName.value.status = claimedOrder.status
   } catch (e) {
     alert(e instanceof Error ? e.message : 'Failed to claim order.')
     return
   }
 
-  const response = await fetch(`http://localhost:8000/api/orders/${popOrderName.value.id}/status`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify('claimed'),
-  })
-
-  if (!response.ok) {
-    alert('Failed to claim order. Please try again.')
-    return
-  }
-
-  delivererCurrentOrder.value = popOrderName.value
   claimNotifVis.value = true;
   setTimeout(() => {
     claimNotifVis.value = false;
   }, 3000);
-  popOrderName.value.status = "claimed";
   const updatedOrders = [...orders.value]
   const targetColumn = orderRows.value[curInd.value] ?? []
   const targetOrder = targetColumn[curCol.value]
