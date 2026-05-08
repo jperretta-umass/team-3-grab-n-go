@@ -38,8 +38,21 @@
       </div>
 
       <div class="filter-group">
-        <label>Diet:</label>
-        <span class="coming-soon">Coming soon</span>
+        <label for="dietType">Diet:</label>
+        <select
+          id="dietType"
+          v-model="selectedDiet"
+          class="green-select"
+        >
+          <option value="">All</option>
+          <option value="Vegetarian">Vegetarian</option>
+          <option value="Local">Local</option>
+          <option value="Sustainable">Sustainable</option>
+          <option value="Whole Grain">Whole Grain</option>
+          <option value="Halal">Halal</option>
+          <option value="Antibiotic Free">Antibiotic Free</option>
+          <option value="Plant Based">Plant Based</option>
+        </select>
       </div>
 
       <button class="cart-tab-btn">
@@ -139,7 +152,7 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { type MealType, selectedHall, selectedMeal, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
+import { type MealType, selectedHall, selectedMeal, selectedDiet, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 
 const router = useRouter()
 const route = useRoute()

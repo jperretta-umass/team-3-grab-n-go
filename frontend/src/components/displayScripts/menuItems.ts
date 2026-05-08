@@ -5,7 +5,7 @@ import { computed, ref } from 'vue'
 
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'late night'
-export type DietType = 'no-peanuts' | 'vegan' | 'gluten-free' | 'vegetarian'
+export type DietType = 'Vegetarian' | 'Local' | 'Sustainable' | 'Whole Grain' | 'Halal' | 'Antibiotic Free' | 'Plant Based'
 export type DiningHall = 'Hampshire' | 'Berkshire' | 'Franklin' | 'Worcester' 
 
 export type MenuItem = {
@@ -41,7 +41,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 1,
     name: 'Grilled Chicken Bowl',
     mealType: ['lunch', 'dinner'],
-    diets: ['gluten-free'],
+    diets: ['Antibiotic Free'],
     category: 'entree',
     diningHall: 'Hampshire',
     price: 13.25,
@@ -50,7 +50,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 2,
     name: 'Vegetarian Pasta',
     mealType: ['lunch', 'dinner'],
-    diets: ['vegetarian', 'vegan'],
+    diets: ['Vegetarian', 'Plant Based'],
     category: 'entree',
     diningHall: 'Berkshire',
     price: 12.50,
@@ -59,7 +59,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 3,
     name: 'Caesar Salad',
     mealType: ['lunch'],
-    diets: ['vegetarian', 'gluten-free'],
+    diets: ['Vegetarian'],
     category: 'entree',
     diningHall: 'Franklin',
     price: 11.00,
@@ -68,7 +68,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 101,
     name: 'Fruit Cup',
     mealType: ['breakfast', 'lunch'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
+    diets: ['Vegetarian', 'Plant Based', 'Local'],
     category: 'snack',
     diningHall: 'Hampshire',
     price: 3.00,
@@ -77,7 +77,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 102,
     name: 'Greek Yogurt',
     mealType: ['breakfast'],
-    diets: ['vegetarian', 'gluten-free'],
+    diets: ['Vegetarian'],
     category: 'snack',
     diningHall: 'Berkshire',
     price: 2.50,
@@ -86,7 +86,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 103,
     name: 'Lemonade',
     mealType: ['breakfast'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
+    diets: ['Vegetarian', 'Plant Based'],
     category: 'drink',
     diningHall: 'Hampshire',
     price: 2.00,
@@ -95,7 +95,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 104,
     name: 'Iced Tea',
     mealType: ['lunch', 'dinner'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
+    diets: ['Vegetarian', 'Plant Based'],
     category: 'drink',
     diningHall: 'Berkshire',
     price: 2.00,
@@ -104,7 +104,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 105,
     name: 'Yogurt Cup',
     mealType: ['breakfast', 'lunch'],
-    diets: ['vegetarian', 'gluten-free'],
+    diets: ['Vegetarian'],
     category: 'snack',
     diningHall: 'Hampshire',
     price: 2.50,
@@ -113,7 +113,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 106,
     name: 'Trail Mix',
     mealType: ['lunch', 'dinner'],
-    diets: ['vegetarian'],
+    diets: ['Vegetarian', 'Whole Grain'],
     category: 'snack',
     diningHall: 'Hampshire',
     price: 4.00,
@@ -122,7 +122,7 @@ const MOCK_ITEMS: MenuItem[] = [
     id: 107,
     name: 'Sparkling Water',
     mealType: ['breakfast', 'lunch', 'dinner'],
-    diets: ['vegan', 'gluten-free', 'vegetarian', 'no-peanuts'],
+    diets: ['Vegetarian', 'Plant Based', 'Sustainable'],
     category: 'drink',
     diningHall: 'Hampshire',
     price: 2.50,
