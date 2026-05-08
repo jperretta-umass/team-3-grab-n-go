@@ -1,9 +1,11 @@
 from datetime import datetime, timezone
 
+from app.auth import get_password_hash
 from app.database import Base, SessionLocal, engine
 from app.models import (
     CurrentOrder,
     CustomerProfile,
+    DelivererProfile,
     DiningHall,
     MenuItem,
     Order,
@@ -113,17 +115,41 @@ def init_database():
 
         db.flush()
 
-        demo_user = User(
+        demo_customer = User(
             username="demo_customer",
             email="demo_customer@example.com",
-            password_hash="string3214",
+            password_hash=get_password_hash("string3214"),
             phone_num="555-0100",
             has_deliverer_profile=False,
         )
-        db.add(demo_user)
+        db.add(demo_customer)
         db.flush()
 
-        db.add(CustomerProfile(user_id=demo_user.id))
+        db.add(CustomerProfile(user_id=demo_customer.id))
+        db.flush()
+
+        demo_deliverer = User(
+            username="demo_deliverer",
+            email="demo_deliverer@example.com",
+            password_hash=get_password_hash("string3214"),
+            phone_num="555-0100",
+            has_deliverer_profile=True,
+        )
+        db.add(demo_deliverer)
+        db.flush()
+
+        db.add(CustomerProfile(user_id=demo_deliverer.id))
+        db.flush()
+
+        # Creates deliverer profile
+        deliverer_prof = DelivererProfile(
+            past_order_id=None,
+            current_order_id=None,
+        )
+
+        # Adds DelivererProfile to demo deliverer
+        demo_deliverer.deliverer_profile = deliverer_prof
+        db.add_all([demo_deliverer, deliverer_prof])
         db.flush()
 
         breakfast_burrito = (
@@ -137,7 +163,7 @@ def init_database():
 
         # Seed a past (completed) order
         past_order = Order(
-            user_id=demo_user.id,
+            user_id=demo_customer.id,
             dining_hall_id=breakfast_burrito.dining_hall_id,
             total_price=breakfast_burrito.price * 2,
             status="completed",
@@ -154,7 +180,7 @@ def init_database():
 
         # Seed an active (in-delivery) order
         active_order = Order(
-            user_id=demo_user.id,
+            user_id=demo_customer.id,
             dining_hall_id=(
                 veggie_wrap.dining_hall_id
                 if veggie_wrap
@@ -183,7 +209,7 @@ def init_database():
 
         # Seed an unclaimed order
         unclaimed_order = Order(
-            user_id=demo_user.id,
+            user_id=demo_customer.id,
             dining_hall_id=breakfast_burrito.dining_hall_id,
             total_price=breakfast_burrito.price * 3,
             status="unclaimed",

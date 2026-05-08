@@ -42,9 +42,15 @@
         <span class="coming-soon">Coming soon</span>
       </div>
 
-      <button class="cart-tab-btn">
-        Open Cart
-      </button>
+      <div class="context-summary">
+        <div class="context-item">
+          <span class="context-label">Dining Hall: <span class="context-value">{{ selectedHall || 'Not selected' }}</span></span>
+        </div>
+        <div class="context-item">
+          <span class="context-label">Delivery Address: <span class="context-value">{{ selectedDeliveryAddress || 'Not selected' }}</span></span>
+        </div>
+      </div>
+
     </section>
 
     <main class="content">
@@ -104,7 +110,13 @@
             Your cart is empty.
           </p>
         </div>
-        <button v-if="cart.length" class="add-btn green" @click="handleCheckout">Checkout</button>
+        <button
+          v-if="cart.length"
+          class="add-btn green"
+          @click="handleCheckout"
+        >
+          Checkout
+        </button>
       </section>
     </main>
 
@@ -139,17 +151,16 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { type MealType, selectedHall, selectedMeal, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
-
+import { type MealType, selectedHall, selectedMeal, selectedDiet, selectedDeliveryAddress, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
 const router = useRouter()
 const route = useRoute()
 
 function goHome() {
-  router.push('/')
+  router.push('/CustomerLanding')
 }
 
 function startOver() {
-  router.push('/customer')
+  router.push('/CustomerLanding')
 }
 
 function displayPrice(price: number): string {
@@ -239,7 +250,6 @@ async function handleCheckout() {
 }
 
 .back-btn,
-.cart-tab-btn,
 .add-btn,
 .remove-btn,
 .start-over-btn {
@@ -251,7 +261,6 @@ async function handleCheckout() {
 }
 
 .back-btn,
-.cart-tab-btn,
 .start-over-btn {
   background: #e4e4e4;
 }
@@ -264,6 +273,34 @@ async function handleCheckout() {
 .orange {
   background: #f39c12;
   color: white;
+}
+
+.context-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.context-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+  text-align: right;
+}
+
+.context-label {
+  color: #555;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.context-value {
+  color: #4caf50;
+  font-size: 1.2rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .filters {
@@ -390,6 +427,12 @@ async function handleCheckout() {
 }
 
 @media (max-width: 850px) {
+  .context-summary {
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
   .content {
     grid-template-columns: 1fr;
   }

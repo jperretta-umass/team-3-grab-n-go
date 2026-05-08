@@ -1,108 +1,109 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <header>
-    <h2>Register</h2>
+  <main class="register-page">
+    <section class="register-card">
+      <h2>Create Account</h2>
+      <p class="subtitle">
+        Register to start using My Delivery App
+      </p>
 
-    <form
-      class="form"
-      @submit.prevent="onSubmit"
-    >
-      <div class="field">
-        <label for="username">Username:</label>
-        <input
-          id="username"
-          v-model="username"
-          type="text"
-          placeholder="Enter username"
-          class="border rounded px-3 py-2"
-          autocomplete="username"
-        >
-      </div>
-
-      <div class="field">
-        <label for="email">Email:</label>
-        <input
-          id="email"
-          v-model="email"
-          type="email"
-          placeholder="Enter Email"
-          class="border rounded px-3 py-2"
-          autocomplete="email"
-        >
-      </div>
-
-      <div class="field">
-        <label for="phone_num">Phone Number:</label>
-        <input
-          id="phone_num"
-          v-model="phone_num"
-          type="text"
-          placeholder="Enter Phone Number"
-          class="border rounded px-3 py-2"
-          autocomplete="phone_num"
-        >
-      </div>
-      <div class="field">
-        <label
-          for="isDeliverer"
-          class="flex items-center gap-2"
-        >
+      <form
+        class="form"
+        @submit.prevent="onSubmit"
+      >
+        <div class="field">
+          <label for="username">Username</label>
           <input
-            id="isDeliverer"
+            id="username"
+            v-model="username"
+            type="text"
+            placeholder="Enter username"
+            autocomplete="username"
+          >
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            v-model="email"
+            type="email"
+            placeholder="Enter email"
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="field">
+          <label for="phone_num">Phone Number</label>
+          <input
+            id="phone_num"
+            v-model="phone_num"
+            type="text"
+            placeholder="Enter phone number"
+          >
+        </div>
+
+        <label class="checkbox-field">
+          <input
             v-model="isDeliverer"
             type="checkbox"
           >
           Register as a deliverer
         </label>
-      </div>
 
-      <div class="field">
-        <label for="password">Password:</label>
-        <input
-          id="password"
-          v-model="password"
-          type="password"
-          placeholder="Enter password"
-          class="border rounded px-3 py-2"
-          autocomplete="new-password"
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            v-model="password"
+            type="password"
+            placeholder="Enter password"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirm Password</label>
+          <input
+            id="confirmPassword"
+            v-model="confirmPassword"
+            type="password"
+            placeholder="Re-enter password"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <p
+          v-if="error"
+          class="error"
         >
-      </div>
+          {{ error }}
+        </p>
 
-      <div class="field">
-        <label for="confirmPassword">Confirm Password:</label>
-        <input
-          id="confirmPassword"
-          v-model="confirmPassword"
-          type="password"
-          placeholder="Re-enter password"
-          class="border rounded px-3 py-2"
-          autocomplete="new-password"
-        >
-      </div>
-
-      <p
-        v-if="error"
-        class="error"
-      >
-        {{ error }}
-      </p>
-
-      <div>
         <button
           type="submit"
-          class="login-button"
+          class="register-button"
           :disabled="loading"
         >
           {{ loading ? 'Creating account...' : 'Register Account' }}
         </button>
-      </div>
-    </form>
-  </header>
+
+        <button
+          type="button"
+          class="login-button"
+          @click="router.push('/login')"
+        >
+          Already have an account? Login
+        </button>
+      </form>
+    </section>
+  </main>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { getPostAuthRoute, saveAuthSession, type AuthSession } from '../utils/auth'
 
 const username = ref('')
 const email = ref('')
@@ -145,8 +146,9 @@ async function onSubmit() {
       return
     }
 
-    localStorage.setItem('auth', JSON.stringify(data))
-    router.push('/')
+    const authSession = data as AuthSession
+    saveAuthSession(authSession)
+    router.push(getPostAuthRoute(authSession.user))
   } catch {
     error.value = 'Network error (is the backend running?)'
   } finally {
@@ -158,29 +160,107 @@ async function onSubmit() {
 </script>
 
 <style scoped>
-.login-button {
-  background-color:rgb(85, 90, 99);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: block;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+.register-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f4f6f8, #e5e7eb);
+  padding: 24px;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  padding: 32px;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+h2 {
+  margin: 0;
+  text-align: center;
+  font-size: 2rem;
+  color: #1f2937;
+}
+
+.subtitle {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 24px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 8px;          /* spacing between label and input */
-  margin-bottom: 16px; /* spacing between fields */
-  max-width: 300px;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+label {
+  font-weight: 600;
+  color: #374151;
+}
+
+input {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4b5563;
+  box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.15);
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.checkbox-field input {
+  width: 18px;
+  height: 18px;
+}
+
+.register-button,
+.login-button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.register-button {
+  background-color: #374151;
+  color: white;
+}
+
+.register-button:hover {
+  background-color: #1f2937;
+}
+
+.login-button {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.login-button:hover {
+  background-color: #d1d5db;
 }
 
 .error {
   color: #b91c1c;
-  margin: 8px 0 16px;
+  background: #fee2e2;
+  padding: 10px;
+  border-radius: 8px;
 }
 </style>

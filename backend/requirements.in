@@ -8,3 +8,5 @@ email-validator
 beautifulsoup4
 httpx
 stripe
+stripe
+PyJWT

@@ -14,9 +14,20 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str = Field(min_length=6, max_length=72)
+
+
 class AuthResponse(BaseModel):
     id: int
     username: str
     email: EmailStr
     phone_num: str | None = None
     is_deliverer: bool
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: AuthResponse

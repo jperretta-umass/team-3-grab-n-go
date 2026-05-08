@@ -47,6 +47,8 @@ passlib[bcrypt]==1.7.4
     # via -r backend/requirements.in
 psycopg2-binary==2.9.11
     # via -r backend/requirements.in
+PyJWT==2.10.1
+    # via -r requirements.in
 pydantic==2.12.5
     # via fastapi
 pydantic-core==2.41.5
