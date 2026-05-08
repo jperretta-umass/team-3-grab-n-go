@@ -7,7 +7,7 @@
       <p>Your order has been placed and sent to the dining hall.</p>
       <button
         class="add-btn green"
-        @click="$router.push('/')"
+        @click="$router.push('/CustomerLanding')"
       >
         Return Home
       </button>
