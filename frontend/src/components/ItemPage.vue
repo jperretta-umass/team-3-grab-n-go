@@ -170,7 +170,7 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { type MealType, selectedHall, selectedMeal, selectedDiet, selectedDeliveryAddress, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, cartEntreeCount, cartSideCount, maxSides, canAddSide, formatTags, addToCart, removeFromCart, fetchMenuItems} from './displayScripts/menuItems'
+import { type MealType, selectedHall, selectedMeal, selectedDiet, selectedDeliveryAddress, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, cartEntreeCount, cartSideCount, maxSides, canAddSide, formatTags, addToCart, removeFromCart, clearCart, fetchMenuItems} from './displayScripts/menuItems'
 const router = useRouter()
 const route = useRoute()
 
@@ -179,6 +179,7 @@ function goHome() {
 }
 
 function startOver() {
+  clearCart()
   router.push('/CustomerLanding')
 }
 
