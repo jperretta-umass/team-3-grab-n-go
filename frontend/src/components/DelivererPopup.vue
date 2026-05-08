@@ -38,6 +38,9 @@ function formatCreatedAt(value: string) {
     Dining Hall: {{ orderObj.dining_hall }}
   </p>
   <p class="pt-1">
+    Delivery Address: {{ orderObj.delivery_address }}
+  </p>
+  <p class="pt-1">
     Status: {{ orderObj.status }}
   </p>
   <p class="pt-1">

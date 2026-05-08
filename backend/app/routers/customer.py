@@ -55,6 +55,7 @@ def _order_to_out(order: Order) -> OrderOut:
         ),
         total_price=order.total_price,
         status=order.status,
+        delivery_address=order.delivery_address,
         created_at=order.created_at,
         items=[
             OrderItemOut(
@@ -181,6 +182,7 @@ def place_order(user_id: int, body: PlaceOrderIn, db: Session = Depends(get_db))
         dining_hall_id=body.dining_hall_id,
         total_price=round(total, 2),
         status="unclaimed",
+        delivery_address=body.delivery_address,
         created_at=datetime.now(timezone.utc),
     )
     db.add(order)

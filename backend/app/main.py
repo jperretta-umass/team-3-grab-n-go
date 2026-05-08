@@ -1,13 +1,21 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Body, Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app.auth import router as auth_router
 from app.database import SessionLocal, get_db
 from app.init_db import init_database
-from app.models import CurrentOrder, DiningHall, MenuItem, Order, UnclaimedOrder, User
+from app.models import (
+    CurrentOrder,
+    DiningHall,
+    MenuItem,
+    Order,
+    PastOrder,
+    UnclaimedOrder,
+    User,
+)
 from app.payments import router as payments_router
 from app.routers import customer
 from app.routers.dining_menu import router as dining_menu_router
@@ -121,7 +129,39 @@ def claim_order(order_id: int, db: Session = Depends(get_db)):
 
     db.add(claimed_order)
     db.commit()
+    db.refresh(order)
+    return {"message": "Order claimed", "order": order.to_dict()}
 
-    db.refresh(claimed_order)
 
-    return {"message": "Order claimed"}
+@app.patch("/api/orders/{order_id}/status")
+def update_order_status(
+    order_id: int,
+    status: str = Body(...),
+    db: Session = Depends(get_db),
+):
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    order.status = status
+
+    if status in {"claimed", "on the way"}:
+        db.query(UnclaimedOrder).filter(UnclaimedOrder.order_id == order.id).delete()
+        existing_current = (
+            db.query(CurrentOrder).filter(CurrentOrder.order_id == order.id).first()
+        )
+        if not existing_current:
+            db.add(CurrentOrder(order_id=order.id))
+
+    if status == "delivered":
+        db.query(CurrentOrder).filter(CurrentOrder.order_id == order.id).delete()
+        db.query(UnclaimedOrder).filter(UnclaimedOrder.order_id == order.id).delete()
+        existing_past = (
+            db.query(PastOrder).filter(PastOrder.order_id == order.id).first()
+        )
+        if not existing_past:
+            db.add(PastOrder(order_id=order.id))
+
+    db.commit()
+    db.refresh(order)
+    return {"order": order.to_dict()}

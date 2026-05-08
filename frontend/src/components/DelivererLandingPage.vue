@@ -31,14 +31,25 @@
         <div class="panel current-order-panel">
           <div class="panel-header">
             <h2>Current Order Status</h2>
-            <span class="status-pill">On The Way</span>
+            <span class="status-pill">{{ delivererCurrentOrder?.status ?? 'No active order' }}</span>
           </div>
 
           <div class="order-details">
-            <p><strong>Dining Hall:</strong> Hampshire</p>
-            <p><strong>Order #:</strong> 1024</p>
-            <p><strong>Pickup Estimate:</strong> 10–15 min</p>
-            <p><strong>Items:</strong> Grilled Chicken Bowl, Fruit Cup</p>
+            <p v-if="delivererCurrentOrderLoading" class="order-details-placeholder">
+              Loading active order...
+            </p>
+            <template v-if="delivererCurrentOrder">
+              <p><strong>Dining Hall:</strong> {{ delivererCurrentOrder.dining_hall }}</p>
+              <p><strong>Order #:</strong> {{ delivererCurrentOrder.id }}</p>
+              <p><strong>To:</strong> {{ delivererCurrentOrder.delivery_address }}</p>
+              <p><strong>Items:</strong> {{ delivererCurrentOrder.items.length }} line(s)</p>
+            </template>
+            <p v-else-if="!delivererCurrentOrderLoading" class="order-details-placeholder">
+              Claim an order on Available Orders to see it here.
+            </p>
+            <p v-if="delivererCurrentOrderError" class="status-error">
+              {{ delivererCurrentOrderError }}
+            </p>
           </div>
         </div>
 
@@ -56,9 +67,12 @@
             <button
               class="action-btn secondary-btn"
               type="button"
+              :disabled="statusUpdating || !delivererCurrentOrder"
+              @click="handleUpdateOrderStatus"
             >
-              Update Order Status
+              {{ statusUpdating ? 'Updating...' : nextStatusLabel }}
             </button>
+            <p v-if="statusError" class="status-error">{{ statusError }}</p>
           </div>
         </div>
       </section>
@@ -69,28 +83,19 @@
         </div>
 
         <div class="history-list">
-          <div class="history-item">
-            <div>
-              <p class="history-title">Berkshire Dining Hall</p>
-              <p class="history-meta">Order #1018 • Completed</p>
-            </div>
-            <button class="small-btn">View</button>
+          <div v-if="pastOrdersLoading" class="history-item">
+            <p>Loading order history...</p>
           </div>
-
-          <div class="history-item">
-            <div>
-              <p class="history-title">Franklin Dining Hall</p>
-              <p class="history-meta">Order #1009 • Completed</p>
-            </div>
-            <button class="small-btn">View</button>
+          <div v-else-if="pastOrders.length == 0" class="history-item">
+            <p>No past orders found.</p>
           </div>
-
-          <div class="history-item">
+          <div v-else v-for="order in pastOrders" :key="order.id" class="history-item">
             <div>
-              <p class="history-title">Worcester Dining Hall</p>
-              <p class="history-meta">Order #998 • Cancelled</p>
+              <p class="history-title">Order to {{ order.dining_hall }}</p>
+              <p class="history-meta">
+                Order #{{ order.id }} - {{ order.status }}
+              </p>
             </div>
-            <button class="small-btn">View</button>
           </div>
         </div>
       </section>
@@ -99,22 +104,86 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { clearAuthSession, getAuthUser } from '../utils/auth'
+import {
+  delivererCurrentOrder,
+  delivererCurrentOrderError,
+  delivererCurrentOrderLoading,
+  fetchDelivererCurrentOrder,
+  updateOrderStatus,
+  pastOrders, 
+  pastOrdersLoading,
+  fetchPastOrders
+} from './displayScripts/Order'
 
 const router = useRouter()
 const authUser = getAuthUser()
 const currentUsername = computed(() => authUser?.username ?? '')
+const statusUpdating = ref(false)
+const statusError = ref<string | null>(null)
+const nextStatus = computed(() => {
+  if (delivererCurrentOrder.value?.status === 'claimed') {
+    return 'on the way'
+  }
+
+  if (delivererCurrentOrder.value?.status === 'on the way') {
+    return 'delivered'
+  }
+
+  return null
+})
+const nextStatusLabel = computed(() => {
+  if (nextStatus.value === 'on the way') {
+    return 'Mark on the way'
+  }
+
+  if (nextStatus.value === 'delivered') {
+    return 'Mark delivered'
+  }
+
+  return 'No active order'
+})
+
+onMounted(() => {
+  fetchPastOrders()
+  fetchDelivererCurrentOrder()
+})
 
 function logout() {
   clearAuthSession()
   router.replace('/Login')
 }
 
+async function handleUpdateOrderStatus() {
+  const order = delivererCurrentOrder.value
+  if (!order) {
+    statusError.value = 'No active order. Claim one from Available Orders first.'
+    return
+  }
+
+  if (!nextStatus.value) {
+    statusError.value = 'This order cannot be updated from its current status.'
+    return
+  }
+
+  statusError.value = null
+  statusUpdating.value = true
+  try {
+    await updateOrderStatus(order.id, nextStatus.value)
+  } catch (e) {
+    statusError.value =
+      e instanceof Error ? e.message : 'Failed to update order status.'
+  } finally {
+    statusUpdating.value = false
+  }
+}
+
 function goToCustomerLanding() {
   router.push('/CustomerLanding')
 }
+
 </script>
 
 <style scoped>
@@ -245,6 +314,17 @@ function goToCustomerLanding() {
   margin: 0 0 12px 0;
   font-size: 1rem;
   color: #222;
+}
+
+.order-details-placeholder,
+.status-error {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.status-error {
+  color: #c0392b;
 }
 
 .status-pill {

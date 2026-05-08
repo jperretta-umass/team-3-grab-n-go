@@ -32,6 +32,7 @@ class CartItemRequest(BaseModel):
 
 class CheckoutRequest(BaseModel):
     user_id: int
+    delivery_address: str
     items: List[CartItemRequest]
 
 
@@ -79,7 +80,10 @@ def create_checkout_session(request: CheckoutRequest, db: Session = Depends(get_
             payment_method_types=["card"],
             line_items=line_items,  # type: ignore
             mode="payment",
-            metadata={"user_id": str(request.user_id)},
+            metadata={
+                "user_id": str(request.user_id),
+                "delivery_address": request.delivery_address,
+            },
             success_url="http://localhost/success",
             cancel_url="http://localhost/ItemPage",
         )
@@ -109,7 +113,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
         user_id = int(session["metadata"]["user_id"])
-
+        # delivery_address = session["metadata"]["delivery_address"]
         # 1. Find the cart  saved earlier
         cart = db.query(Cart).filter(Cart.user_id == user_id).first()
 
@@ -121,6 +125,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
             new_order = Order(
                 user_id=user_id,
                 dining_hall_id=hall_id,
+                delivery_address=session["metadata"]["delivery_address"],
                 total_price=session["amount_total"] / 100,
                 status="unclaimed",
                 created_at=datetime.now(timezone.utc),
