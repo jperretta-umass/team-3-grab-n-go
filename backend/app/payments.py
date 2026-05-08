@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Cart, CartItem, MenuItem, Order, OrderItem
+from app.models import Cart, CartItem, MenuItem, Order, OrderItem, UnclaimedOrder
 
 router = APIRouter(prefix="/api/payments", tags=["payments"])
 
@@ -141,6 +141,8 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                     quantity=c_item.quantity,
                 )
                 db.add(o_item)
+
+            db.add(UnclaimedOrder(order_id=new_order.id))
 
             # Destroy cart
             db.query(CartItem).filter(CartItem.cart_id == cart.id).delete()

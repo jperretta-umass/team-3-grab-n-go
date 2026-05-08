@@ -8,7 +8,6 @@ from app.database import get_db
 from app.models import (
     Cart,
     CartItem,
-    CurrentOrder,
     DiningHall,
     MenuItem,
     Order,
@@ -96,9 +95,8 @@ def get_profile(user_id: int, db: Session = Depends(get_db)):
     user = _get_user_or_404(user_id, db)
 
     active_count = (
-        db.query(CurrentOrder)
-        .join(Order, CurrentOrder.order_id == Order.id)
-        .filter(Order.user_id == user_id)
+        db.query(Order)
+        .filter(Order.user_id == user_id, Order.status != "delivered")
         .count()
     )
     past_count = (
@@ -125,8 +123,8 @@ def get_active_orders(user_id: int, db: Session = Depends(get_db)):
 
     orders = (
         db.query(Order)
-        .join(CurrentOrder, CurrentOrder.order_id == Order.id)
-        .filter(Order.user_id == user_id)
+        .filter(Order.user_id == user_id, Order.status != "delivered")
+        .order_by(Order.created_at.desc())
         .all()
     )
     return [_order_to_out(o) for o in orders]

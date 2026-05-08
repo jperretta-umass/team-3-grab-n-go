@@ -171,8 +171,11 @@
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { type MealType, selectedHall, selectedMeal, selectedDiet, selectedDeliveryAddress, availableMeals, loading, error, filteredEntrees, filteredSnacksAndDrinks, cart, cartTotal, cartEntreeCount, cartSideCount, maxSides, canAddSide, formatTags, addToCart, removeFromCart, clearCart, fetchMenuItems} from './displayScripts/menuItems'
+import { getAuthUser } from '../utils/auth'
+
 const router = useRouter()
 const route = useRoute()
+const authUser = getAuthUser()
 
 function goHome() {
   router.push('/CustomerLanding')
@@ -206,6 +209,11 @@ watch(availableMeals, (meals) => {
 })
 
 async function handleCheckout() {
+  if (!authUser?.id) {
+    router.replace('/Login')
+    return
+  }
+
   try {
     // Format local cart to send to the backend
     const itemsToCheckout = cart.value.map((item) => ({
@@ -219,7 +227,7 @@ async function handleCheckout() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ 
-        user_id: 1, // Hardcoded
+        user_id: authUser.id,
         delivery_address: selectedDeliveryAddress.value || "No address provided",
         items: itemsToCheckout 
       }),
