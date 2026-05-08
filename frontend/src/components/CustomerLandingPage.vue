@@ -150,9 +150,6 @@
                 Order #{{ order.id }} • {{ order.status }}
               </p>
             </div>
-            <button class="small-btn">
-              Reorder
-            </button>
           </div>
         </div>
       </section>
