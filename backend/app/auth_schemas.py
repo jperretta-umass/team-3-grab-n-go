@@ -10,19 +10,15 @@ class RegisterRequest(BaseModel):
 
     @field_validator("password")
     @classmethod
-
     def validate_password(cls, value: str) -> str:
         if len(value) < 6:
-            raise ValueError(
-                "Password must be at least 6 characters long"
-            )
+            raise ValueError("Password must be at least 6 characters long")
 
         if len(value) > 72:
-            raise ValueError(
-                "Password must be less than 72 characters"
-            )
+            raise ValueError("Password must be less than 72 characters")
 
         return value
+
 
 class LoginRequest(BaseModel):
     email: EmailStr

@@ -123,6 +123,7 @@ def get_profile(user_id: int, db: Session = Depends(get_db)):
         "past_orders_count": past_count,
     }
 
+
 @router.patch("/{user_id}/deliverer-profile")
 def update_deliverer_profile(
     user_id: int,
@@ -140,6 +141,7 @@ def update_deliverer_profile(
         "message": "Deliverer profile updated",
         "has_deliverer_profile": user.has_deliverer_profile,
     }
+
 
 @router.get("/{user_id}/active-orders", response_model=List[OrderOut])
 def get_active_orders(user_id: int, db: Session = Depends(get_db)):
