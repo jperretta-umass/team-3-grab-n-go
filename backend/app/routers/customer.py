@@ -2,12 +2,14 @@ from datetime import datetime, timezone
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import (
     Cart,
     CartItem,
+    CurrentOrder,
     DiningHall,
     MenuItem,
     Order,
@@ -28,6 +30,10 @@ from app.schemas_customer import (
 )
 
 router = APIRouter(prefix="/api/customers", tags=["customers"])
+
+
+class DelivererProfileUpdate(BaseModel):
+    has_deliverer_profile: bool
 
 
 def _get_user_or_404(user_id: int, db: Session) -> User:
@@ -95,8 +101,9 @@ def get_profile(user_id: int, db: Session = Depends(get_db)):
     user = _get_user_or_404(user_id, db)
 
     active_count = (
-        db.query(Order)
-        .filter(Order.user_id == user_id, Order.status != "delivered")
+        db.query(CurrentOrder)
+        .join(Order, CurrentOrder.order_id == Order.id)
+        .filter(Order.user_id == user_id)
         .count()
     )
     past_count = (
@@ -116,6 +123,23 @@ def get_profile(user_id: int, db: Session = Depends(get_db)):
         "past_orders_count": past_count,
     }
 
+@router.patch("/{user_id}/deliverer-profile")
+def update_deliverer_profile(
+    user_id: int,
+    body: DelivererProfileUpdate,
+    db: Session = Depends(get_db),
+):
+    user = _get_user_or_404(user_id, db)
+
+    user.has_deliverer_profile = body.has_deliverer_profile
+
+    db.commit()
+    db.refresh(user)
+
+    return {
+        "message": "Deliverer profile updated",
+        "has_deliverer_profile": user.has_deliverer_profile,
+    }
 
 @router.get("/{user_id}/active-orders", response_model=List[OrderOut])
 def get_active_orders(user_id: int, db: Session = Depends(get_db)):
@@ -123,8 +147,8 @@ def get_active_orders(user_id: int, db: Session = Depends(get_db)):
 
     orders = (
         db.query(Order)
-        .filter(Order.user_id == user_id, Order.status != "delivered")
-        .order_by(Order.created_at.desc())
+        .join(CurrentOrder, CurrentOrder.order_id == Order.id)
+        .filter(Order.user_id == user_id)
         .all()
     )
     return [_order_to_out(o) for o in orders]
