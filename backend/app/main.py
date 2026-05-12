@@ -4,11 +4,12 @@ from fastapi import Body, Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from app.auth import router as auth_router
+from app.auth import get_current_user, router as auth_router
 from app.database import SessionLocal, get_db
 from app.init_db import init_database
 from app.models import (
     CurrentOrder,
+    DelivererProfile,
     DiningHall,
     MenuItem,
     Order,
@@ -85,39 +86,94 @@ def get_order(db: Session = Depends(get_db)):
     return {"orders": [order.to_dict() for order in orders]}
 
 
+def ensure_deliverer_profile(user: User, db: Session) -> int:
+    if not user.has_deliverer_profile:
+        raise HTTPException(status_code=403, detail="User is not a deliverer")
+
+    if user.deliverer_id is None:
+        profile = DelivererProfile()
+        db.add(profile)
+        db.flush()
+        user.deliverer_id = profile.id
+        db.add(user)
+
+    return user.deliverer_id
+
+
+@app.get("/api/orders/deliverer/current")
+def get_current_deliverer_order(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    deliverer_id = ensure_deliverer_profile(current_user, db)
+    current_order = (
+        db.query(CurrentOrder)
+        .filter(CurrentOrder.deliverer_id == deliverer_id)
+        .join(Order)
+        .filter(Order.status.in_(["claimed", "on the way"]))
+        .first()
+    )
+
+    if current_order is None:
+        return {"order": None}
+
+    return {"order": current_order.order.to_dict()}
+
+
+@app.get("/api/orders/deliverer/past")
+def get_past_deliverer_orders(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    deliverer_id = ensure_deliverer_profile(current_user, db)
+    current_orders = (
+        db.query(CurrentOrder)
+        .filter(CurrentOrder.deliverer_id == deliverer_id)
+        .all()
+    )
+    delivered_orders = [
+        current_order.order.to_dict()
+        for current_order in current_orders
+        if current_order.order.status == "delivered"
+    ]
+    return {"orders": delivered_orders}
+
+
 @app.post("/api/orders/claim/{order_id}")
-def claim_order(order_id: int, db: Session = Depends(get_db)):
-
-    # Find deliverer profile id from demo_delieverer
-    deliverer = db.get(User, 2)
-    if deliverer is None:
-        raise HTTPException(status_code=404, detail="Deliverer not found")
-
-    if deliverer.deliverer_id is None:
-        raise HTTPException(status_code=400, detail="User has no deliverer profile")
+def claim_order(
+    order_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    deliverer_id = ensure_deliverer_profile(current_user, db)
 
     # Get the order
     order = db.get(Order, order_id)
     if order is None:
         raise HTTPException(status_code=404, detail="Order not found")
 
+    if order.status != "unclaimed":
+        raise HTTPException(status_code=400, detail="Order already claimed")
+
     # Checks if the order been claimed
     existing = db.query(CurrentOrder).filter(CurrentOrder.order_id == order_id).first()
     if existing and existing.deliverer_id is not None:
         raise HTTPException(status_code=400, detail="Order already claimed")
 
-    # Check if delieverer claimed an order already
+    # Check if deliverer claimed an order already
     current_order = (
         db.query(CurrentOrder)
-        .filter(CurrentOrder.deliverer_id == deliverer.deliverer_id)
+        .filter(CurrentOrder.deliverer_id == deliverer_id)
+        .join(Order)
+        .filter(Order.status.in_(["claimed", "on the way"]))
         .first()
     )
 
     if current_order:
-        raise HTTPException(status_code=400, detail="Deliever already claimed an order")
+        raise HTTPException(status_code=400, detail="Deliverer already claimed an order")
 
     # Adds it to claimed order
-    claimed_order = CurrentOrder(order_id=order_id, deliverer_id=deliverer.deliverer_id)
+    claimed_order = CurrentOrder(order_id=order_id, deliverer_id=deliverer_id)
     # Remove it from unclaimed order
     unclaimed_order = (
         db.query(UnclaimedOrder).filter(UnclaimedOrder.order_id == order_id).first()
@@ -137,24 +193,34 @@ def claim_order(order_id: int, db: Session = Depends(get_db)):
 def update_order_status(
     order_id: int,
     status: str = Body(...),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    deliverer_id = ensure_deliverer_profile(current_user, db)
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
+
+    current_order = (
+        db.query(CurrentOrder)
+        .filter(
+            CurrentOrder.order_id == order_id,
+            CurrentOrder.deliverer_id == deliverer_id,
+        )
+        .first()
+    )
+    if current_order is None:
+        raise HTTPException(
+            status_code=403,
+            detail="Order is not assigned to this deliverer",
+        )
 
     order.status = status
 
     if status in {"claimed", "on the way"}:
         db.query(UnclaimedOrder).filter(UnclaimedOrder.order_id == order.id).delete()
-        existing_current = (
-            db.query(CurrentOrder).filter(CurrentOrder.order_id == order.id).first()
-        )
-        if not existing_current:
-            db.add(CurrentOrder(order_id=order.id))
 
     if status == "delivered":
-        db.query(CurrentOrder).filter(CurrentOrder.order_id == order.id).delete()
         db.query(UnclaimedOrder).filter(UnclaimedOrder.order_id == order.id).delete()
         existing_past = (
             db.query(PastOrder).filter(PastOrder.order_id == order.id).first()
