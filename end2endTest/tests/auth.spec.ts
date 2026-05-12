@@ -63,7 +63,8 @@ test('User Registration', async ({ page, request }) => {
   await page.getByRole('button', { name: 'Register Account' }).click();
 
   await expect(page).toHaveURL('/CustomerLanding');
-  await expect(page.getByRole('heading', { name: 'Customer Landing Page' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Current Order Status' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Start New Order' })).toBeVisible();
 
   await expectCurrentUser(page, request, user);
 });
@@ -91,7 +92,8 @@ test('User Login', async ({ page, request }) => {
   await page.getByRole('button', { name: 'Login' }).click();
 
   await expect(page).toHaveURL('/CustomerLanding');
-  await expect(page.getByRole('heading', { name: 'Customer Landing Page' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Current Order Status' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Start New Order' })).toBeVisible();
 
   await expectCurrentUser(page, request, user);
 });

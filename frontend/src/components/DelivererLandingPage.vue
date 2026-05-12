@@ -22,7 +22,7 @@
           </button>
         </div>
       </div>
-      <h1 class="page-title">Deliverer Landing Page</h1>
+      <h1 class="page-title">Deliver. Earn Some Cash!</h1> 
       <p class="page-subtitle">
         Check your current order, review past orders, or start a new one.
       </p>
