@@ -1,150 +1,327 @@
-# **Minute Meals!**
+# Minute Meals
 
-    Doordash but for Grab and go on Umass campus 
+Grab and Go delivered by students for students on the UMass Amherst campus.
 
 ## Tech Stack
-    - **Backend:** FastAPI, Uvicorn
-    - **Frontend:** Vite
-    - **Database:** PostgresSQL 
-    - **Containers:** Docker, Docker Compose
-    - **Reverse Proxy:** Nginx 
 
-## File Structure 
-    Will add full file structure once everything has settled a bit (likely will just autogenerate it using tree)
-## Authors
-    Team 3 of CS320 @ Umass Amherst Spring 2026: 
-    Manager: Dr. Perretta
-    Team:  Ayman Blanco, Alex Murdock, Colin Kirn, Grace Huang, Gruia Pascale, Isabelle Neves, Rama Bachimanchi, Samuel Parkin 
+- Backend: FastAPI, Uvicorn, SQLAlchemy, PostgreSQL
+- Frontend: Vue 3, TypeScript, Vite, Vue Router, Tailwind CSS
+- Payments: Stripe Checkout and Stripe webhooks
+- Testing: Pytest, Vitest, Playwright
+- Infrastructure: Docker Compose, Nginx
 
+## Project Structure
 
-## How to install
-    Make sure to have installed: 
-        -Docker
-        -Docker Compose 
-        -Python 3.14
-
-    One must create a '.env\ file in the project root. 
-
-    Eg. 
-        '''env
-        POSTGRES_USER=postgres
-        POSTGRES_PASSWORD=postgres
-        POSTGRES_DB=myapp
-        DATABASE_URL=postgresql://postgress:postgres@db:5432/myapp
-        VITE_API_URL=http://localhost:8000
-## How to Use
-    Once features have started to populate will add doccuentation, so it can be used//understood here. (Ideally they will never need to see this)
-
-    Backend (Start FastAPI + UVIcorn) no one should have to do this once docker is set up, but in case something breaks here's the command sequence to do, also running locally can be faster for rapid prototyping//debugging. 
-
-    ```CommandLine for backend
-    cd backend 
-    #create environment for the first time
-    python -m venv .venv
-    source .venv/bin/activate #mac/linux 
-    # .venv\Scripts\activate #windows
-    pip install pip-tools
-    pip-sync requirements.txt requirements-dev.txt
-
-    
-    #runing linter:
-
-        black --check .
-        isort --check-only .
-        pycodestyle .
-        pyright
-
-    #Running pytest 
-        docker run -d  -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=postgres -p 9003:5432 postgres:16
-        DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:9003/postgres pytest -vv
-
-    Frontend (Vite)
-```Frontend 
-    cd frontend
-
-    npm ci
-
-    npm run dev -- --host 0.0.0.0 --port 5173
-
+```text
+team-3-grab-n-go/
+├── backend/              # FastAPI app, database models, routers, and backend tests
+├── frontend/             # Vue/Vite frontend app, routes, components, and unit tests
+├── end2endTest/          # Playwright end-to-end tests
+├── nginx/                # Local Nginx reverse proxy configuration
+├── secrets/              # Local Stripe secret files; do not commit real secrets
+├── docker-compose.yml    # Main local development Docker stack
+├── docker-compose.test.yml
+├── .env                  # Local development environment variables
+├── .env.test             # Test environment variables
+└── README.md
 ```
 
-should be accessable at 
-http://localhost:5173
+## Authors
 
-To view API docs: 
-http://localhost:8000/docs while the docker stack is running.
-# Running Dev Stack
+Team 3 of CS320 at UMass Amherst, Spring 2026.
 
-    ```docker compose up --build backend #rebuilds one service entirely```
-    In the browser visit localhost:80 to visit the running site.
-    
-    docker Compose Commands(Most useful once everything is approved on PRs)
-    docker compose up --build # builds whole app 
-    docker compose up [WHICH THING YOU WANT RUNNING] # This will start just one container call can be made once to start multiple containers eg. 
-    "docker compose up backend db"
-    would start the backend and database containers respectively.
-    docker compose down #stops everything 
-    docker compose stop [thing] # stops the specifc container
-    docker compose restart [thing] #stops then starts container you want 
+- Manager: Dr. Perretta
+- Team: Ayman Blanco, Alex Murdock, Colin Kirn, Grace Huang, Gruia Pascale, Isabelle Neves, Rama Bachimanchi, Samuel Parkin
 
-    Other Docker Commands that may be useful: 
-    docker ps #lists running containers
-    docker ps # all containers 
-    docker logs -f backend #follows logs 
-    docker exec -it backend bash #shell into container 
-    docker stop backend #stops container (backend used as example)
-    docker rm backend #removes container (backend used as example)
+## Prerequisites
 
-    docker images # lists docker images
-    docker network ls #networks 
+Install these before running the app locally:
 
+- Docker
+- Docker Compose
+- Python 3.14 for backend-only development
+- Node.js and npm for frontend-only development
+- Stripe CLI for local payment testing
 
-##Payment Integration (Stripe)
-1. Initial Stripe Setup
-- Create a Stripe Account: Sign up at Stripe.com and stay in Test Mode.
-- Install Stripe CLI:
-    Mac: brew install stripe/stripe-cli/stripe
+## Environment Setup
 
-    Windows/Linux: Download from the Stripe GitHub.
+Create a `.env` file in the project root:
 
-    Login: Open your terminal and run stripe login. Follow the browser instructions to authenticate.
+```env
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=myapp
+DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/myapp
+AUTH_SECRET_KEY=replace-this-for-local-dev
+```
 
-2. Create Local Secrets
-Docker Compose looks for secrets in a ./secrets folder at the project root. You MUST CREATE this folder and the following two files:
+For Stripe, create these files locally:
 
-./secrets/stripe_secret_key.txt:
+```text
+secrets/stripe_secret_key.txt
+secrets/stripe_webhook_secret.txt
+```
 
-Go to your Stripe Dashboard -> Developers -> API Keys.
+Each file should contain only the secret value, with no variable name prefix.
 
-Copy the Secret key (starts with sk_test_). ONLY PASTE THE KEY ITSELF INTO THE FILE, NOT THE "STRIPE_SECRET_KEY=" PART.
-SO IT MUST START WITH : sk_test...
+## Running the App
 
-Paste it into this file.
+Start the full app:
 
-./secrets/stripe_webhook_secret.txt:
-
-Open a terminal and run: stripe listen --forward-to localhost/api/payments/webhook
-
-The terminal will output: Ready! Your webhook signing secret is whsec_...
-
-Copy that whsec_ string and paste it into this file. AGAIN DO NOT PREFIX THIS WITH ANYTHING JUST SIMPLY COPY PASTE.
-
-3. Running with Payments
-Once your secrets are in place, the stripe-tunnel service in Docker will automatically handle the connection.
-
-Bash
-# Start the full stack
+```sh
 docker compose up --build
-How to test the flow:
+```
 
-Go to http://localhost/ItemPage and add items to your cart.
+Open the app:
 
-Click Checkout. You will be redirected to a Stripe-hosted page.
+```text
+http://localhost
+```
 
-USE TEH TEST CARD: 4242 4242 4242 4242 (any future expiry and any CVC).
+Useful local URLs:
 
-Upon success, you'll be redirected to http://localhost/success.
+```text
+Frontend through Nginx: http://localhost
+Backend API docs:       http://localhost:8000/docs
+Backend health check:   http://localhost:8000/health
+Vite dev server:        http://localhost:5173
+```
 
-Check http://localhost/DelivererPage to verify the order was moved from the Cart to the Orders table.
+Stop the stack:
 
-Note: Every time you stop and restart your Stripe listener, the whsec_ key MIGHT change. If payments stop populating in the DB, check if you need to update your stripe_webhook_secret.txt.
+```sh
+docker compose down
+```
+
+Reset local database data:
+
+```sh
+docker compose down -v
+docker compose up --build
+```
+
+## Demo Accounts
+
+Seed data is created when the backend starts.
+
+```text
+Customer:
+email: demo_customer@example.com
+password: string3214
+
+Deliverer:
+email: demo_deliverer@example.com
+password: string3214
+```
+
+## Frontend Routes
+
+```text
+/Login
+/Register
+/CustomerLanding
+/DelivererLanding
+/DelivererPage
+/ItemPage
+/success
+/UserProfile
+```
+
+## Backend API Overview
+
+Auth:
+
+```text
+POST /auth/register
+POST /auth/login
+GET  /auth/me
+POST /auth/change-password
+```
+
+Menus:
+
+```text
+GET /api/menu-items
+GET /api/menu-items?hall=Worcester
+GET /api/dining-menu?hall=worcester
+GET /api/dining-menu?hall=worcester&date=05/12/2026
+```
+
+Customer cart and orders:
+
+```text
+GET    /api/customers/{user_id}/profile
+GET    /api/customers/{user_id}/cart
+POST   /api/customers/{user_id}/cart/items
+PUT    /api/customers/{user_id}/cart/items/{menu_item_id}
+DELETE /api/customers/{user_id}/cart/items/{menu_item_id}
+GET    /api/customers/{user_id}/orders
+POST   /api/customers/{user_id}/orders
+```
+
+Deliverer/orders:
+
+```text
+GET   /api/orders
+POST  /api/orders/claim/{order_id}
+PATCH /api/orders/{order_id}/status
+```
+
+Payments:
+
+```text
+POST /api/payments/create-checkout-session
+POST /api/payments/webhook
+```
+
+Full generated API documentation is available at:
+
+```text
+http://localhost:8000/docs
+```
+
+## Backend Development
+
+Create and activate a backend virtual environment:
+
+```sh
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install pip-tools
+pip-sync requirements.txt requirements-dev.txt
+```
+
+Run the backend locally:
+
+```sh
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Run backend checks:
+
+```sh
+cd backend
+./lint.sh
+pytest -vv
+```
+
+## Frontend Development
+
+Run the frontend locally:
+
+```sh
+cd frontend
+npm ci
+npm run dev -- --host 0.0.0.0 --port 5173
+```
+
+Run frontend checks:
+
+```sh
+cd frontend
+npm run lint
+npm run test
+npm run build
+```
+
+## End-to-End Tests
+
+Run Playwright end-to-end tests:
+
+```sh
+cd end2endTest
+npm ci
+npm run test
+```
+
+Run plain Playwright:
+
+```sh
+npm run test:plain
+```
+
+Open the Playwright UI:
+
+```sh
+npm run test:ui
+```
+
+## Payment Integration
+
+### Initial Stripe Setup
+
+Create a Stripe account at Stripe.com and stay in test mode.
+
+Install the Stripe CLI:
+
+```sh
+# macOS
+brew install stripe/stripe-cli/stripe
+```
+
+For Windows and Linux, download the Stripe CLI from the Stripe GitHub page.
+
+Log in:
+
+```sh
+stripe login
+```
+
+### Create Local Secrets
+
+Docker Compose looks for secrets in a `secrets` folder at the project root. Create these two files:
+
+```text
+secrets/stripe_secret_key.txt
+secrets/stripe_webhook_secret.txt
+```
+
+For `secrets/stripe_secret_key.txt`, copy your Stripe test secret key from the Stripe Dashboard. The value should start with `sk_test_`.
+
+For `secrets/stripe_webhook_secret.txt`, run:
+
+```sh
+stripe listen --forward-to localhost/api/payments/webhook
+```
+
+Copy the webhook signing secret from the terminal output. The value should start with `whsec_`.
+
+### Test the Payment Flow
+
+Start the full stack:
+
+```sh
+docker compose up --build
+```
+
+Then:
+
+1. Go to `http://localhost/ItemPage`.
+2. Add items to your cart.
+3. Click Checkout.
+4. Use the Stripe test card `4242 4242 4242 4242` with any future expiration date and any CVC.
+5. After success, you should be redirected to `http://localhost/success`.
+6. Check `http://localhost/DelivererPage` to verify the order moved from the cart to the orders table.
+
+If payments stop populating the database, check whether `secrets/stripe_webhook_secret.txt` needs to be updated.
+
+## Troubleshooting
+
+If the app fails to start, check whether ports `80`, `8000`, or `5173` are already in use.
+
+If database data looks stale, reset the Docker volume:
+
+```sh
+docker compose down -v
+docker compose up --build
+```
+
+If Stripe checkout succeeds but no order appears, check:
+
+- `secrets/stripe_secret_key.txt`
+- `secrets/stripe_webhook_secret.txt`
+- `stripe-tunnel` container logs
+- `backend` container logs
+
+If the frontend cannot reach the backend, prefer opening the app through `http://localhost` instead of the raw Vite URL.
