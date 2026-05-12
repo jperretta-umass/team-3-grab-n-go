@@ -92,7 +92,7 @@ test('customer can choose items to put in cart and send it to checkout', async (
   await signInWithToken(page, session.access_token);
   await page.goto('/CustomerLanding');
 
-  await expect(page.getByRole('heading', { name: 'Customer Landing Page' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Current Order Status' })).toBeVisible();
   await page.locator('.hall-select').selectOption('Hampshire');
   await page.locator('#deliveryAddress').selectOption('Southwest');
   await page.getByRole('button', { name: 'Start New Order' }).click();
