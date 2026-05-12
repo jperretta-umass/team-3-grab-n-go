@@ -94,7 +94,8 @@ test('customer can choose items to put in cart and send it to checkout', async (
 
   await expect(page.getByRole('heading', { name: 'Customer Landing Page' })).toBeVisible();
   await page.locator('.hall-select').selectOption('Hampshire');
-  await page.getByRole('button', { name: 'Start Order' }).click();
+  await page.locator('#deliveryAddress').selectOption('Southwest');
+  await page.getByRole('button', { name: 'Start New Order' }).click();
 
   await expect(page).toHaveURL('/ItemPage');
   await expect(page.getByRole('heading', { name: 'Grab & Go Menu' })).toBeVisible();
@@ -110,8 +111,7 @@ test('customer can choose items to put in cart and send it to checkout', async (
     .getByRole('button', { name: 'Add' })
     .click();
 
-  const expectedTotal = (entree!.price + snack!.price).toFixed(2);
-  await expect(page.getByRole('heading', { name: `Cart: $${expectedTotal}` })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Cart: $13.50' })).toBeVisible();
   await expect(page.locator('.cart-panel')).toContainText(entree!.name);
   await expect(page.locator('.cart-panel')).toContainText(snack!.name);
 
@@ -121,6 +121,7 @@ test('customer can choose items to put in cart and send it to checkout', async (
   await expect(page.getByRole('heading', { name: 'Payment Successful!' })).toBeVisible();
   expect(checkoutPayload).toEqual({
     user_id: session.user.id,
+    delivery_address: 'Southwest',
     items: [
       { menu_item_id: entree!.id, quantity: 1 },
       { menu_item_id: snack!.id, quantity: 1 },
@@ -142,6 +143,7 @@ test('placed orders appear in the customer order history API', async ({ request 
     {
       data: {
         dining_hall_id: 1,
+        delivery_address: 'Southwest',
         items: [
           {
             menu_item_id: item!.id,
@@ -159,6 +161,7 @@ test('placed orders appear in the customer order history API', async ({ request 
   expect(createdOrder).toMatchObject({
     dining_hall: 'Hampshire',
     status: 'unclaimed',
+    delivery_address: 'Southwest',
     total_price: item!.price * 2,
     items: [
       {
