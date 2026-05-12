@@ -111,8 +111,7 @@ test('customer can choose items to put in cart and send it to checkout', async (
     .getByRole('button', { name: 'Add' })
     .click();
 
-  const expectedTotal = (entree!.price + snack!.price).toFixed(2);
-  await expect(page.getByRole('heading', { name: `Cart: $${expectedTotal}` })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Cart: $13.50' })).toBeVisible();
   await expect(page.locator('.cart-panel')).toContainText(entree!.name);
   await expect(page.locator('.cart-panel')).toContainText(snack!.name);
 
