@@ -175,7 +175,6 @@ import { getAuthUser } from '../utils/auth'
 
 const router = useRouter()
 const route = useRoute()
-const authUser = getAuthUser()
 
 function goHome() {
   router.push('/CustomerLanding')
@@ -209,12 +208,13 @@ watch(availableMeals, (meals) => {
 })
 
 async function handleCheckout() {
-  if (!authUser?.id) {
-    router.replace('/Login')
-    return
-  }
-
   try {
+    const authUser = getAuthUser()
+    if (!authUser) {
+      router.replace('/Login')
+      return
+    }
+
     // Format local cart to send to the backend
     const itemsToCheckout = cart.value.map((item) => ({
       menu_item_id: item.id,
