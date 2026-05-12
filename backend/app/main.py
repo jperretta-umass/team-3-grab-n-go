@@ -4,7 +4,8 @@ from fastapi import Body, Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from app.auth import get_current_user, router as auth_router
+from app.auth import get_current_user
+from app.auth import router as auth_router
 from app.database import SessionLocal, get_db
 from app.init_db import init_database
 from app.models import (
@@ -127,9 +128,7 @@ def get_past_deliverer_orders(
 ):
     deliverer_id = ensure_deliverer_profile(current_user, db)
     current_orders = (
-        db.query(CurrentOrder)
-        .filter(CurrentOrder.deliverer_id == deliverer_id)
-        .all()
+        db.query(CurrentOrder).filter(CurrentOrder.deliverer_id == deliverer_id).all()
     )
     delivered_orders = [
         current_order.order.to_dict()
@@ -170,7 +169,9 @@ def claim_order(
     )
 
     if current_order:
-        raise HTTPException(status_code=400, detail="Deliverer already claimed an order")
+        raise HTTPException(
+            status_code=400, detail="Deliverer already claimed an order"
+        )
 
     # Adds it to claimed order
     claimed_order = CurrentOrder(order_id=order_id, deliverer_id=deliverer_id)
