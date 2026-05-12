@@ -16,7 +16,7 @@ from app.auth_schemas import (
     TokenResponse,
 )
 from app.database import get_db
-from app.models import User
+from app.models import DelivererProfile, User
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -138,6 +138,12 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)):
         password_hash=get_password_hash(payload.password),
     )
     db.add(user)
+    if payload.is_deliverer:
+        deliverer_profile = DelivererProfile()
+        db.add(deliverer_profile)
+        db.flush()
+        user.deliverer_id = deliverer_profile.id
+
     db.commit()
     db.refresh(user)
 

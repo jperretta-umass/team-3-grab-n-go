@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { getAuthToken } from '../../utils/auth'
 
 export type OrderItem = {
   menu_item_id: number
@@ -73,7 +74,12 @@ type RawOrder = {
 }
 
 type OrderResponse = {
-  order?: RawOrder
+  order?: RawOrder | null
+}
+
+function authHeaders(): Record<string, string> {
+  const token = getAuthToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
 export function convertOrder(data: RawOrder): Order {
@@ -149,15 +155,15 @@ export async function fetchDelivererCurrentOrder(): Promise<void> {
   delivererCurrentOrderError.value = null
 
   try {
-    const response = await fetch(`${API_BASE}/api/orders`)
+    const response = await fetch(`${API_BASE}/api/orders/deliverer/current`, {
+      headers: authHeaders(),
+    })
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data = (await response.json()) as { orders?: RawOrder[] }
-    const activeOrder = (data.orders ?? [])
-      .map((order) => convertOrder(order))
-      .find(isActiveDelivererOrder) ?? null
+    const data = (await response.json()) as OrderResponse
+    const activeOrder = data.order ? convertOrder(data.order) : null
 
     setDelivererCurrentOrder(activeOrder)
   } catch (error) {
@@ -177,6 +183,7 @@ export async function fetchDelivererCurrentOrder(): Promise<void> {
 export async function claimOrder(orderId: number): Promise<Order> {
   const response = await fetch(`${API_BASE}/api/orders/claim/${orderId}`, {
     method: 'POST',
+    headers: authHeaders(),
   })
 
   if (!response.ok) {
@@ -199,6 +206,7 @@ export async function updateOrderStatus(orderId: number, status: string): Promis
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
+      ...authHeaders(),
     },
     body: JSON.stringify(status),
   })
@@ -224,14 +232,15 @@ export const pastOrdersLoading = ref(false)
 export async function fetchPastOrders(): Promise<void> {
   pastOrdersLoading.value = true
   try {
-    const response = await fetch(`${API_BASE}/api/orders`)
+    const response = await fetch(`${API_BASE}/api/orders/deliverer/past`, {
+      headers: authHeaders(),
+    })
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
     const data = (await response.json()) as { orders?: RawOrder[] }
     pastOrders.value = (data.orders ?? []).map((order) => convertOrder(order))
-    .filter((order) => order.status === 'delivered')
   } catch {
     pastOrders.value = []
   }finally {
